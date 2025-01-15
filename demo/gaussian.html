@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Demo - Garden</title>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./lib/three.module.js",
+          "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0px;
+      }
+
+      .gaussian_container {
+        /*height: 100vh;*/
+        display: flex;
+        flex-direction: column;
+      }
+
+      .gaussian_statebar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff2c5;
+        padding: 20px;
+      }
+
+      .gaussian_complete {
+        position: absolute;
+        right: 0;
+        display: flex;
+      }
+
+      .gaussian_complete_btn {
+        padding: 10px 15px;
+        margin: 0 10px;
+        background-color: #c0c0c0;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+
+      #gaussian_complete_btn_cancel {
+        background-color: #ff9090;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="gaussian_container">
+      <div class="gaussian_statebar">
+        <div>드래그하여 정확한 위치를 선택해주세요</div>
+        <div class="gaussian_complete">
+          <div
+            class="gaussian_complete_btn"
+            id="gaussian_complete_btn_cancel"
+            onClick="openDemo('minimap')"
+          >
+            취소
+          </div>
+          <div class="gaussian_complete_btn" onClick="openDemo('driving')">
+            선택 완료
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
+      import * as THREE from "three";
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = parseInt(urlParams.get("mode")) || 0;
+
+      const viewer = new GaussianSplats3D.Viewer({
+        cameraUp: [0, -1, -0.54],
+        initialCameraPosition: [-3.15634, -0.16946, -0.51552],
+        initialCameraLookAt: [1.52976, 2.27776, 1.65898],
+        sphericalHarmonicsDegree: 2,
+      });
+
+      viewer
+        .addSplatScenes([
+          {
+            path: "assets/data/garden/test1_pixed.splat",
+            splatAlphaRemovalThreshold: 10,
+          },
+          {
+            path: "assets/data/garden/test1_pixed.splat",
+            rotation: [0, 0, 0, 0],
+            scale: [1.5, 1.5, 1.5],
+            position: [-30, -20, -32],
+          },
+        ])
+        .then(() => {
+          viewer.start();
+        });
+
+      // 카메라 이동 속도 및 회전 속도 설정
+      const moveSpeed = 0.01;
+      const rotationSpeed = 0.002; // 회전 속도 조정
+
+      // 원위치 복귀 좌표
+      const originalPosition = new THREE.Vector3(-3.15634, -0.16946, -0.51552);
+
+      // 화살표 키로 카메라 이동 처리
+      document.addEventListener("keydown", function (event) {
+        const forward = new THREE.Vector3();
+        const right = new THREE.Vector3();
+        const up = new THREE.Vector3(0, 1, 0);
+
+        viewer.camera.getWorldDirection(forward);
+        forward.normalize();
+
+        right.crossVectors(forward, up).normalize();
+
+        const moveDirection = new THREE.Vector3(0, 0, 0);
+
+        // W, A, S, D로 이동 처리
+        if (event.key === "w" || event.key === "W") {
+          moveDirection.add(forward.clone());
+        } else if (event.key === "s" || event.key === "S") {
+          moveDirection.add(forward.clone().multiplyScalar(-1));
+        } else if (event.key === "a" || event.key === "A") {
+          moveDirection.add(right.clone().multiplyScalar(-1));
+        } else if (event.key === "d" || event.key === "D") {
+          moveDirection.add(right.clone());
+        }
+
+        // E 키로 상승
+        if (event.key === "e" || event.key === "E") {
+          viewer.camera.position.y += moveSpeed;
+        }
+
+        // Q 키로 하강
+        if (event.key === "q" || event.key === "Q") {
+          viewer.camera.position.y -= moveSpeed;
+        }
+
+        // R 키로 원위치 복귀
+        if (event.key === "r" || event.key === "R") {
+          viewer.camera.position.copy(originalPosition);
+        }
+
+        // 카메라 이동 처리
+        viewer.camera.position.add(moveDirection);
+      });
+
+      // 휠로 확대/축소 처리
+      document.addEventListener("wheel", function (event) {
+        const zoomSpeed = 0.1;
+        if (event.deltaY < 0) {
+          viewer.camera.position.z -= zoomSpeed;
+        } else {
+          viewer.camera.position.z += zoomSpeed;
+        }
+      });
+    </script>
+
+    <script>
+      function openDemo(page) {
+        let url = page + ".html";
+        window.location = url;
+      }
+    </script>
+  </body>
+</html>

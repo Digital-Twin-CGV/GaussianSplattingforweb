@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .minimap_container {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      .minimap_map {
+        position: relative;
+
+        width: 100%;
+      }
+
+      #minimap_gaussian {
+        width: 100%;
+      }
+
+      .marker {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        pointer-events: none; /* 클릭 이벤트 무시 */
+        transform: translate(-50%, -50%); /* 중심 기준 배치 */
+      }
+
+      /* .minimap_statebar {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+       } */
+
+      .minimap_statebar {
+        position: fixed;
+        bottom: -230px; /* 처음엔 숨겨진 상태 */
+        left: 0;
+        width: 100%;
+        /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); */
+        transition: bottom 0.3s ease;
+      }
+
+      .minimap_statebar.open {
+        bottom: 0; /* 드로어가 올라오는 상태 */
+      }
+
+      .toggle_arrow {
+        cursor: pointer;
+        background-color: #fff;
+        /* border-radius: 10px; */
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+        width: 60px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 20px;
+        /* margin-bottom: 20px; */
+      }
+
+      .minimap_complete_btn {
+        /* background-color: #e25c55; */
+        background-color: white;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        width: 216px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+
+        border-radius: 50px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
+        cursor: pointer;
+      }
+
+      #minimap_gaussian {
+        width: 100%;
+      }
+
+      .statebar_container {
+        display: flex;
+        background-color: #fff;
+        width: 100%;
+        align-items: center;
+        text-align: center;
+      }
+
+      .position_container,
+      .select_container,
+      .gaussian_map {
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+
+      .position_container {
+        flex: 1;
+        border-right: 1px solid black;
+      }
+      .select_container {
+        flex: 4;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .gaussian_map {
+        flex: 1;
+      }
+
+      .current_pos,
+      .arrive_pos {
+        display: flex;
+      }
+      .select {
+        font-size: 23px;
+        font-weight: bold;
+        padding-bottom: 30px;
+      }
+
+      .current_text {
+        color: #2600ff;
+        font-size: 23px;
+        padding-bottom: 10px;
+        font-weight: bold;
+      }
+      .arrive_text {
+        color: #1dd200;
+        font-size: 23px;
+        font-weight: bold;
+      }
+
+      .current_circle,
+      .arrive_circle {
+        width: 15px;
+        height: 15px;
+        border-radius: 50px;
+        margin-right: 15px;
+        margin-top: 5px;
+      }
+      .current_circle {
+        background-color: #2600ff;
+      }
+      .arrive_circle {
+        background-color: #1dd200;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="header"></div>
+    <div class="minimap_container">
+      <div class="minimap_map" id="minimap_map">
+        <img
+          id="minimap_gaussian"
+          alt="gaussian_img"
+          src="assets/images/minimap_background.png"
+        />
+        <!-- marker_current 추가 -->
+        <img
+          class="marker"
+          id="marker_current"
+          src="assets/images/marker_current.png"
+        />
+      </div>
+
+      <div class="minimap_statebar">
+        <div class="toggle_arrow" onclick="toggleDrawer()">▲</div>
+        <div class="statebar_container">
+          <div class="position_container">
+            <div class="current_pos">
+              <div class="current_circle"></div>
+              <div class="current_text">현재 위치</div>
+            </div>
+            <div class="arrive_pos">
+              <div class="arrive_circle"></div>
+              <div class="arrive_text">도착 위치</div>
+            </div>
+          </div>
+          <div class="select_container">
+            <div class="select">미니맵에서 원하는 위치를 선택해주세요</div>
+            <div class="minimap_complete_btn" onClick="openDemo('gaussian')">
+              선택완료
+            </div>
+          </div>
+          <div class="gaussian_map">
+            <img
+              id="guassian_map"
+              alt="gaussian_map_img"
+              src="assets/images/gaussianmap.png"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("header.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header").innerHTML = data;
+          })
+          .catch((error) => console.error("Error loading header:", error));
+      });
+      const minimap = document.getElementById('minimap_map');
+      const background = document.getElementById('minimap_gaussian');
+      const markerCurrent = document.getElementById('marker_current');
+      let markerDestination = null; // destination 마커를 관리하는 변수
+
+      // marker_current 위치 설정 (중앙 왼쪽)
+      markerCurrent.style.left = '10%';
+      markerCurrent.style.top = '50%';
+
+
+      //========현재 위치 마커 x,y값으로 직접 지정할때 사용 위는 임시============
+      // function setCurrentMarkerPosition(x, y) {
+      //   // `x`와 `y`는 minimap 기준으로 지정된 좌표입니다.
+      //   markerCurrent.style.left = `${x}px`;
+      //   markerCurrent.style.top = `${y}px`;
+      // }
+      // // 초기 marker_current 위치 설정 (예: 10%, 50%)
+      // setCurrentMarkerPosition(background.offsetWidth * 0.1, background.offsetHeight * 0.5);
+      //=====================================================================
+
+      // 마커 생성 함수
+      function addDestinationMarker(x, y) {
+        // 기존 마커가 있다면 삭제
+        if (markerDestination) {
+          markerDestination.remove();
+        }
+
+        // 새로운 마커 생성 및 추가
+        markerDestination = document.createElement('img');
+        markerDestination.src = 'assets/images/marker_destination.png';
+        markerDestination.className = 'marker';
+        markerDestination.style.left = `${x}px`;
+        markerDestination.style.top = `${y}px`;
+
+        minimap.appendChild(markerDestination);
+      }
+
+      // 클릭 이벤트
+      minimap.addEventListener('click', (event) => {
+        const rect = minimap.getBoundingClientRect();
+
+        // 클릭 좌표 계산 (minimap 기준)
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        // 클릭 위치가 이미지 영역 안인지 확인
+        if (
+          x >= 0 &&
+          x <= background.offsetWidth &&
+          y >= 0 &&
+          y <= background.offsetHeight
+        ) {
+          addDestinationMarker(x, y);
+        }
+      });
+
+      function openDemo(page) {
+        let url = page + '.html';
+
+        window.location = url;
+      }
+      function toggleDrawer() {
+        const statebar = document.querySelector(".minimap_statebar");
+        const arrow = document.querySelector(".toggle_arrow");
+
+        statebar.classList.toggle("open");
+
+        if (statebar.classList.contains("open")) {
+          arrow.textContent = "▼";
+        } else {
+          arrow.textContent = "▲";
+        }
+      }
+    </script>
+    <!-- <script></script> -->
+  </body>
+</html>

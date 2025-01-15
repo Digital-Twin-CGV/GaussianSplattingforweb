@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      .header_container {
+        width: 100%;
+        height: 60px;
+        background-color: white;
+        display: flex;
+      }
+      .home_button {
+        border: none;
+        background-color: white;
+        font-size: 20px;
+        font-weight: bold;
+        padding-left: 30px;
+      }
+      .battery {
+        font-size: 20px;
+        font-weight: bold;
+        padding-right: 30px;
+        padding-top: 15px;
+        margin-left: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header_container">
+      <button class="home_button" onclick="openHome('index')">홈</button>
+      <div class="battery">100%</div>
+    </div>
+    <script>
+      function openHome(page) {
+        let url = page + ".html";
+
+        window.location = url;
+      }
+    </script>
+  </body>
+</html>

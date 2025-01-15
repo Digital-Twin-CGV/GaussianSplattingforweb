@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .main-container {
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .large-button {
+        text-align: center;
+        background-color: #96e6ff;
+        padding: 50px;
+        font-size: 30px;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main-container">
+      <button class="large-button" onclick="openDemo('minimap')">
+        시작하려면 화면을 터치해주세요
+      </button>
+    </div>
+
+    <script>
+      function openDemo(page) {
+        let url = page + ".html";
+
+        window.location = url;
+      }
+    </script>
+  </body>
+</html>

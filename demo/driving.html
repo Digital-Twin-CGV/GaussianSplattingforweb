@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .driving_container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .driving_statebar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #ff4747;
+        padding: 20px;
+
+        cursor: pointer;
+      }
+
+      .driving_map {
+        width: 100%;
+      }
+
+      #driving_gaussian {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="driving_container">
+      <div class="driving_map">
+        <img
+          id="driving_gaussian"
+          alt="gaussian_img"
+          src="assets/images/minimap.jpg"
+        />
+      </div>
+    </div>
+    <div onClick="openDemo('minimap')" class="driving_statebar">
+      <div>안내중지</div>
+    </div>
+    <script>
+      function openDemo(page) {
+        let url = page + ".html";
+
+        window.location = url;
+      }
+    </script>
+  </body>
+</html>
