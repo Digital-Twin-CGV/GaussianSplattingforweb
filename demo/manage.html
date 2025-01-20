@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .manage_container {
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+
+      .manage_bao {
+        border-radius: 27px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
+
+        border: 5px solid #638c6d;
+      }
+
+      .manage_idpw {
+        display: flex;
+        align-items: center;
+      }
+
+      .manage_text_label {
+        font-size: 40px;
+        font-weight: bold;
+      }
+
+      .manage_inputbox {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        color: #638c6d;
+      }
+
+      input {
+        width: 500px;
+        height: 50px;
+
+        margin-left: 50px;
+
+        font-size: 30px;
+
+        border-radius: 12px;
+        border: 3px solid #638c6d;
+      }
+
+      #manage_check_btn {
+        border: none;
+        border-radius: 20px;
+        background-color: #638c6d;
+
+        font-size: 40px;
+        font-weight: bold;
+        color: white;
+
+        padding: 20px 150px;
+
+        cursor: pointer;
+      }
+
+      .error {
+        height: 21px;
+        color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="manage_container">
+      <img class="manage_bao" src="assets/images/won_bao.png" />
+      <div class="manage_inputbox">
+        <div class="manage_idpw" style="padding-bottom: 20px">
+          <label class="manage_text_label" for="manage_id"> 아이디 </label>
+          <input type="text" name="manage_id" id="manage_id" />
+        </div>
+        <div class="manage_idpw">
+          <label class="manage_text_label" for="manage_pw"> 비밀번호 </label>
+          <input type="password" name="manage_pw" id="manage_pw" />
+        </div>
+      </div>
+      <button id="manage_check_btn">확인</button>
+      <p id="error_message" class="error"></p>
+    </div>
+
+    <script>
+      function openDemo(page) {
+        // 창 넘어가는 함수
+        let url = page + ".html"; // url 만들기기
+
+        window.location = url;
+      }
+
+      document
+        .getElementById("manage_check_btn")
+        .addEventListener("click", function () {
+          // 더미 데이터
+          const correctId = "cgv2025";
+          const correctPw = "cgvlab2025";
+
+          // 사용자 입력 값 가져오기
+          const inputId = document.getElementById("manage_id").value;
+          const inputPw = document.getElementById("manage_pw").value;
+
+          // 에러 메시지 영역
+          const errorMessage = document.getElementById("error_message");
+
+          // 유효성 검사
+          if (inputId === correctId && inputPw === correctPw) {
+            // 일치하면 다음 화면으로 이동
+            openDemo("managerMap"); // 이동할 페이지
+          } else {
+            // 일치하지 않으면 에러 메시지 표시
+            errorMessage.textContent =
+              "아이디 또는 비밀번호가 올바르지 않습니다.";
+          }
+        });
+    </script>
+  </body>
+</html>
