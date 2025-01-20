@@ -157,25 +157,29 @@
       .arrive_circle {
         background-color: #1dd200;
       }
-
     </style>
   </head>
 
   <body>
     <div id="header"></div>
     <div class="minimap_container">
+      <h1>호출할 로봇을 선택해주세요 (로봇 1)</h1>
+      <h3>빨간색으로 표시된 것은 사용 중인 로봇이니, 사용할 수 없습니다.</h3>
       <div class="minimap_map" id="minimap_map">
         <img
           id="minimap_gaussian"
           alt="gaussian_img"
           src="assets/images/minimap_background.png"
         />
+        <!-- 랜드마크 버튼 -->
+        <button class="minimap_landmark" , type="button"></button>
+
         <!-- marker_current 추가 -->
-        <img
+        <!-- <img
           class="marker"
           id="marker_current"
           src="assets/images/marker_current.png"
-        />
+        /> -->
       </div>
 
       <div class="minimap_statebar">
@@ -216,15 +220,14 @@
           })
           .catch((error) => console.error("Error loading header:", error));
       });
-      const minimap = document.getElementById('minimap_map');
-      const background = document.getElementById('minimap_gaussian');
-      const markerCurrent = document.getElementById('marker_current');
+      const minimap = document.getElementById("minimap_map");
+      const background = document.getElementById("minimap_gaussian");
+      const markerCurrent = document.getElementById("marker_current");
       let markerDestination = null; // destination 마커를 관리하는 변수
 
       // marker_current 위치 설정 (중앙 왼쪽)
-      markerCurrent.style.left = '10%';
-      markerCurrent.style.top = '50%';
-
+      markerCurrent.style.left = "10%";
+      markerCurrent.style.top = "50%";
 
       //========현재 위치 마커 x,y값으로 직접 지정할때 사용 위는 임시============
       // function setCurrentMarkerPosition(x, y) {
@@ -244,9 +247,9 @@
         }
 
         // 새로운 마커 생성 및 추가
-        markerDestination = document.createElement('img');
-        markerDestination.src = 'assets/images/marker_destination.png';
-        markerDestination.className = 'marker';
+        markerDestination = document.createElement("img");
+        markerDestination.src = "assets/images/marker_destination.png";
+        markerDestination.className = "marker";
         markerDestination.style.left = `${x}px`;
         markerDestination.style.top = `${y}px`;
 
@@ -254,7 +257,7 @@
       }
 
       // 클릭 이벤트
-      minimap.addEventListener('click', (event) => {
+      minimap.addEventListener("click", (event) => {
         const rect = minimap.getBoundingClientRect();
 
         // 클릭 좌표 계산 (minimap 기준)
@@ -273,7 +276,7 @@
       });
 
       function openDemo(page) {
-        let url = page + '.html';
+        let url = page + ".html";
 
         window.location = url;
       }
