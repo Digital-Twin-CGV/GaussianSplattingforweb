@@ -192,7 +192,7 @@
           selectedTop = `${topPercentage}%`;
           selectedLeft = `${leftPercentage}%`;
 
-          console.log(`${robotName}, ${selectedTop}, ${selectedLeft}`);
+          // console.log(`${robotName}, ${selectedTop}, ${selectedLeft}`);
         }
       }
 
@@ -201,7 +201,6 @@
           const url =
             page +
             `.html?robot=${selectedRobot}&top=${selectedTop}&left=${selectedLeft}`;
-          // const url = page + ".html?robot=" + selectedRobot;
           window.location.href = url;
         } else {
           alert("로봇을 선택해주세요");
