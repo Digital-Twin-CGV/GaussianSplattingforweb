@@ -14,88 +14,82 @@
         display: flex;
         flex-direction: column;
         position: relative;
+        width: 100%;
+        height: 100vh;
+      }
+
+      .minimap_robot {
+        position: absolute;
+        display: flex;
+      }
+
+      .minimap_robot_btn {
+        z-index: 10;
+        border-radius: 100px;
+        width: 30px;
+        height: 30px;
+        background-color: green;
+      }
+
+      .minimap_robot_name {
+        padding-left: 10px;
+      }
+
+      .minimap_title {
+        text-align: center;
+      }
+
+      .minimap_landmark_btn {
+        z-index: 10;
+        border-radius: 100px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .minimap_landmark_btn1 {
+        position: absolute;
+        top: 45%;
+        left: 8%;
+      }
+      .minimap_landmark_btn2 {
+        position: absolute;
+        top: 38%;
+        left: 34%;
+      }
+      .minimap_landmark_btn3 {
+        position: absolute;
+        top: 38%;
+        left: 65%;
+      }
+      .minimap_landmark_btn4 {
+        position: absolute;
+        top: 45%;
+        left: 90%;
+      }
+
+      .minimap_landmark_btn.selected {
+        background-color: yellow;
+      }
+
+      .minimap_check {
+        text-align: center;
+      }
+
+      .minimap_check_btn {
+        width: 300px;
+        height: 80px;
+        border-radius: 10px;
+        font-size: large;
       }
 
       .minimap_map {
         position: relative;
-
         width: 100%;
-      }
-
-      #minimap_gaussian {
-        width: 100%;
-      }
-
-      .marker {
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        pointer-events: none; /* 클릭 이벤트 무시 */
-        transform: translate(-50%, -50%); /* 중심 기준 배치 */
-      }
-
-      /* .minimap_statebar {
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-       } */
-
-      .minimap_statebar {
-        position: fixed;
-        bottom: -230px; /* 처음엔 숨겨진 상태 */
-        left: 0;
-        width: 100%;
-        /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); */
-        transition: bottom 0.3s ease;
-      }
-
-      .minimap_statebar.open {
-        bottom: 0; /* 드로어가 올라오는 상태 */
-      }
-
-      .toggle_arrow {
-        cursor: pointer;
-        background-color: #fff;
-        /* border-radius: 10px; */
-        border-top-right-radius: 10px;
-        border-top-left-radius: 10px;
-        width: 60px;
-        height: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-left: 20px;
-        /* margin-bottom: 20px; */
-      }
-
-      .minimap_complete_btn {
-        /* background-color: #e25c55; */
-        background-color: white;
-        color: black;
-        font-size: 20px;
-        font-weight: bold;
-        width: 216px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-
-        border-radius: 50px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
         cursor: pointer;
       }
 
       #minimap_gaussian {
         width: 100%;
-      }
-
-      .statebar_container {
-        display: flex;
-        background-color: #fff;
-        width: 100%;
-        align-items: center;
-        text-align: center;
       }
 
       .position_container,
@@ -105,108 +99,87 @@
         padding-right: 40px;
       }
 
-      .position_container {
-        flex: 1;
-        border-right: 1px solid black;
-      }
-      .select_container {
-        flex: 4;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-      }
       .gaussian_map {
         flex: 1;
       }
 
-      .current_pos,
-      .arrive_pos {
-        display: flex;
-      }
       .select {
         font-size: 23px;
         font-weight: bold;
         padding-bottom: 30px;
       }
-
-      .current_text {
-        color: #2600ff;
-        font-size: 23px;
-        padding-bottom: 10px;
-        font-weight: bold;
-      }
-      .arrive_text {
-        color: #1dd200;
-        font-size: 23px;
-        font-weight: bold;
-      }
-
-      .current_circle,
-      .arrive_circle {
-        width: 15px;
-        height: 15px;
-        border-radius: 50px;
-        margin-right: 15px;
-        margin-top: 5px;
-      }
-      .current_circle {
-        background-color: #2600ff;
-      }
-      .arrive_circle {
-        background-color: #1dd200;
-      }
-
     </style>
   </head>
 
   <body>
     <div id="header"></div>
     <div class="minimap_container">
+      <div class="minimap_title">
+        <h1 id="robot-info">호출할 위치를 선택해주세요</h1>
+        <h3>
+          랜드마크 선택 시 상세 위치 설정 없이 바로 로봇이 해당 위치로
+          이동합니다.
+        </h3>
+      </div>
       <div class="minimap_map" id="minimap_map">
         <img
           id="minimap_gaussian"
           alt="gaussian_img"
           src="assets/images/minimap_background.png"
         />
-        <!-- marker_current 추가 -->
-        <img
-          class="marker"
-          id="marker_current"
-          src="assets/images/marker_current.png"
-        />
-      </div>
 
-      <div class="minimap_statebar">
-        <div class="toggle_arrow" onclick="toggleDrawer()">▲</div>
-        <div class="statebar_container">
-          <div class="position_container">
-            <div class="current_pos">
-              <div class="current_circle"></div>
-              <div class="current_text">현재 위치</div>
-            </div>
-            <div class="arrive_pos">
-              <div class="arrive_circle"></div>
-              <div class="arrive_text">도착 위치</div>
-            </div>
-          </div>
-          <div class="select_container">
-            <div class="select">미니맵에서 원하는 위치를 선택해주세요</div>
-            <div class="minimap_complete_btn" onClick="openDemo('gaussian')">
-              선택완료
-            </div>
-          </div>
-          <div class="gaussian_map">
-            <img
-              id="guassian_map"
-              alt="gaussian_map_img"
-              src="assets/images/gaussianmap.png"
-            />
-          </div>
+        <!-- 선택된 로봇 위치 -->
+        <div class="minimap_robot">
+          <button class="minimap_robot_btn" , type="button"></button>
+          <div class="minimap_robot_name">로봇 위치</div>
+        </div>
+
+        <!-- 랜드마크 버튼 -->
+        <div class="minimap_landmark">
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn1"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn2"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn3"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn4"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
         </div>
       </div>
+
+      <div class="minimap_check">
+        <button
+          class="minimap_check_btn"
+          ,
+          type="button"
+          ,
+          onclick="openPage()"
+        >
+          선택 완료
+        </button>
+      </div>
     </div>
+    <canvas id="colorCanvas" style="display: none"></canvas>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         fetch("header.html")
@@ -216,80 +189,169 @@
           })
           .catch((error) => console.error("Error loading header:", error));
       });
-      const minimap = document.getElementById('minimap_map');
-      const background = document.getElementById('minimap_gaussian');
-      const markerCurrent = document.getElementById('marker_current');
-      let markerDestination = null; // destination 마커를 관리하는 변수
 
-      // marker_current 위치 설정 (중앙 왼쪽)
-      markerCurrent.style.left = '10%';
-      markerCurrent.style.top = '50%';
+      let isLandMarkSelected = false; // 랜드마크를 선택했는지..
+      let isMarkerSelected = null;
 
-
-      //========현재 위치 마커 x,y값으로 직접 지정할때 사용 위는 임시============
-      // function setCurrentMarkerPosition(x, y) {
-      //   // `x`와 `y`는 minimap 기준으로 지정된 좌표입니다.
-      //   markerCurrent.style.left = `${x}px`;
-      //   markerCurrent.style.top = `${y}px`;
-      // }
-      // // 초기 marker_current 위치 설정 (예: 10%, 50%)
-      // setCurrentMarkerPosition(background.offsetWidth * 0.1, background.offsetHeight * 0.5);
-      //=====================================================================
-
-      // 마커 생성 함수
-      function addDestinationMarker(x, y) {
-        // 기존 마커가 있다면 삭제
-        if (markerDestination) {
-          markerDestination.remove();
-        }
-
-        // 새로운 마커 생성 및 추가
-        markerDestination = document.createElement('img');
-        markerDestination.src = 'assets/images/marker_destination.png';
-        markerDestination.className = 'marker';
-        markerDestination.style.left = `${x}px`;
-        markerDestination.style.top = `${y}px`;
-
-        minimap.appendChild(markerDestination);
+      function setLandmarkSelected(isSelected) {
+        isLandMarkSelected = isSelected;
+      }
+      function setMarkerSelected(isSelected) {
+        isMarkerSelected = isSelected;
       }
 
-      // 클릭 이벤트
-      minimap.addEventListener('click', (event) => {
-        const rect = minimap.getBoundingClientRect();
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const robot = params.get("robot");
+        const top = params.get("top");
+        const left = params.get("left");
 
-        // 클릭 좌표 계산 (minimap 기준)
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        return { robot, top, left };
+      }
 
-        // 클릭 위치가 이미지 영역 안인지 확인
-        if (
-          x >= 0 &&
-          x <= background.offsetWidth &&
-          y >= 0 &&
-          y <= background.offsetHeight
-        ) {
-          addDestinationMarker(x, y);
+      const minimap = document.getElementById("minimap_map");
+      const background = document.getElementById("minimap_gaussian");
+      const canvas = document.getElementById("colorCanvas");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      let marker = null;
+
+      background.addEventListener("load", () => {
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      });
+
+      minimap.addEventListener("click", (event) => {
+        const minimapRect = minimap.getBoundingClientRect();
+        const x = event.clientX - minimapRect.left;
+        const y = event.clientY - minimapRect.top;
+
+        const landmarkButton = document.querySelectorAll(
+          ".minimap_landmark_btn"
+        );
+        let clickedLandmarkButton = null;
+
+        // 랜드마크 버튼 클릭 여부 확인
+        landmarkButton.forEach((btn) => {
+          if (isClickInside(event, btn)) {
+            clickedLandmarkButton = btn;
+          }
+        });
+
+        // 랜드마크 버튼 클릭 시
+        if (clickedLandmarkButton) {
+          // 기존에 찍혀있는 마커 제거
+          if (marker) {
+            minimap.removeChild(marker);
+            marker = null;
+          }
+
+          clickedLandmarkButton.classList.add("selected");
+          console.log("랜드마크 건설!!");
+
+          // 기존에 선택했던 랜드마크 선택 삭제
+          landmarkButton.forEach((btn) => {
+            if (btn !== clickedLandmarkButton) {
+              btn.classList.remove("selected");
+            }
+          });
+
+          setLandmarkSelected(true);
+          setMarkerSelected(false);
+          return;
+        }
+
+        // 클릭한 위치의 색 가져오기
+        const pixelData = ctx.getImageData(x, y, 1, 1).data;
+        const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
+
+        if (color !== "rgb(255, 255, 255)") {
+          // 기존 랜드마크가 있으면 제거
+          landmarkButton.forEach((btn) => {
+            btn.classList.remove("selected");
+          });
+
+          if (marker) {
+            minimap.removeChild(marker);
+          }
+
+          // 마커 생성
+          marker = document.createElement("div");
+          marker.style.position = "absolute";
+          marker.style.top = `${y - 15}px`;
+          marker.style.left = `${x - 15}px`;
+          marker.style.width = "25px";
+          marker.style.height = "25px";
+          marker.style.backgroundColor = "red";
+          marker.style.borderRadius = "50%";
+          marker.style.zIndex = "10";
+
+          minimap.appendChild(marker);
+
+          setMarkerSelected(true);
+          setLandmarkSelected(false); // 랜드마크 선택 해제
+
+          // 좌표를 콘솔에 출력
+          console.log(`X: ${x}, Y: ${y}, RGB: ${color}`);
+        } else {
+          console.log("흰색인데요");
         }
       });
 
-      function openDemo(page) {
-        let url = page + '.html';
-
-        window.location = url;
+      function isClickInside(event, element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom
+        );
       }
-      function toggleDrawer() {
-        const statebar = document.querySelector(".minimap_statebar");
-        const arrow = document.querySelector(".toggle_arrow");
 
-        statebar.classList.toggle("open");
-
-        if (statebar.classList.contains("open")) {
-          arrow.textContent = "▼";
-        } else {
-          arrow.textContent = "▲";
+      let selectedLandmarkButton = null;
+      function toggleLandmarkSelection(button) {
+        if (selectedLandmarkButton && selectedLandmarkButton !== button) {
+          selectedLandmarkButton.classList.remove("selected");
         }
+
+        if (marker) {
+          minimap.removeChild(marker);
+          marker = null;
+        }
+        // 현재 버튼을 선택/해제
+        if (button.classList.contains("selected")) {
+          button.classList.remove("selected");
+          selectedLandmarkButton = null; // 선택 해제
+        } else {
+          button.classList.add("selected");
+          selectedLandmarkButton = button; // 새로 선택한 버튼 저장
+        }
+
+        setLandmarkSelected(selectedLandmarkButton !== null); // 선택된 랜드마크가 있으면 true, 없으면 false
+        setMarkerSelected(false); // 마커는 선택되지 않음
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const { robot, top, left } = getUrlParams();
+        if (robot && top && left) console.log(`${robot}, ${top}, ${left}`);
+
+        const robotElement = document.querySelector(`.minimap_robot`);
+        if (robotElement) {
+          robotElement.style.top = `${top}`;
+          robotElement.style.left = `${left}`;
+        }
+      });
+
+      function openPage() {
+        if (isLandMarkSelected) window.location.href = "moving.html";
+        else if (isMarkerSelected) window.location.href = "gaussian.html";
       }
     </script>
-    <!-- <script></script> -->
   </body>
 </html>
