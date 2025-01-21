@@ -150,6 +150,24 @@
             if (robotElement) {
               robotElement.style.top = robot.top;
               robotElement.style.left = robot.left;
+
+              const button = robotElement.querySelector(
+                ".selectrobot_robot_btn"
+              );
+              if (robot.available) {
+                // 사용 가능한 경우
+                button.style.backgroundColor = "green";
+              } else {
+                button.style.backgroundColor = "red";
+              }
+
+              button.onclick = () =>
+                updateTitle(
+                  robot.robotId,
+                  robot.top,
+                  robot.left,
+                  robot.available
+                );
             }
           });
         });
@@ -159,11 +177,15 @@
       const markerCurrent = document.getElementById("marker_current");
       let markerDestination = null; // destination 마커를 관리하는 변수
       let selectedRobot = null;
+      let selectedAvailable = null;
 
-      function updateTitle(robotName, top, left) {
+      function updateTitle(robotName, top, left, available) {
         const title = document.getElementById("title");
         title.textContent = `호출할 로봇을 선택해주세요 (로봇 ${robotName})`;
         selectedRobot = robotName;
+        selectedAvailable = available;
+
+        console.log(`${selectedAvailable}`);
 
         const robotElement = document.querySelector(
           `.selectrobot_robot${robotName}`
@@ -172,14 +194,14 @@
 
         // 로봇 좌표 퍼센트 구하기
         if (robotElement && parentElement) {
-          // 부모 요소의 크기 구하기
+          // 부모 요소(미니맵 이미지)의 크기 구하기
           const parentWidth = parentElement.offsetWidth;
           const parentHeight = parentElement.offsetHeight;
 
           // 로봇 위치 계산 (픽셀 -> 퍼센트)
           const rect = robotElement.getBoundingClientRect();
 
-          // 부모 요소의 위치와 페이지 스크롤 위치를 고려하여 상대 위치 계산
+          // 부모 요소의 크기와 페이지 스크롤 위치를 고려하여 상대 위치 계산
           const topPercentage =
             ((rect.top - parentElement.getBoundingClientRect().top) /
               parentHeight) *
@@ -192,18 +214,22 @@
           selectedTop = `${topPercentage}%`;
           selectedLeft = `${leftPercentage}%`;
 
-          // console.log(`${robotName}, ${selectedTop}, ${selectedLeft}`);
+          console.log(`${robotName}, ${selectedTop}, ${selectedLeft}`);
         }
       }
 
       function openDemo(page) {
-        if (selectedRobot && selectedTop && selectedLeft) {
-          const url =
-            page +
-            `.html?robot=${selectedRobot}&top=${selectedTop}&left=${selectedLeft}`;
-          window.location.href = url;
+        if (!selectedAvailable) {
+          alert("현재 사용중인 로봇입니다. 다른 로봇을 선택해주세요.");
         } else {
-          alert("로봇을 선택해주세요");
+          if (selectedRobot && selectedTop && selectedLeft) {
+            const url =
+              page +
+              `.html?robot=${selectedRobot}&top=${selectedTop}&left=${selectedLeft}`;
+            window.location.href = url;
+          } else {
+            alert("로봇을 선택해주세요");
+          }
         }
       }
     </script>
