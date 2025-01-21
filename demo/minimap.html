@@ -28,6 +28,7 @@
         border-radius: 100px;
         width: 30px;
         height: 30px;
+        background-color: green;
       }
 
       .minimap_robot_name {
@@ -38,18 +39,36 @@
         text-align: center;
       }
 
-      .minimap_landmark {
-      }
-
       .minimap_landmark_btn {
-        position: absolute;
-        top: 38%;
-        left: 34%;
-
         z-index: 10;
         border-radius: 100px;
         width: 30px;
         height: 30px;
+      }
+
+      .minimap_landmark_btn1 {
+        position: absolute;
+        top: 45%;
+        left: 8%;
+      }
+      .minimap_landmark_btn2 {
+        position: absolute;
+        top: 38%;
+        left: 34%;
+      }
+      .minimap_landmark_btn3 {
+        position: absolute;
+        top: 38%;
+        left: 65%;
+      }
+      .minimap_landmark_btn4 {
+        position: absolute;
+        top: 45%;
+        left: 90%;
+      }
+
+      .minimap_landmark_btn.selected {
+        background-color: yellow;
       }
 
       .minimap_check {
@@ -80,18 +99,6 @@
         padding-right: 40px;
       }
 
-      /* .position_container {
-        flex: 1;
-        border-right: 1px solid black;
-      }
-      .select_container {
-        flex: 4;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-      } */
       .gaussian_map {
         flex: 1;
       }
@@ -130,11 +137,32 @@
         <!-- 랜드마크 버튼 -->
         <div class="minimap_landmark">
           <button
-            class="minimap_landmark_btn"
+            class="minimap_landmark_btn minimap_landmark_btn1"
             ,
             type="button"
             ,
-            onclick="setLandmarkSelected(true)"
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn2"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn3"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
+          ></button>
+          <button
+            class="minimap_landmark_btn minimap_landmark_btn4"
+            ,
+            type="button"
+            ,
+            onclick="toggleLandmarkSelection(this)"
           ></button>
         </div>
       </div>
@@ -151,6 +179,7 @@
         </button>
       </div>
     </div>
+    <canvas id="colorCanvas" style="display: none"></canvas>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         fetch("header.html")
@@ -160,15 +189,15 @@
           })
           .catch((error) => console.error("Error loading header:", error));
       });
-      const minimap = document.getElementById("minimap_map");
-      const background = document.getElementById("minimap_gaussian");
-      // const markerCurrent = document.getElementById("marker_current");
-      // let markerDestination = null; // destination 마커를 관리하는 변수
 
       let isLandMarkSelected = false; // 랜드마크를 선택했는지..
+      let isMarkerSelected = null;
 
       function setLandmarkSelected(isSelected) {
         isLandMarkSelected = isSelected;
+      }
+      function setMarkerSelected(isSelected) {
+        isMarkerSelected = isSelected;
       }
 
       function getUrlParams() {
@@ -180,31 +209,132 @@
         return { robot, top, left };
       }
 
+      const minimap = document.getElementById("minimap_map");
+      const background = document.getElementById("minimap_gaussian");
+      const canvas = document.getElementById("colorCanvas");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       let marker = null;
+
+      background.addEventListener("load", () => {
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      });
 
       minimap.addEventListener("click", (event) => {
         const minimapRect = minimap.getBoundingClientRect();
         const x = event.clientX - minimapRect.left;
         const y = event.clientY - minimapRect.top;
 
-        if (marker) {
-          minimap.removeChild(marker);
+        const landmarkButton = document.querySelectorAll(
+          ".minimap_landmark_btn"
+        );
+        let clickedLandmarkButton = null;
+
+        // 랜드마크 버튼 클릭 여부 확인
+        landmarkButton.forEach((btn) => {
+          if (isClickInside(event, btn)) {
+            clickedLandmarkButton = btn;
+          }
+        });
+
+        // 랜드마크 버튼 클릭 시
+        if (clickedLandmarkButton) {
+          // 기존에 찍혀있는 마커 제거
+          if (marker) {
+            minimap.removeChild(marker);
+            marker = null;
+          }
+
+          clickedLandmarkButton.classList.add("selected");
+          console.log("랜드마크 건설!!");
+
+          // 기존에 선택했던 랜드마크 선택 삭제
+          landmarkButton.forEach((btn) => {
+            if (btn !== clickedLandmarkButton) {
+              btn.classList.remove("selected");
+            }
+          });
+
+          setLandmarkSelected(true);
+          setMarkerSelected(false);
+          return;
         }
 
-        marker = document.createElement("div");
-        marker.style.position = "absolute";
-        marker.style.top = `${y - 15}px`; // 마커 위치 설정
-        marker.style.left = `${x - 15}px`;
-        marker.style.width = "20px";
-        marker.style.height = "20px";
-        marker.style.backgroundColor = "red";
-        marker.style.borderRadius = "50%";
-        marker.style.zIndex = "10";
+        // 클릭한 위치의 색 가져오기
+        const pixelData = ctx.getImageData(x, y, 1, 1).data;
+        const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
 
-        minimap.appendChild(marker);
+        if (color !== "rgb(255, 255, 255)") {
+          // 기존 랜드마크가 있으면 제거
+          landmarkButton.forEach((btn) => {
+            btn.classList.remove("selected");
+          });
 
-        // 좌표를 콘솔에 출력
-        console.log(`클릭된 위치: X: ${x}, Y: ${y}`);
+          if (marker) {
+            minimap.removeChild(marker);
+          }
+
+          // 마커 생성
+          marker = document.createElement("div");
+          marker.style.position = "absolute";
+          marker.style.top = `${y - 15}px`;
+          marker.style.left = `${x - 15}px`;
+          marker.style.width = "25px";
+          marker.style.height = "25px";
+          marker.style.backgroundColor = "red";
+          marker.style.borderRadius = "50%";
+          marker.style.zIndex = "10";
+
+          minimap.appendChild(marker);
+
+          setMarkerSelected(true);
+          setLandmarkSelected(false); // 랜드마크 선택 해제
+
+          // 좌표를 콘솔에 출력
+          console.log(`X: ${x}, Y: ${y}, RGB: ${color}`);
+        } else {
+          console.log("흰색인데요");
+        }
+      });
+
+      function isClickInside(event, element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom
+        );
+      }
+
+      let selectedLandmarkButton = null;
+      function toggleLandmarkSelection(button) {
+        if (selectedLandmarkButton && selectedLandmarkButton !== button) {
+          selectedLandmarkButton.classList.remove("selected");
+        }
+
+        if (marker) {
+          minimap.removeChild(marker);
+          marker = null;
+        }
+        // 현재 버튼을 선택/해제
+        if (button.classList.contains("selected")) {
+          button.classList.remove("selected");
+          selectedLandmarkButton = null; // 선택 해제
+        } else {
+          button.classList.add("selected");
+          selectedLandmarkButton = button; // 새로 선택한 버튼 저장
+        }
+
+        setLandmarkSelected(selectedLandmarkButton !== null); // 선택된 랜드마크가 있으면 true, 없으면 false
+        setMarkerSelected(false); // 마커는 선택되지 않음
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
       });
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -218,15 +348,9 @@
         }
       });
 
-      // function openDemo(page) {
-      //   let url = page + ".html";
-
-      //   window.location = url;
-      // }
-
       function openPage() {
         if (isLandMarkSelected) window.location.href = "moving.html";
-        else window.location.href = "gaussian.html";
+        else if (isMarkerSelected) window.location.href = "gaussian.html";
       }
     </script>
   </body>
