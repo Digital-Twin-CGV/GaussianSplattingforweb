@@ -26,7 +26,7 @@
         border: 5px solid #638c6d;
       }
 
-      .manage_idpw {
+      .manage_code {
         display: flex;
         align-items: center;
       }
@@ -44,16 +44,26 @@
         color: #638c6d;
       }
 
-      input {
+      .manage_code_box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .manage_code_title {
+        font-size: 40px;
+        margin-bottom: 30px;
+      }
+
+      #manage_code {
         width: 500px;
         height: 50px;
 
-        margin-left: 50px;
-
         font-size: 30px;
-
         border-radius: 12px;
         border: 3px solid #638c6d;
+
+        text-align: center;
       }
 
       #manage_check_btn {
@@ -81,13 +91,9 @@
     <div class="manage_container">
       <img class="manage_bao" src="assets/images/won_bao.png" />
       <div class="manage_inputbox">
-        <div class="manage_idpw" style="padding-bottom: 20px">
-          <label class="manage_text_label" for="manage_id"> 아이디 </label>
-          <input type="text" name="manage_id" id="manage_id" />
-        </div>
-        <div class="manage_idpw">
-          <label class="manage_text_label" for="manage_pw"> 비밀번호 </label>
-          <input type="password" name="manage_pw" id="manage_pw" />
+        <div class="manage_code_box">
+          <div class="manage_code_title">코드를 입력하세요</div>
+          <input type="password" name="manage_code" id="manage_code" />
         </div>
       </div>
       <button id="manage_check_btn">확인</button>
@@ -102,30 +108,43 @@
         window.location = url;
       }
 
+      function checkPassword() {
+        // 더미 데이터
+        const correctPw = "cgv2025";
+
+        // 사용자 입력 값 가져오기
+        const inputPw = document.getElementById("manage_code").value;
+
+        // 에러 메시지 영역
+        const errorMessage = document.getElementById("error_message");
+
+        // 유효성 검사
+        if (inputPw === correctPw) {
+          // 일치하면 다음 화면으로 이동
+          openDemo("managerMap"); // 이동할 페이지
+        } else {
+          // 일치하지 않으면 에러 메시지 표시
+          errorMessage.textContent = "코드가 틀렸습니다.";
+        }
+      }
+
       document
         .getElementById("manage_check_btn")
-        .addEventListener("click", function () {
-          // 더미 데이터
-          const correctId = "cgv2025";
-          const correctPw = "cgvlab2025";
+        .addEventListener("click", checkPassword);
 
-          // 사용자 입력 값 가져오기
-          const inputId = document.getElementById("manage_id").value;
-          const inputPw = document.getElementById("manage_pw").value;
-
-          // 에러 메시지 영역
-          const errorMessage = document.getElementById("error_message");
-
-          // 유효성 검사
-          if (inputId === correctId && inputPw === correctPw) {
-            // 일치하면 다음 화면으로 이동
-            openDemo("managerMap"); // 이동할 페이지
-          } else {
-            // 일치하지 않으면 에러 메시지 표시
-            errorMessage.textContent =
-              "아이디 또는 비밀번호가 올바르지 않습니다.";
+      document
+        .getElementById("manage_code")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            checkPassword();
           }
         });
+
+      window.addEventListener("pageshow", function () {
+        // 페이지가 다시 표시될 때 입력 필드 초기화
+        document.getElementById("manage_code").value = "";
+        document.getElementById("error_message").textContent = "";
+      });
     </script>
   </body>
 </html>
