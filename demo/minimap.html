@@ -7,8 +7,22 @@
     <title>3D Gaussian Splat Viewer</title>
     <style>
       body {
-        margin: 0;
-      }
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+/*
+      01.22 심성환
+      .minimap_container {
+      flex: 1; /* 미니맵 영역을 확장 */
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+ */
 
       .minimap_container {
         display: flex;
@@ -23,6 +37,13 @@
         display: flex;
       }
 
+/*       
+      01.22 심성환
+      #minimap_gaussian {
+        width: 100%;
+        height: 100%; /* 부모 높이에 맞춤 */
+        object-fit: cover; /* 비율을 유지하며 꽉 채우기 */
+      } */
       .minimap_robot_btn {
         z-index: 10;
         border-radius: 100px;
@@ -67,10 +88,24 @@
         left: 90%;
       }
 
+      .minimap_complete_btn {
+        /* background-color: #e25c55; */
+        background-color: white;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        width: 216px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+        
       .minimap_landmark_btn.selected {
         background-color: yellow;
       }
 
+      
       .minimap_check {
         text-align: center;
       }
@@ -108,10 +143,77 @@
         font-weight: bold;
         padding-bottom: 30px;
       }
+
+      .current_text {
+        color: #2600ff;
+        font-size: 23px;
+        padding-bottom: 10px;
+        font-weight: bold;
+      }
+      .arrive_text {
+        color: #1dd200;
+        font-size: 23px;
+        font-weight: bold;
+      }
+
+      .current_circle,
+      .arrive_circle {
+        width: 15px;
+        height: 15px;
+        border-radius: 50px;
+        margin-right: 15px;
+        margin-top: 5px;
+      }
+      .current_circle {
+        background-color: #2600ff;
+      }
+      .arrive_circle {
+        background-color: #1dd200;
+      }
+
+
+      .minimap_complete_btn {
+        background-color: white;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        width: 216px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 50px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
+        cursor: pointer;
+      }
+
+
+      #coordinates {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+      }
     </style>
   </head>
 
   <body>
+
+    <!--임시 좌표표시-->
+    <div id="original_coordinates" style="position: fixed; top: 40px; right: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 5px 10px; border-radius: 5px; font-size: 16px; font-weight: bold;">
+      X: 0, Y: 0
+    </div>
+    <div id="coordinates">X: 0, Y: 0</div>
+    <!--임시 좌표표시-->
+
+
+
     <div id="header"></div>
     <div class="minimap_container">
       <div class="minimap_title">
@@ -125,9 +227,8 @@
         <img
           id="minimap_gaussian"
           alt="gaussian_img"
-          src="assets/images/minimap_background.png"
+          src="assets/images/minimap_temp2.png"
         />
-
         <!-- 선택된 로봇 위치 -->
         <div class="minimap_robot">
           <button class="minimap_robot_btn" , type="button"></button>
@@ -266,6 +367,14 @@
           return;
         }
 
+        // 새로운 마커 생성 및 추가
+        markerDestination = document.createElement('img');
+        markerDestination.src = 'assets/images/marker_destination.png';
+        markerDestination.className = 'marker';
+
+        
+        markerDestination.style.left = `${x}px`;
+        markerDestination.style.top = `${y}px`;
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(x, y, 1, 1).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
@@ -313,6 +422,61 @@
         );
       }
 
+      // 좌표 변환 함수
+      function convertCoordinates(x, y, width, height) {
+        // 이미지 상의 클릭 범위를 기준으로 실제 좌표를 계산합니다.
+        // 이 예시는 minimap_temp2 이미지의 크기만 고려하여 변환됩니다.
+        
+        // minimap_temp2 이미지의 실제 크기 (여기서는 예시로 왼쪽 상단 (-300, -2400)부터 오른쪽 하단 (-1300, -500)까지 설정)
+        const leftTop = { x: -300, y: -2400 };    // 아이스크림 (좌측 상단)
+        const rightBottom = { x: -1300, y: -500 }; // 출입구 (우측 하단)
+
+        // 화면 기준 X, Y를 0~1로 정규화
+        const normalizedX = x / width;  // 0 ~ 1
+        const normalizedY = y / height; // 0 ~ 1
+
+        // 실제 X 좌표 계산
+        const worldX = leftTop.x + normalizedX * (rightBottom.x - leftTop.x);
+
+        // 실제 Y 좌표 계산
+        const worldY = leftTop.y + normalizedY * (rightBottom.y - leftTop.y);
+
+        return { x: worldX.toFixed(2), y: worldY.toFixed(2) }; // 소수점 2자리까지 출력
+      }
+
+
+
+
+      // 클릭 이벤트
+      minimap.addEventListener('click', (event) => {
+        const rect = minimap.getBoundingClientRect();
+
+        // 클릭 좌표 계산 (minimap 기준)
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        // 클릭 위치가 이미지 영역 안인지 확인
+        if (x >= 0 && 
+            x <= background.offsetWidth && 
+            y >= 0 && 
+            y <= background.offsetHeight
+        ) {
+          addDestinationMarker(x, y);
+
+
+          document.getElementById('original_coordinates').textContent = `Original X: ${x}, Y: ${y}`;
+          
+
+          const converted = convertCoordinates(x, y, background.offsetWidth, background.offsetHeight);
+
+          const convertedCoordinates = {x: converted.x, y: converted.y};
+          localStorage.setItem('selectedCoordinates', JSON.stringify(convertedCoordinates));
+
+
+          //<!--임시 좌표표시-->
+          document.getElementById('coordinates').textContent = `X: ${converted.x}, Y: ${converted.y}`;
+          //<!--임시 좌표표시-->
+        }
       let selectedLandmarkButton = null;
       function toggleLandmarkSelection(button) {
         if (selectedLandmarkButton && selectedLandmarkButton !== button) {
