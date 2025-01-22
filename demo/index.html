@@ -16,6 +16,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
       }
       .main_large-button {
         text-align: center;
@@ -42,26 +43,62 @@
 
         cursor: pointer;
       }
+
+      .mobile-message {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 30px;
+        text-align: center;
+      }
     </style>
   </head>
 
   <body>
     <div class="main_container">
-      <button class="main_large-button" onclick="openDemo('selectrobot')">
-        시작하기
-      </button>
-      <button class="main_manager" onclick="openDemo('manage')">
-        관리자 모드
-      </button>
+      <div class="buttons" id="buttons">
+        <button class="main_large-button" onclick="openDemo('selectrobot')">
+          시작하기
+        </button>
+        <button class="main_manager" onclick="openDemo('manage')">
+          관리자 모드
+        </button>
+      </div>
+      <div class="mobile-message" id="mobileMessage">
+        화면을 가로로 돌려주세요
+      </div>
     </div>
 
     <script>
       function openDemo(page) {
         // 창 넘어가는 함수
         let url = page + ".html"; // url 만들기기
-
         window.location = url;
       }
+
+      function checkMobile() {
+        // 모바일인지
+        var mobileMessage = document.getElementById("mobileMessage");
+        var buttons = document.getElementById("buttons");
+
+        if (window.innerWidth < window.innerHeight) {
+          // 세로 모드일 때는 "화면을 가로로 돌려주세요" 메시지만 보이게
+          mobileMessage.style.display = "flex";
+          buttons.style.display = "none"; // 버튼 숨기기
+        } else {
+          // 가로 모드일 때는 버튼만 보이게
+          mobileMessage.style.display = "none";
+          buttons.style.display = "block"; // 버튼 보이기
+        }
+      }
+
+      // 화면 크기 변경 시마다 실행
+      window.addEventListener("resize", checkMobile);
+
+      // 페이지 로드 시에도 실행
+      checkMobile();
     </script>
   </body>
 </html>
