@@ -162,9 +162,12 @@
           viewer.camera.position.z += zoomSpeed;
         }
       });
-    </script>
 
-    <script>
+      const markerTop = urlParams.get("top");
+      const markerLeft = urlParams.get("left");
+
+      console.log(`top: ${markerTop}, left: ${markerLeft}`);
+
       function openDemo(page) {
         let url = page + ".html";
         window.location = url;
