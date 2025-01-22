@@ -348,6 +348,16 @@
         }
       });
 
+      function openHome(page) {
+        let url = page + ".html";
+        window.location = url;
+      }
+
+      function goBack() {
+        console.log("뒤로가기");
+        history.back();
+      }
+
       function openPage() {
         if (isLandMarkSelected) window.location.href = "moving.html";
         else if (isMarkerSelected) window.location.href = "gaussian.html";
