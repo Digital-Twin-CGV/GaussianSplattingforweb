@@ -50,7 +50,6 @@
         background-color: #ff9090;
       }
 
-      <!--임시-->
       /* 스타일 추가: 카메라 이동 수동 입력칸 */
       #manualCameraControls {
         position: absolute;
@@ -79,8 +78,6 @@
         background-color: #c0c0c0;
         border-radius: 5px;
       }
-      <!--임시-->
-      
     </style>
   </head>
 
@@ -103,18 +100,7 @@
       </div>
     </div>
 
-    <!--임시-->
-    <div id="cameraPositionDisplay" style="
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      border-radius: 5px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    ">
+    <div id="cameraPositionDisplay" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px; font-family: Arial, sans-serif; font-size: 14px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);">
       Loading camera position...
     </div>
 
@@ -128,31 +114,25 @@
       </div>
       <button onclick="updateCameraPosition()">이동</button>
     </div>
-    <!--임시-->
 
     <script type="module">
-
-
       import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
       import * as THREE from "three";
 
       const urlParams = new URLSearchParams(window.location.search);
       const mode = parseInt(urlParams.get("mode")) || 0;
 
-      //원위치 좌표
-      let initialCameraPosition = { x: 0, y: -550, z: 0 };
+      let initialCameraPosition = { x: 0, y: -800, z: 0 };
       const initialCameraRotation = { x: 0, y: 0, z: 0 };
-
 
       document.addEventListener("DOMContentLoaded", () => {
         const selectedCoordinates = JSON.parse(localStorage.getItem('selectedCoordinates'));
         if (selectedCoordinates) {
           initialCameraPosition.x = selectedCoordinates.x;
-          initialCameraPosition.y = -550;
-          initialCameraPosition.z = selectedCoordinates.y;;  // 기본 z값 설정 2차원에서는 y값임
+          initialCameraPosition.y = -800;
+          initialCameraPosition.z = selectedCoordinates.y;
         }
       });
-
 
       const viewer = new GaussianSplats3D.Viewer({
         cameraUp: [0, -1, -0.54],
@@ -162,84 +142,63 @@
       });
 
       viewer
-        .addSplatScenes([
-          {
-            path: "assets/data/garden/test2.splat",
-            rotation: [0, 0, 0, 0],
-            scale: [100 , 100, 100],
-            position: [0, 0, 0],
-          },
-        ])
+        .addSplatScenes([{
+          path: "assets/data/garden/test2.splat",
+          rotation: [0, 0, 0, 0],
+          scale: [100, 100, 100],
+          position: [0, 0, 0],
+        }])
         .then(() => {
           viewer.start();
         });
 
-      // 카메라 이동 속도 및 회전 속도 설정
-      const moveSpeed = 0.01;
-      const rotationSpeed = 0.002; // 회전 속도 조정
-
-
-
-      //==============임시 카메라위치
       const cameraInfoDisplay = document.getElementById("cameraPositionDisplay");
-      // 카메라 정보 업데이트 함수
-    function updateCameraInfo() {
-      const { x, y, z } = viewer.camera.position; // 위치
-      const { x: rx, y: ry, z: rz } = viewer.camera.rotation; // 회전
 
-      cameraInfoDisplay.innerHTML = `
-        <strong>Camera Info:</strong><br>
-        <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}<br>
-        <strong>Rotation:</strong> x=${(rx * 180 / Math.PI).toFixed(2)}°, 
-        y=${(ry * 180 / Math.PI).toFixed(2)}°, z=${(rz * 180 / Math.PI).toFixed(2)}°
-      `;
+      function updateCameraInfo() {
+        const { x, y, z } = viewer.camera.position;
+        const { x: rx, y: ry, z: rz } = viewer.camera.rotation;
+
+        cameraInfoDisplay.innerHTML = `
+          <strong>Camera Info:</strong><br>
+          <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}<br>
+          <strong>Rotation:</strong> x=${(rx * 180 / Math.PI).toFixed(2)}°, 
+          y=${(ry * 180 / Math.PI).toFixed(2)}°, z=${(rz * 180 / Math.PI).toFixed(2)}°
+        `;
       }
 
-      // 초기 위치 표시
       updateCameraInfo();
-      //==============임시 카메라위치
 
-      //임시
-      window.updateCameraPosition=function() {
+      function updateCameraPosition() {
         const x = parseFloat(document.getElementById("manualX").value);
         const y = parseFloat(document.getElementById("manualY").value);
         const z = parseFloat(document.getElementById("manualZ").value);
 
         if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
           viewer.camera.position.set(x, y, z);
-          viewer.camera.updateMatrixWorld(true); // 월드 행렬 업데이트
-          viewer.camera.updateProjectionMatrix(); // 프로젝션 행렬 업데이트
-          updateCameraInfo(); // 카메라 정보를 화면에 반영
+          updateCameraInfo();
         } else {
           alert("유효한 값을 입력해주세요.");
         }
       }
-      //임시
-
 
       function resetCamera() {
         if (viewer.camera) {
-          // 초기 위치와 회전값으로 설정
           viewer.camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z);
           updateCameraInfo();
         }
       }
-    
 
-
-      // 화살표 키로 카메라 이동 처리
       document.addEventListener("keydown", function (event) {
         const forward = new THREE.Vector3();
         const right = new THREE.Vector3();
         const up = new THREE.Vector3(0, 1, 0);
 
-        viewer.camera.getWorldDirection(forward);  // 앞쪽 방향 벡터
+        viewer.camera.getWorldDirection(forward);
         forward.normalize();
-        right.crossVectors(forward, up).normalize();  // 옆쪽 방향 벡터
+        right.crossVectors(forward, up).normalize();
 
         const moveDirection = new THREE.Vector3(0, 0, 0);
 
-        // W, A, S, D로 이동 처리
         if (event.key === "w" || event.key === "W") {
           moveDirection.add(forward.clone());
         } else if (event.key === "s" || event.key === "S") {
@@ -250,60 +209,45 @@
           moveDirection.add(right.clone());
         }
 
-        // E 키로 상승
         if (event.key === "e" || event.key === "E") {
-          viewer.camera.position.y += moveSpeed;
+          viewer.camera.position.y += 0.01;
         }
 
-        // Q 키로 하강
         if (event.key === "q" || event.key === "Q") {
-          viewer.camera.position.y -= moveSpeed;
+          viewer.camera.position.y -= 0.01;
         }
 
-        // 회전 계산 (위치 이동 없이 회전만)
         if (event.key === "ArrowLeft") {
-          viewer.camera.rotation.y += rotationSpeed; // Y축 기준으로 좌회전
+          viewer.camera.rotation.y += 0.002;
         } else if (event.key === "ArrowRight") {
-          viewer.camera.rotation.y -= rotationSpeed; // Y축 기준으로 우회전
+          viewer.camera.rotation.y -= 0.002;
         }
 
         if (event.key === "ArrowUp") {
-          viewer.camera.rotation.x += rotationSpeed; // X축 기준으로 상향 회전
+          viewer.camera.rotation.x += 0.002;
         } else if (event.key === "ArrowDown") {
-          viewer.camera.rotation.x -= rotationSpeed; // X축 기준으로 하향 회전
+          viewer.camera.rotation.x -= 0.002;
         }
+
         if (event.key === "r" || event.key === "R") {
-          resetCamera();  // 카메라를 초기화 위치로 설정
+          resetCamera();
         }
 
-        // 카메라 이동 처리
         viewer.camera.position.add(moveDirection);
-
-        // 카메라 정보 업데이트
         updateCameraInfo();
       });
 
-
-      // 휠로 확대/축소 처리
       document.addEventListener("wheel", function (event) {
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
-          // 줌 인
-          viewer.camera.zoom = Math.min(viewer.camera.zoom + zoomSpeed, 5); // 최대 줌 제한
+          viewer.camera.zoom = Math.min(viewer.camera.zoom + zoomSpeed, 5);
         } else {
-          // 줌 아웃
-          viewer.camera.zoom = Math.max(viewer.camera.zoom - zoomSpeed, 0.5); // 최소 줌 제한
+          viewer.camera.zoom = Math.max(viewer.camera.zoom - zoomSpeed, 0.5);
         }
 
         viewer.camera.updateProjectionMatrix();
-
-        //==============임시 카메라위치
-        updateCameraInfo(); // 위치 업데이트
-        //==============임시 카메라위치
-
+        updateCameraInfo();
       });
-
-      
     </script>
 
     <script>
