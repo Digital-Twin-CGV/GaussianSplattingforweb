@@ -4,313 +4,243 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>3D Gaussian Splat Demo - Garden</title>
-    <script type="text/javascript" src="js/util.js"></script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "./lib/three.module.js",
-          "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
-        }
-      }
-    </script>
+    <title>3D Gaussian Splat Viewer</title>
     <style>
       body {
-        margin: 0px;
+        margin: 0;
       }
 
-      .gaussian_container {
+      .selectrobot_container {
         display: flex;
         flex-direction: column;
+        position: relative;
+        width: 100%;
+        height: 100vh;
       }
 
-      .gaussian_statebar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #fff2c5;
-        padding: 20px;
-      }
-
-      .gaussian_complete {
-        position: absolute;
-        right: 0;
-        display: flex;
-      }
-
-      .gaussian_complete_btn {
-        padding: 10px 15px;
-        margin: 0 10px;
-        background-color: #c0c0c0;
-        border-radius: 20px;
-        cursor: pointer;
-      }
-
-      #gaussian_complete_btn_cancel {
-        background-color: #ff9090;
-      }
-
-      <!--임시-->
-      /* 스타일 추가: 카메라 이동 수동 입력칸 */
-      #manualCameraControls {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 10px;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-      }
-
-      #manualCameraControls input {
-        width: 60px;
-        margin: 5px;
-        padding: 5px;
-        font-size: 14px;
+      .selectrobot_title {
         text-align: center;
       }
 
-      #manualCameraControls button {
-        padding: 5px 10px;
-        font-size: 14px;
-        cursor: pointer;
-        background-color: #c0c0c0;
-        border-radius: 5px;
+      .selectrobot_robot1 {
+        position: absolute;
+        display: flex;
       }
-      <!--임시-->
-      
+
+      .selectrobot_robot2 {
+        position: absolute;
+        display: flex;
+      }
+
+      .selectrobot_robot_btn {
+        z-index: 10;
+        border-radius: 100px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .selectrobot_robot_name {
+        padding-left: 10px;
+      }
+
+      .selectrobot_check {
+        text-align: center;
+      }
+
+      .selectrobot_check_btn {
+        width: 300px;
+        height: 80px;
+        border-radius: 10px;
+        font-size: large;
+      }
+
+      .selectrobot_map {
+        position: relative;
+
+        width: 100%;
+      }
+
+      #selectrobot_gaussian {
+        width: 100%;
+      }
+
+      #selectrobot_gaussian {
+        width: 100%;
+      }
+
+      .position_container,
+      .select_container,
+      .gaussian_map {
+        padding-left: 40px;
+        padding-right: 40px;
+      }
     </style>
   </head>
 
   <body>
-    <div class="gaussian_container">
-      <div class="gaussian_statebar">
-        <div>드래그하여 정확한 위치를 선택해주세요</div>
-        <div class="gaussian_complete">
-          <div
-            class="gaussian_complete_btn"
-            id="gaussian_complete_btn_cancel"
-            onClick="openDemo('minimap')"
-          >
-            취소
-          </div>
-          <div class="gaussian_complete_btn" onClick="openDemo('moving')">
-            선택 완료
-          </div>
+    <div id="header"></div>
+    <div class="selectrobot_container">
+      <div class="selectrobot_title">
+        <h1 id="title">호출할 로봇을 선택해주세요</h1>
+        <h3>빨간색으로 표시된 것은 사용 중인 로봇이니, 사용할 수 없습니다.</h3>
+      </div>
+      <div class="selectrobot_map" id="selectrobot_map">
+        <img
+          id="selectrobot_gaussian"
+          alt="gaussian_img"
+          src="assets/images/minimap_temp2.png"
+        />
+        <!-- 로봇 선택 버튼 -->
+        <div class="selectrobot_robot1">
+          <button
+            class="selectrobot_robot_btn"
+            ,
+            type="button"
+            ,
+            onclick="updateTitle('1')"
+          ></button>
+          <div class="selectrobot_robot_name">로봇 1</div>
         </div>
+        <div class="selectrobot_robot2">
+          <button
+            class="selectrobot_robot_btn"
+            ,
+            type="button"
+            ,
+            onclick="updateTitle('2')"
+          ></button>
+          <div class="selectrobot_robot_name">로봇 2</div>
+        </div>
+
+        <!-- 랜드마크 버튼 -->
+        <!-- <div class="selectrobot_landmark">
+          <button class="selectrobot_landmark_btn" , type="button"></button>
+        </div> -->
+      </div>
+
+      <div class="selectrobot_check">
+        <button
+          class="selectrobot_check_btn"
+          ,
+          type="button"
+          ,
+          onclick="openDemo('minimap')"
+        >
+          선택 완료
+        </button>
       </div>
     </div>
-
-    <!--임시-->
-    <div id="cameraPositionDisplay" style="
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      border-radius: 5px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    ">
-      Loading camera position...
-    </div>
-
-    <!-- 카메라 위치 수동 입력칸 -->
-    <div id="manualCameraControls">
-      <div>카메라 위치 입력</div>
-      <div>
-        X: <input type="number" id="manualX" step="0.01" />
-        Y: <input type="number" id="manualY" step="0.01" />
-        Z: <input type="number" id="manualZ" step="0.01" />
-      </div>
-      <button onclick="updateCameraPosition()">이동</button>
-    </div>
-    <!--임시-->
-
-    <script type="module">
-
-
-      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
-      import * as THREE from "three";
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const mode = parseInt(urlParams.get("mode")) || 0;
-
-      //원위치 좌표
-      let initialCameraPosition = { x: 0, y: -550, z: 0 };
-      const initialCameraRotation = { x: 0, y: 0, z: 0 };
-
-
+    <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const selectedCoordinates = JSON.parse(localStorage.getItem('selectedCoordinates'));
-        if (selectedCoordinates) {
-          initialCameraPosition.x = selectedCoordinates.x;
-          initialCameraPosition.y = -550;
-          initialCameraPosition.z = selectedCoordinates.y;;  // 기본 z값 설정 2차원에서는 y값임
-        }
+        fetch("header.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("header").innerHTML = data;
+          })
+          .catch((error) => console.error("Error loading header:", error));
       });
 
+      fetch("robotdata.json")
+        .then((response) => response.json())
+        .then((data) => {
+          data.forEach((robot) => {
+            const robotElement = document.querySelector(
+              `.selectrobot_robot${robot.robotId}`
+            );
+            if (robotElement) {
+              robotElement.style.top = robot.top;
+              robotElement.style.left = robot.left;
 
-      const viewer = new GaussianSplats3D.Viewer({
-        cameraUp: [0, -1, -0.54],
-        initialCameraPosition: [initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z],
-        initialCameraLookAt: [0, 0, 0],
-        sphericalHarmonicsDegree: 2,
-      });
+              const button = robotElement.querySelector(
+                ".selectrobot_robot_btn"
+              );
+              if (robot.available) {
+                // 사용 가능한 경우
+                button.style.backgroundColor = "green";
+              } else {
+                button.style.backgroundColor = "red";
+              }
 
-      viewer
-        .addSplatScenes([
-          {
-            path: "assets/data/garden/test2.splat",
-            rotation: [0, 0, 0, 0],
-            scale: [100 , 100, 100],
-            position: [0, 0, 0],
-          },
-        ])
-        .then(() => {
-          viewer.start();
+              button.onclick = () =>
+                updateTitle(
+                  robot.robotId,
+                  robot.top,
+                  robot.left,
+                  robot.available
+                );
+            }
+          });
         });
 
-      // 카메라 이동 속도 및 회전 속도 설정
-      const moveSpeed = 0.01;
-      const rotationSpeed = 0.002; // 회전 속도 조정
+      const selectrobot = document.getElementById("selectrobot_map");
+      const background = document.getElementById("selectrobot_gaussian");
+      const markerCurrent = document.getElementById("marker_current");
+      let markerDestination = null; // destination 마커를 관리하는 변수
+      let selectedRobot = null;
+      let selectedAvailable = null;
 
+      function updateTitle(robotName, top, left, available) {
+        const title = document.getElementById("title");
+        title.textContent = `호출할 로봇을 선택해주세요 (로봇 ${robotName})`;
+        selectedRobot = robotName;
+        selectedAvailable = available;
 
+        console.log(`${selectedAvailable}`);
 
-      //==============임시 카메라위치
-      const cameraInfoDisplay = document.getElementById("cameraPositionDisplay");
-      // 카메라 정보 업데이트 함수
-    function updateCameraInfo() {
-      const { x, y, z } = viewer.camera.position; // 위치
-      const { x: rx, y: ry, z: rz } = viewer.camera.rotation; // 회전
+        const robotElement = document.querySelector(
+          `.selectrobot_robot${robotName}`
+        );
+        const parentElement = document.getElementById("selectrobot_map");
 
-      cameraInfoDisplay.innerHTML = `
-        <strong>Camera Info:</strong><br>
-        <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}<br>
-        <strong>Rotation:</strong> x=${(rx * 180 / Math.PI).toFixed(2)}°, 
-        y=${(ry * 180 / Math.PI).toFixed(2)}°, z=${(rz * 180 / Math.PI).toFixed(2)}°
-      `;
-      }
+        // 로봇 좌표 퍼센트 구하기
+        if (robotElement && parentElement) {
+          // 부모 요소(미니맵 이미지)의 크기 구하기
+          const parentWidth = parentElement.offsetWidth;
+          const parentHeight = parentElement.offsetHeight;
 
-      // 초기 위치 표시
-      updateCameraInfo();
-      //==============임시 카메라위치
+          // 로봇 위치 계산 (픽셀 -> 퍼센트)
+          const rect = robotElement.getBoundingClientRect();
 
-      //임시
-      window.updateCameraPosition=function() {
-        const x = parseFloat(document.getElementById("manualX").value);
-        const y = parseFloat(document.getElementById("manualY").value);
-        const z = parseFloat(document.getElementById("manualZ").value);
+          // 부모 요소의 크기와 페이지 스크롤 위치를 고려하여 상대 위치 계산
+          const topPercentage =
+            ((rect.top - parentElement.getBoundingClientRect().top) /
+              parentHeight) *
+            100;
+          const leftPercentage =
+            ((rect.left - parentElement.getBoundingClientRect().left) /
+              parentWidth) *
+            100;
 
-        if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
-          viewer.camera.position.set(x, y, z);
-          viewer.camera.updateMatrixWorld(true); // 월드 행렬 업데이트
-          viewer.camera.updateProjectionMatrix(); // 프로젝션 행렬 업데이트
-          updateCameraInfo(); // 카메라 정보를 화면에 반영
-        } else {
-          alert("유효한 값을 입력해주세요.");
+          selectedTop = `${topPercentage}%`;
+          selectedLeft = `${leftPercentage}%`;
+
+          console.log(`${robotName}, ${selectedTop}, ${selectedLeft}`);
         }
       }
-      //임시
 
-
-      function resetCamera() {
-        if (viewer.camera) {
-          // 초기 위치와 회전값으로 설정
-          viewer.camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z);
-          updateCameraInfo();
-        }
-      }
-    
-
-
-      // 화살표 키로 카메라 이동 처리
-      document.addEventListener("keydown", function (event) {
-        const forward = new THREE.Vector3();
-        const right = new THREE.Vector3();
-        const up = new THREE.Vector3(0, 1, 0);
-
-        viewer.camera.getWorldDirection(forward);  // 앞쪽 방향 벡터
-        forward.normalize();
-        right.crossVectors(forward, up).normalize();  // 옆쪽 방향 벡터
-
-        const moveDirection = new THREE.Vector3(0, 0, 0);
-
-        // W, A, S, D로 이동 처리
-        if (event.key === "w" || event.key === "W") {
-          moveDirection.add(forward.clone());
-        } else if (event.key === "s" || event.key === "S") {
-          moveDirection.add(forward.clone().multiplyScalar(-1));
-        } else if (event.key === "a" || event.key === "A") {
-          moveDirection.add(right.clone().multiplyScalar(-1));
-        } else if (event.key === "d" || event.key === "D") {
-          moveDirection.add(right.clone());
-        }
-
-        // E 키로 상승
-        if (event.key === "e" || event.key === "E") {
-          viewer.camera.position.y += moveSpeed;
-        }
-
-        // Q 키로 하강
-        if (event.key === "q" || event.key === "Q") {
-          viewer.camera.position.y -= moveSpeed;
-        }
-
-        // 회전 계산 (위치 이동 없이 회전만)
-        if (event.key === "ArrowLeft") {
-          viewer.camera.rotation.y += rotationSpeed; // Y축 기준으로 좌회전
-        } else if (event.key === "ArrowRight") {
-          viewer.camera.rotation.y -= rotationSpeed; // Y축 기준으로 우회전
-        }
-
-        if (event.key === "ArrowUp") {
-          viewer.camera.rotation.x += rotationSpeed; // X축 기준으로 상향 회전
-        } else if (event.key === "ArrowDown") {
-          viewer.camera.rotation.x -= rotationSpeed; // X축 기준으로 하향 회전
-        }
-        if (event.key === "r" || event.key === "R") {
-          resetCamera();  // 카메라를 초기화 위치로 설정
-        }
-
-        // 카메라 이동 처리
-        viewer.camera.position.add(moveDirection);
-
-        // 카메라 정보 업데이트
-        updateCameraInfo();
-      });
-
-
-      // 휠로 확대/축소 처리
-      document.addEventListener("wheel", function (event) {
-        const zoomSpeed = 0.1;
-        if (event.deltaY < 0) {
-          // 줌 인
-          viewer.camera.zoom = Math.min(viewer.camera.zoom + zoomSpeed, 5); // 최대 줌 제한
-        } else {
-          // 줌 아웃
-          viewer.camera.zoom = Math.max(viewer.camera.zoom - zoomSpeed, 0.5); // 최소 줌 제한
-        }
-
-        viewer.camera.updateProjectionMatrix();
-
-        //==============임시 카메라위치
-        updateCameraInfo(); // 위치 업데이트
-        //==============임시 카메라위치
-
-      }); 
-
-      const markerTop = urlParams.get("top");
-      const markerLeft = urlParams.get("left");
-
-      console.log(`top: ${markerTop}, left: ${markerLeft}`);
-
-      function openDemo(page) {
+      function openHome(page) {
         let url = page + ".html";
         window.location = url;
+      }
+
+      function goBack() {
+        console.log("뒤로가기");
+        history.back();
+      }
+
+      function openDemo(page) {
+        if (!selectedAvailable) {
+          alert("현재 사용중인 로봇입니다. 다른 로봇을 선택해주세요.");
+        } else {
+          if (selectedRobot && selectedTop && selectedLeft) {
+            const url =
+              page +
+              `.html?robot=${selectedRobot}&top=${selectedTop}&left=${selectedLeft}`;
+            window.location.href = url;
+          } else {
+            alert("로봇을 선택해주세요");
+          }
+        }
       }
     </script>
   </body>
