@@ -325,7 +325,8 @@
         '로봇 1이 주행을 시작했습니다.(2025.01.21 11:00:00)',
         '로봇 1이 충전을 시작했습니다.(2025.01.21 12:00:00)',
       ];
-      let controlRobotHandler;
+      let controlRobotHandler; // 로봇 제어 이벤트 핸들러
+      let stopRobotHandler; // 로봇 정지 이벤트 핸들러
 
       function showRobotDetails(robot) {
         const modal = document.querySelector('.managerMap_modal');
@@ -334,13 +335,20 @@
         const robotId = modal.querySelector('.managerMap_modal_title');
         const robotCamera = modal.querySelector('.managerMap_modal_camera');
         const robotLogs = modal.querySelector('.managerMap_modal_logs');
-        const robotButton = document.querySelector(
+        const robotControlBtn = document.querySelector(
           '#managerMap_modal_robot_btn'
         );
+        const robotStopBtn = document.querySelector(
+          '#managerMap_modal_stop_btn'
+        );
 
-        // 이벤트 리스너 추가
+        // 로봇 제어 이벤트 리스너
         controlRobotHandler = () => controlRobot(robot);
-        robotButton.addEventListener('click', controlRobotHandler);
+        robotControlBtn.addEventListener('click', controlRobotHandler);
+
+        // 로봇 정지 이벤트 리스너
+        stopRobotHandler = () => stopRobot(robot);
+        robotStopBtn.addEventListener('click', stopRobotHandler);
 
         robotId.innerHTML = `로봇${robot.id}`;
 
@@ -363,14 +371,18 @@
       function closeModal() {
         const modal = document.querySelector('.managerMap_modal');
         const overlay = document.querySelector('.managerMap_modal_overlay');
-        const robotButton = document.querySelector(
+        const robotControlBtn = document.querySelector(
           '#managerMap_modal_robot_btn'
+        );
+        const robotStopBtn = document.querySelector(
+          '#managerMap_modal_stop_btn'
         );
 
         modal.style.display = 'none';
         overlay.style.display = 'none';
         // 이벤트 리스너 제거
-        robotButton.removeEventListener('click', controlRobotHandler);
+        robotControlBtn.removeEventListener('click', controlRobotHandler);
+        robotStopBtn.removeEventListener('click', stopRobotHandler);
       }
 
       // 모달 닫기 이벤트
@@ -381,13 +393,18 @@
         .querySelector('.managerMap_modal_overlay')
         .addEventListener('click', closeModal);
 
-      // 로봇 제어 버튼 이벤트
+      // 로봇 제어 버튼
       function controlRobot(robot) {
         if (robot.inUse) {
           alert('로봇이 이미 사용중입니다.');
         } else {
           openPage('minimap');
         }
+      }
+
+      // 로봇 정지 버튼
+      function stopRobot(robot) {
+        alert(`로봇${robot.id}을 즉시 정지합니다.`);
       }
 
       // 마커를 이미지 위에 추가
