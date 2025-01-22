@@ -313,28 +313,12 @@
           setMarkerSelected(true);
           setLandmarkSelected(false); // 랜드마크 선택 해제
 
-          // 좌표 변환
-          const converted = convertCoordinates(
-            x,
-            y,
-            minimapRect.width,
-            minimapRect.height
-          );
+          
+          const converted = convertCoordinates(x, y, background.offsetWidth, background.offsetHeight);
+          const convertedCoordinates = { x: converted.x, y: converted.y };
 
-          // 변환된 좌표 객체 생성
-          const convertedCoordinates = {
-            x: converted.actualX,
-            y: converted.actualY,
-          };
+          localStorage.setItem("selectedCoordinates", JSON.stringify(convertedCoordinates));
 
-          // 변환된 좌표를 localStorage에 저장
-          localStorage.setItem(
-            "selectedCoordinates",
-            JSON.stringify(convertedCoordinates)
-          );
-
-          // 좌표를 콘솔에 출력
-          console.log(`X: ${x}, Y: ${y}, RGB: ${color}`);
         } else {
           console.log("흰색인데요");
         }
