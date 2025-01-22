@@ -193,20 +193,24 @@
       
       function convertCoordinates(x, y, width, height) {
         // 이미지 상의 클릭 범위를 기준으로 실제 좌표를 계산합니다.
-        // 이 예시는 minimap_temp2 이미지의 크기만 고려하여 변환됩니다.
-        
-        // minimap_temp2 이미지의 실제 크기 (여기서는 예시로 왼쪽 상단 (-300, -2400)부터 오른쪽 하단 (-1300, -500)까지 설정)
-        const leftTop = { x: -300, y: -500 };    // 아이스크림 (좌측 상단)
-        const rightBottom = { x: -1300, y: -2400 }; // 출입구 (우측 하단)
-        // 화면 기준 X, Y를 0~1로 정규화
-        const normalizedX = x / width;  // 0 ~ 1
-        const normalizedY = y / height; // 0 ~ 1
+
+        // minimap_temp2 이미지의 실제 크기 (좌측 상단 (-1300, -500)부터 우측 하단 (-300, -2400)까지 설정)
+        const leftTop = { x: -1300, y: -500 };     // 아이스크림 (좌측 상단)
+        const rightBottom = { x: -300, y: -2400 }; // 출입구 (우측 하단)
+
+        // 화면 기준 X, Y를 0~1로 정규화 (이미지의 크기를 기준으로 비율을 계산)
+        const normalizedX = (x - 0) / width;  // 화면의 X 좌표를 0 ~ 1로 정규화
+        const normalizedY = (y - 0) / height; // 화면의 Y 좌표를 0 ~ 1로 정규화
+
         // 실제 X 좌표 계산
         const worldX = leftTop.x + normalizedX * (rightBottom.x - leftTop.x);
         // 실제 Y 좌표 계산
         const worldY = leftTop.y + normalizedY * (rightBottom.y - leftTop.y);
-        return { x: worldX.toFixed(2), y: worldY.toFixed(2) }; // 소수점 2자리까지 출력
-      }
+
+        // 소수점 두 자리까지 반환
+        return { x: worldX.toFixed(2), y: worldY.toFixed(2) };
+    }
+
 
       let isLandMarkSelected = false; // 랜드마크를 선택했는지..
       let isMarkerSelected = null;
@@ -313,7 +317,7 @@
           setMarkerSelected(true);
           setLandmarkSelected(false); // 랜드마크 선택 해제
 
-          
+
           const converted = convertCoordinates(x, y, background.offsetWidth, background.offsetHeight);
           const convertedCoordinates = { x: converted.x, y: converted.y };
 
