@@ -221,10 +221,15 @@
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
       });
 
+      let selectedX = null;
+      let selectedY = null;
+
       minimap.addEventListener("click", (event) => {
         const minimapRect = minimap.getBoundingClientRect();
         const x = event.clientX - minimapRect.left;
         const y = event.clientY - minimapRect.top;
+        selectedX = x;
+        selectedY = y;
 
         const landmarkButton = document.querySelectorAll(
           ".minimap_landmark_btn"
@@ -359,8 +364,14 @@
       }
 
       function openPage() {
-        if (isLandMarkSelected) window.location.href = "moving.html";
-        else if (isMarkerSelected) window.location.href = "gaussian.html";
+        if (isLandMarkSelected) {
+          window.location.href = "moving.html";
+        } else if (isMarkerSelected) {
+          const markerTop = selectedX;
+          const markerLeft = selectedY;
+          window.location.href = `gaussian.html?top=${markerTop}&left=${markerLeft}`;
+          // window.location.href = "gaussian.html";
+        }
       }
     </script>
   </body>
