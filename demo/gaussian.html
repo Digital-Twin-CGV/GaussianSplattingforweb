@@ -140,7 +140,7 @@
       const mode = parseInt(urlParams.get("mode")) || 0;
 
       //원위치 좌표
-      let initialCameraPosition = { x: 0, y: -550, z: 0 };
+      let initialCameraPosition = { x: 0, y: -30, z: 0 };
       const initialCameraRotation = { x: 0, y: 0, z: 0 };
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -149,9 +149,10 @@
         );
         if (selectedCoordinates) {
           initialCameraPosition.x = selectedCoordinates.x;
-          initialCameraPosition.y = -550;
+          initialCameraPosition.y = -30;
           initialCameraPosition.z = selectedCoordinates.y; // 기본 z값 설정 2차원에서는 y값임
         }
+        resetCamera();
       });
 
       const viewer = new GaussianSplats3D.Viewer({
@@ -168,7 +169,7 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/garden/test2.splat",
+            path: "assets/data/garden/cu.splat",
             rotation: [0, 0, 0, 0],
             scale: [100, 100, 100],
             position: [0, 0, 0],
@@ -233,6 +234,8 @@
             initialCameraPosition.y,
             initialCameraPosition.z
           );
+          viewer.camera.rotation.set(10, 0, 0);
+
           updateCameraInfo();
         }
       }
