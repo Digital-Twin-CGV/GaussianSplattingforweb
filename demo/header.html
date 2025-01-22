@@ -19,6 +19,13 @@
         font-weight: bold;
         padding-left: 30px;
       }
+      .back_button {
+        border: none;
+        background-color: white;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 20px;
+      }
       .battery {
         font-size: 20px;
         font-weight: bold;
@@ -31,15 +38,20 @@
 
   <body>
     <div class="header_container">
+      <button class="back_button" onclick="goBack()">뒤로가기</button>
       <button class="home_button" onclick="openHome('index')">홈</button>
-      <div class="battery">100%</div>
     </div>
-    <script>
-      function openHome(page) {
-        let url = page + ".html";
 
-        window.location = url;
-      }
+    <script>
+      // function openHome(page) {
+      //   let url = page + ".html";
+      //   window.location = url;
+      // }
+
+      // function goBack() {
+      //   console.log("뒤로가기");
+      //   history.back();
+      // }
     </script>
   </body>
 </html>
