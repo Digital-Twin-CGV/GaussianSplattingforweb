@@ -96,7 +96,7 @@
           >
             취소
           </div>
-          <div class="gaussian_complete_btn" onClick="openDemo('driving')">
+          <div class="gaussian_complete_btn" onClick="openDemo('moving')">
             선택 완료
           </div>
         </div>
@@ -301,12 +301,13 @@
         updateCameraInfo(); // 위치 업데이트
         //==============임시 카메라위치
 
-      });
+      }); 
 
-      
-    </script>
+      const markerTop = urlParams.get("top");
+      const markerLeft = urlParams.get("left");
 
-    <script>
+      console.log(`top: ${markerTop}, left: ${markerLeft}`);
+
       function openDemo(page) {
         let url = page + ".html";
         window.location = url;

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Viewer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .manage_container {
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+
+      .manage_bao {
+        border-radius: 27px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
+
+        border: 5px solid #638c6d;
+      }
+
+      .manage_code {
+        display: flex;
+        align-items: center;
+      }
+
+      .manage_text_label {
+        font-size: 40px;
+        font-weight: bold;
+      }
+
+      .manage_inputbox {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        color: #638c6d;
+      }
+
+      .manage_code_box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .manage_code_title {
+        font-size: 40px;
+        margin-bottom: 30px;
+      }
+
+      #manage_code {
+        width: 500px;
+        height: 50px;
+
+        font-size: 30px;
+        border-radius: 12px;
+        border: 3px solid #638c6d;
+
+        text-align: center;
+      }
+
+      #manage_check_btn {
+        border: none;
+        border-radius: 20px;
+        background-color: #638c6d;
+
+        font-size: 40px;
+        font-weight: bold;
+        color: white;
+
+        padding: 20px 150px;
+
+        cursor: pointer;
+      }
+
+      .error {
+        height: 21px;
+        color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="manage_container">
+      <img class="manage_bao" src="assets/images/won_bao.png" />
+      <div class="manage_inputbox">
+        <div class="manage_code_box">
+          <div class="manage_code_title">코드를 입력하세요</div>
+          <input type="password" name="manage_code" id="manage_code" />
+        </div>
+      </div>
+      <button id="manage_check_btn">확인</button>
+      <p id="error_message" class="error"></p>
+    </div>
+
+    <script>
+      function openDemo(page) {
+        // 창 넘어가는 함수
+        let url = page + ".html"; // url 만들기기
+
+        window.location = url;
+      }
+
+      function checkPassword() {
+        // 더미 데이터
+        const correctPw = "cgv2025";
+
+        // 사용자 입력 값 가져오기
+        const inputPw = document.getElementById("manage_code").value;
+
+        // 에러 메시지 영역
+        const errorMessage = document.getElementById("error_message");
+
+        // 유효성 검사
+        if (inputPw === correctPw) {
+          // 일치하면 다음 화면으로 이동
+          openDemo("managerMap"); // 이동할 페이지
+        } else {
+          // 일치하지 않으면 에러 메시지 표시
+          errorMessage.textContent = "코드가 틀렸습니다.";
+        }
+      }
+
+      document
+        .getElementById("manage_check_btn")
+        .addEventListener("click", checkPassword);
+
+      document
+        .getElementById("manage_code")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            checkPassword();
+          }
+        });
+
+      window.addEventListener("pageshow", function () {
+        // 페이지가 다시 표시될 때 입력 필드 초기화
+        document.getElementById("manage_code").value = "";
+        document.getElementById("error_message").textContent = "";
+      });
+    </script>
+  </body>
+</html>
