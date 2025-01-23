@@ -27,8 +27,8 @@
 
       .robot_marker {
         position: absolute;
-        width: 20px;
-        height: 20px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
 
         cursor: pointer;
@@ -167,6 +167,10 @@
         height: 100px;
         overflow-y: auto;
       }
+
+      span {
+        font-weight: bold;
+      }
     </style>
   </head>
 
@@ -279,7 +283,7 @@
         const label = document.createElement('span');
         label.innerHTML = `로봇 ${robot.robotId}<br>${robot.battery}%`;
         label.style.position = 'absolute';
-        label.style.left = '25px'; // 마커 오른쪽
+        label.style.left = '60px'; // 마커 오른쪽
         label.style.color = 'black';
         label.style.fontSize = '15px';
         label.style.width = '50px';
