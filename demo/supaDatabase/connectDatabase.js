@@ -16,9 +16,7 @@ async function getPassword() {
     return null;
   }
 
-  console.log(password);
-
-  return password.password;
+  return password;
 }
 
 getPassword();
