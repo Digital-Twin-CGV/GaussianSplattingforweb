@@ -85,6 +85,7 @@
         color: red;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
@@ -100,50 +101,51 @@
       <p id="error_message" class="error"></p>
     </div>
 
-    <script>
+    <script type="module">
+      import { getPassword } from './supaDatabase/connectDatabase.js';
+
+      async function checkPassword() {
+        // 더미 데이터
+        const correctPw = await getPassword();
+
+        // 사용자 입력 값 가져오기
+        const inputPw = document.getElementById('manage_code').value;
+
+        // 에러 메시지 영역
+        const errorMessage = document.getElementById('error_message');
+
+        // 유효성 검사
+        if (inputPw == correctPw.password) {
+          // 일치하면 다음 화면으로 이동
+          openDemo('managerMap'); // 이동할 페이지
+        } else {
+          // 일치하지 않으면 에러 메시지 표시
+          errorMessage.textContent = '코드가 틀렸습니다.';
+        }
+      }
       function openDemo(page) {
         // 창 넘어가는 함수
-        let url = page + ".html"; // url 만들기기
+        let url = page + '.html'; // url 만들기기
 
         window.location = url;
       }
 
-      function checkPassword() {
-        // 더미 데이터
-        const correctPw = "cgv2025";
-
-        // 사용자 입력 값 가져오기
-        const inputPw = document.getElementById("manage_code").value;
-
-        // 에러 메시지 영역
-        const errorMessage = document.getElementById("error_message");
-
-        // 유효성 검사
-        if (inputPw === correctPw) {
-          // 일치하면 다음 화면으로 이동
-          openDemo("managerMap"); // 이동할 페이지
-        } else {
-          // 일치하지 않으면 에러 메시지 표시
-          errorMessage.textContent = "코드가 틀렸습니다.";
-        }
-      }
+      document
+        .getElementById('manage_check_btn')
+        .addEventListener('click', checkPassword);
 
       document
-        .getElementById("manage_check_btn")
-        .addEventListener("click", checkPassword);
-
-      document
-        .getElementById("manage_code")
-        .addEventListener("keydown", function (event) {
-          if (event.key === "Enter") {
+        .getElementById('manage_code')
+        .addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
             checkPassword();
           }
         });
 
-      window.addEventListener("pageshow", function () {
+      window.addEventListener('pageshow', function () {
         // 페이지가 다시 표시될 때 입력 필드 초기화
-        document.getElementById("manage_code").value = "";
-        document.getElementById("error_message").textContent = "";
+        document.getElementById('manage_code').value = '';
+        document.getElementById('error_message').textContent = '';
       });
     </script>
   </body>
