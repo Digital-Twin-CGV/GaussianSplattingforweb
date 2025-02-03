@@ -14921,14 +14921,18 @@ class Viewer {
 
   onMouseClick(mouse) {
     this.mousePosition.set(mouse.offsetX, mouse.offsetY);
-    // this.checkForFocalPointChange();
-    // this.mousePosition.set(mouse.offsetX, mouse.offsetZ);
+    this.saveCoord();
   }
 
-  checkForFocalPointChange = (function () {
+  saveCoord = (function () {
     const renderDimensions = new THREE.Vector2();
-    const toNewFocalPoint = new THREE.Vector3();
+    // const toNewFocalPoint = new THREE.Vector3();
     const outHits = [];
+
+    // 클릭한 곳에 구 찍어주기기
+    const sphereRadius = 5; // 구 반지름
+    const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
     return function () {
       if (!this.transitioningCameraTarget) {
@@ -14939,17 +14943,28 @@ class Viewer {
           this.mousePosition,
           renderDimensions
         );
+
+        // 충돌하는 객체 찾기
         this.raycaster.intersectSplatMesh(this.splatMesh, outHits);
+
         if (outHits.length > 0) {
+          // outHits.sort((a, b) => b.distance - a.distance); 가장 멀리 있는 점을 찍기 위한.. 하지만 이건 필요 없을 것 같아요우
           const hit = outHits[0];
           const intersectionPoint = hit.origin;
-          toNewFocalPoint.copy(intersectionPoint).sub(this.camera.position);
-          if (toNewFocalPoint.length() > MINIMUM_DISTANCE_TO_NEW_FOCAL_POINT) {
-            this.previousCameraTarget.copy(this.controls.target);
-            this.nextCameraTarget.copy(intersectionPoint);
-            this.transitioningCameraTarget = true;
-            this.transitioningCameraTargetStartTime = getCurrentTime();
-          }
+
+          // 클릭한 부분 좌표 찍기
+          console.log(
+            `x=${intersectionPoint.x}, y=${intersectionPoint.y}, z=${intersectionPoint.z}`
+          );
+
+          // 구 찍기기
+          const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          sphereMesh.position.set(
+            intersectionPoint.x,
+            intersectionPoint.y,
+            intersectionPoint.z
+          );
+          this.splatMesh.add(sphereMesh);
         }
       }
     };
