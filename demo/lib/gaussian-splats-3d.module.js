@@ -1,5 +1,3 @@
-// 주인님 저 녀석은 가짜예요 (마우스 클릭 이벤트는 여기서 수정해야함)
-
 import * as THREE from "three";
 import {
   Ray as Ray$1,
@@ -148,7 +146,12 @@ const rgbaArrayToInteger = function (arr, offset) {
   );
 };
 
-const fetchWithProgress = function (path, onProgress, saveChunks = true) {
+const fetchWithProgress = function (
+  path,
+  onProgress,
+  saveChunks = true,
+  headers
+) {
   const abortController = new AbortController();
   const signal = abortController.signal;
   let aborted = false;
@@ -158,7 +161,9 @@ const fetchWithProgress = function (path, onProgress, saveChunks = true) {
   };
 
   return new AbortablePromise((resolve, reject) => {
-    fetch(path, { signal })
+    const fetchOptions = { signal };
+    if (headers) fetchOptions.headers = headers;
+    fetch(path, fetchOptions)
       .then(async (data) => {
         // Handle error conditions where data is still returned
         if (!data.ok) {
@@ -4807,6 +4812,7 @@ class PlyLoader {
     compressionLevel,
     optimizeSplatData = true,
     outSphericalHarmonicsDegree = 0,
+    headers,
     sectionSize,
     sceneCenter,
     blockSize,
@@ -5105,43 +5111,47 @@ class PlyLoader {
     };
 
     if (onProgress) onProgress(0, "0%", LoaderStatus.Downloading);
-    return fetchWithProgress(fileName, localOnProgress, false).then(() => {
-      if (onProgress) onProgress(0, "0%", LoaderStatus.Processing);
-      return loadPromise.promise.then((splatData) => {
-        if (onProgress) onProgress(100, "100%", LoaderStatus.Done);
-        if (internalLoadType === InternalLoadType.DownloadBeforeProcessing) {
-          const chunkDatas = chunks.map((chunk) => chunk.data);
-          return new Blob(chunkDatas).arrayBuffer().then((plyFileData) => {
-            return PlyLoader.loadFromFileData(
-              plyFileData,
-              minimumAlpha,
-              compressionLevel,
-              optimizeSplatData,
-              outSphericalHarmonicsDegree,
-              sectionSize,
-              sceneCenter,
-              blockSize,
-              bucketSize
-            );
-          });
-        } else if (internalLoadType === InternalLoadType.DirectToSplatBuffer) {
-          return splatData;
-        } else {
-          return delayedExecute(() => {
-            return finalize$1(
-              splatData,
-              optimizeSplatData,
-              minimumAlpha,
-              compressionLevel,
-              sectionSize,
-              sceneCenter,
-              blockSize,
-              bucketSize
-            );
-          });
-        }
-      });
-    });
+    return fetchWithProgress(fileName, localOnProgress, false, headers).then(
+      () => {
+        if (onProgress) onProgress(0, "0%", LoaderStatus.Processing);
+        return loadPromise.promise.then((splatData) => {
+          if (onProgress) onProgress(100, "100%", LoaderStatus.Done);
+          if (internalLoadType === InternalLoadType.DownloadBeforeProcessing) {
+            const chunkDatas = chunks.map((chunk) => chunk.data);
+            return new Blob(chunkDatas).arrayBuffer().then((plyFileData) => {
+              return PlyLoader.loadFromFileData(
+                plyFileData,
+                minimumAlpha,
+                compressionLevel,
+                optimizeSplatData,
+                outSphericalHarmonicsDegree,
+                sectionSize,
+                sceneCenter,
+                blockSize,
+                bucketSize
+              );
+            });
+          } else if (
+            internalLoadType === InternalLoadType.DirectToSplatBuffer
+          ) {
+            return splatData;
+          } else {
+            return delayedExecute(() => {
+              return finalize$1(
+                splatData,
+                optimizeSplatData,
+                minimumAlpha,
+                compressionLevel,
+                sectionSize,
+                sceneCenter,
+                blockSize,
+                bucketSize
+              );
+            });
+          }
+        });
+      }
+    );
   }
 
   static loadFromFileData(
@@ -5424,6 +5434,7 @@ class SplatLoader {
     minimumAlpha,
     compressionLevel,
     optimizeSplatData = true,
+    headers,
     sectionSize,
     sceneCenter,
     blockSize,
@@ -5596,41 +5607,45 @@ class SplatLoader {
     };
 
     if (onProgress) onProgress(0, "0%", LoaderStatus.Downloading);
-    return fetchWithProgress(fileName, localOnProgress, false).then(() => {
-      if (onProgress) onProgress(0, "0%", LoaderStatus.Processing);
-      return loadPromise.promise.then((splatData) => {
-        if (onProgress) onProgress(100, "100%", LoaderStatus.Done);
-        if (internalLoadType === InternalLoadType.DownloadBeforeProcessing) {
-          return new Blob(chunks).arrayBuffer().then((splatData) => {
-            return SplatLoader.loadFromFileData(
-              splatData,
-              minimumAlpha,
-              compressionLevel,
-              optimizeSplatData,
-              sectionSize,
-              sceneCenter,
-              blockSize,
-              bucketSize
-            );
-          });
-        } else if (internalLoadType === InternalLoadType.DirectToSplatBuffer) {
-          return splatData;
-        } else {
-          return delayedExecute(() => {
-            return finalize(
-              splatData,
-              optimizeSplatData,
-              minimumAlpha,
-              compressionLevel,
-              sectionSize,
-              sceneCenter,
-              blockSize,
-              bucketSize
-            );
-          });
-        }
-      });
-    });
+    return fetchWithProgress(fileName, localOnProgress, false, headers).then(
+      () => {
+        if (onProgress) onProgress(0, "0%", LoaderStatus.Processing);
+        return loadPromise.promise.then((splatData) => {
+          if (onProgress) onProgress(100, "100%", LoaderStatus.Done);
+          if (internalLoadType === InternalLoadType.DownloadBeforeProcessing) {
+            return new Blob(chunks).arrayBuffer().then((splatData) => {
+              return SplatLoader.loadFromFileData(
+                splatData,
+                minimumAlpha,
+                compressionLevel,
+                optimizeSplatData,
+                sectionSize,
+                sceneCenter,
+                blockSize,
+                bucketSize
+              );
+            });
+          } else if (
+            internalLoadType === InternalLoadType.DirectToSplatBuffer
+          ) {
+            return splatData;
+          } else {
+            return delayedExecute(() => {
+              return finalize(
+                splatData,
+                optimizeSplatData,
+                minimumAlpha,
+                compressionLevel,
+                sectionSize,
+                sceneCenter,
+                blockSize,
+                bucketSize
+              );
+            });
+          }
+        });
+      }
+    );
   }
 
   static loadFromFileData(
@@ -5683,7 +5698,8 @@ class KSplatLoader {
     fileName,
     externalOnProgress,
     loadDirectoToSplatBuffer,
-    onSectionBuilt
+    onSectionBuilt,
+    headers
   ) {
     let directLoadBuffer;
     let directLoadSplatBuffer;
@@ -5943,7 +5959,8 @@ class KSplatLoader {
     return fetchWithProgress(
       fileName,
       localOnProgress,
-      !loadDirectoToSplatBuffer
+      !loadDirectoToSplatBuffer,
+      headers
     ).then((fullBuffer) => {
       if (externalOnProgress)
         externalOnProgress(0, "0%", LoaderStatus.Processing);
@@ -6095,13 +6112,11 @@ class OrbitControls extends EventDispatcher {
     this.mouseButtons = {
       LEFT: MOUSE.ROTATE,
       MIDDLE: MOUSE.DOLLY,
-      //RIGHT: MOUSE.PAN,
+      RIGHT: MOUSE.PAN,
     };
 
     // Touch fingers
-    this.touches = { ONE: TOUCH.ROTATE
-                      //, TWO: TOUCH.DOLLY_PAN 
-                    };
+    this.touches = { ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN };
 
     // for reset
     this.target0 = this.target.clone();
@@ -8850,7 +8865,7 @@ class SplatMaterial {
     if (dynamicMode) {
       vertexShaderSource += `
                 mat4 transform = transforms[sceneIndex];
-                mat4 transformModelViewMatrix = modelViewMatrix * transform;
+                mat4 transformModelViewMatrix = viewMatrix * transform;
             `;
     } else {
       vertexShaderSource += `mat4 transformModelViewMatrix = modelViewMatrix;`;
@@ -9265,7 +9280,8 @@ class SplatMaterial3D {
     maxScreenSpaceSplatSize = 2048,
     splatScale = 1.0,
     pointCloudModeEnabled = false,
-    maxSphericalHarmonicsDegree = 0
+    maxSphericalHarmonicsDegree = 0,
+    kernel2DSize = 0.3
   ) {
     const customVertexVars = `
             uniform vec2 covariancesTextureSize;
@@ -9292,7 +9308,8 @@ class SplatMaterial3D {
     vertexShaderSource += SplatMaterial3D.buildVertexShaderProjection(
       antialiased,
       enableOptionalEffects,
-      maxScreenSpaceSplatSize
+      maxScreenSpaceSplatSize,
+      kernel2DSize
     );
     const fragmentShaderSource = SplatMaterial3D.buildFragmentShader();
 
@@ -9339,7 +9356,8 @@ class SplatMaterial3D {
   static buildVertexShaderProjection(
     antialiased,
     enableOptionalEffects,
-    maxScreenSpaceSplatSize
+    maxScreenSpaceSplatSize,
+    kernel2DSize
   ) {
     let vertexShaderSource = `
 
@@ -9400,16 +9418,16 @@ class SplatMaterial3D {
     if (antialiased) {
       vertexShaderSource += `
                 float detOrig = cov2Dm[0][0] * cov2Dm[1][1] - cov2Dm[0][1] * cov2Dm[0][1];
-                cov2Dm[0][0] += 0.3;
-                cov2Dm[1][1] += 0.3;
+                cov2Dm[0][0] += ${kernel2DSize};
+                cov2Dm[1][1] += ${kernel2DSize};
                 float detBlur = cov2Dm[0][0] * cov2Dm[1][1] - cov2Dm[0][1] * cov2Dm[0][1];
                 vColor.a *= sqrt(max(detOrig / detBlur, 0.0));
                 if (vColor.a < minAlpha) return;
             `;
     } else {
       vertexShaderSource += `
-                cov2Dm[0][0] += 0.3;
-                cov2Dm[1][1] += 0.3;
+                cov2Dm[0][0] += ${kernel2DSize};
+                cov2Dm[1][1] += ${kernel2DSize};
             `;
     }
 
@@ -10767,7 +10785,8 @@ class SplatMesh extends THREE.Mesh {
     maxScreenSpaceSplatSize = 1024,
     logLevel = LogLevel.None,
     sphericalHarmonicsDegree = 0,
-    sceneFadeInRateMultiplier = 1.0
+    sceneFadeInRateMultiplier = 1.0,
+    kernel2DSize = 0.3
   ) {
     super(dummyGeometry, dummyMaterial);
 
@@ -10806,6 +10825,10 @@ class SplatMesh extends THREE.Mesh {
     // https://github.com/nerfstudio-project/gsplat/pull/117
     // https://github.com/graphdeco-inria/gaussian-splatting/issues/294#issuecomment-1772688093
     this.antialiased = antialiased;
+
+    // The size of the 2D kernel used for splat rendering
+    // This will adjust the 2D kernel size after the projection
+    this.kernel2DSize = kernel2DSize;
 
     // Specify the maximum clip space splat size, can help deal with large splats that get too unwieldy
     this.maxScreenSpaceSplatSize = maxScreenSpaceSplatSize;
@@ -11134,7 +11157,8 @@ class SplatMesh extends THREE.Mesh {
           this.maxScreenSpaceSplatSize,
           this.splatScale,
           this.pointCloudModeEnabled,
-          this.minSphericalHarmonicsDegree
+          this.minSphericalHarmonicsDegree,
+          this.kernel2DSize
         );
       } else {
         this.material = SplatMaterial2D.build(
@@ -14347,7 +14371,7 @@ class Viewer {
     this.ignoreDevicePixelRatio = options.ignoreDevicePixelRatio || false;
     this.devicePixelRatio = this.ignoreDevicePixelRatio
       ? 1
-      : window.devicePixelRatio;
+      : window.devicePixelRatio || 1;
 
     // Tells the viewer to use 16-bit floating point values when storing splat covariance data in textures, instead of 32-bit
     this.halfPrecisionCovariancesOnGPU =
@@ -14399,6 +14423,10 @@ class Viewer {
     // https://github.com/nerfstudio-project/gsplat/pull/117
     // https://github.com/graphdeco-inria/gaussian-splatting/issues/294#issuecomment-1772688093
     this.antialiased = options.antialiased || false;
+
+    // This constant is added to the projected 2D screen-space splat scales
+    this.kernel2DSize =
+      options.kernel2DSize === undefined ? 0.3 : options.kernel2DSize;
 
     this.webXRMode = options.webXRMode || WebXRMode.None;
     if (this.webXRMode !== WebXRMode.None) {
@@ -14606,7 +14634,8 @@ class Viewer {
       this.maxScreenSpaceSplatSize,
       this.logLevel,
       this.sphericalHarmonicsDegree,
-      this.sceneFadeInRateMultiplier
+      this.sceneFadeInRateMultiplier,
+      this.kernel2DSize
     );
     this.splatMesh.frustumCulled = false;
     if (this.onSplatMeshChangedCallback) this.onSplatMeshChangedCallback();
@@ -14623,8 +14652,7 @@ class Viewer {
         this.rootElement.style.position = "absolute";
         document.body.appendChild(this.rootElement);
       } else {
-        this.rootElement =
-          this.renderer.domElement.parentElement || document.body;
+        this.rootElement = this.renderer.domElement || document.body;
       }
     }
 
@@ -14897,7 +14925,6 @@ class Viewer {
     };
   })();
 
-  // 마우스
   onMouseMove(mouse) {
     this.mousePosition.set(mouse.offsetX, mouse.offsetY);
   }
@@ -14923,8 +14950,7 @@ class Viewer {
 
   onMouseClick(mouse) {
     this.mousePosition.set(mouse.offsetX, mouse.offsetY);
-    // this.checkForFocalPointChange();
-    // this.mousePosition.set(mouse.offsetX, mouse.offsetZ);
+    this.checkForFocalPointChange();
   }
 
   checkForFocalPointChange = (function () {
@@ -15127,6 +15153,7 @@ class Viewer {
    *
    *         onProgress:                 Function to be called as file data are received, or other processing occurs
    *
+   *         headers:                    Optional HTTP headers to be sent along with splat requests
    * }
    * @return {AbortablePromise}
    */
@@ -15276,7 +15303,8 @@ class Viewer {
       options.splatAlphaRemovalThreshold,
       buildSection.bind(this),
       onProgress,
-      hideLoadingUI.bind(this)
+      hideLoadingUI.bind(this),
+      options.headers
     );
   }
 
@@ -15290,6 +15318,7 @@ class Viewer {
    * @param {function} buildFunc Function to build the viewer's splat mesh with the downloaded splat buffer
    * @param {function} onProgress Function to be called as file data are received, or other processing occurs
    * @param {function} onException Function to be called when exception occurs
+   * @param {object} headers Optional HTTP headers to pass to use for downloading splat scene
    * @return {AbortablePromise}
    */
   downloadAndBuildSingleSplatSceneStandardLoad(
@@ -15298,7 +15327,8 @@ class Viewer {
     splatAlphaRemovalThreshold,
     buildFunc,
     onProgress,
-    onException
+    onException,
+    headers
   ) {
     const downloadPromise = this.downloadSplatSceneToSplatBuffer(
       path,
@@ -15306,7 +15336,8 @@ class Viewer {
       onProgress,
       false,
       undefined,
-      format
+      format,
+      headers
     );
     const downloadAndBuildPromise = abortablePromiseWithExtractedComponents(
       downloadPromise.abortHandler
@@ -15347,6 +15378,7 @@ class Viewer {
    * @param {function} buildFunc Function to rebuild the viewer's splat mesh after a new splat buffer section is downloaded
    * @param {function} onDownloadProgress Function to be called as file data are received
    * @param {function} onDownloadException Function to be called when exception occurs at any point during the full download
+   * @param {object} headers Optional HTTP headers to pass to use for downloading splat scene
    * @return {AbortablePromise}
    */
   downloadAndBuildSingleSplatSceneProgressiveLoad(
@@ -15355,7 +15387,8 @@ class Viewer {
     splatAlphaRemovalThreshold,
     buildFunc,
     onDownloadProgress,
-    onDownloadException
+    onDownloadException,
+    headers
   ) {
     let progressiveLoadedSectionBuildCount = 0;
     let progressiveLoadedSectionBuilding = false;
@@ -15413,7 +15446,8 @@ class Viewer {
       onDownloadProgress,
       true,
       onProgressiveLoadSectionProgress,
-      format
+      format,
+      headers
     );
 
     const progressiveLoadFirstSectionBuildPromise =
@@ -15462,6 +15496,11 @@ class Viewer {
    *         rotation (Array<number>):   Rotation of the scene represented as a quaternion, defaults to [0, 0, 0, 1]
    *
    *         scale (Array<number>):      Scene's scale, defaults to [1, 1, 1]
+   *
+   *         headers:                    Optional HTTP headers to be sent along with splat requests
+   *
+   *         format (SceneFormat)        Optional, the format of the scene data (.ply, .ksplat, .splat). If not present, the
+   *                                     file extension in 'path' will be used to determine the format (if it is present)
    * }
    * @param {boolean} showLoadingUI Display a loading spinner while the scene is loading, defaults to true
    * @param {function} onProgress Function to be called as file data are received
@@ -15521,7 +15560,8 @@ class Viewer {
         onLoadProgress.bind(this, i),
         false,
         undefined,
-        format
+        format,
+        options.headers
       );
       baseDownloadPromises.push(baseDownloadPromise);
       nativeDownloadPromises.push(baseDownloadPromise.promise);
@@ -15583,6 +15623,7 @@ class Viewer {
    * @param {boolean} progressiveBuild Construct file sections into splat buffers as they are downloaded
    * @param {function} onSectionBuilt Function to be called when new section is added to the file
    * @param {string} format File format of the scene
+   * @param {object} headers Optional HTTP headers to pass to use for downloading splat scene
    * @return {AbortablePromise}
    */
   downloadSplatSceneToSplatBuffer(
@@ -15591,7 +15632,8 @@ class Viewer {
     onProgress = undefined,
     progressiveBuild = false,
     onSectionBuilt = undefined,
-    format
+    format,
+    headers
   ) {
     const optimizeSplatData = progressiveBuild ? false : this.optimizeSplatData;
     try {
@@ -15603,14 +15645,16 @@ class Viewer {
           onSectionBuilt,
           splatAlphaRemovalThreshold,
           this.inMemoryCompressionLevel,
-          optimizeSplatData
+          optimizeSplatData,
+          headers
         );
       } else if (format === SceneFormat.KSplat) {
         return KSplatLoader.loadFromURL(
           path,
           onProgress,
           progressiveBuild,
-          onSectionBuilt
+          onSectionBuilt,
+          headers
         );
       } else if (format === SceneFormat.Ply) {
         return PlyLoader.loadFromURL(
@@ -15621,7 +15665,8 @@ class Viewer {
           splatAlphaRemovalThreshold,
           this.inMemoryCompressionLevel,
           optimizeSplatData,
-          this.sphericalHarmonicsDegree
+          this.sphericalHarmonicsDegree,
+          headers
         );
       }
     } catch (e) {
@@ -16612,7 +16657,8 @@ class Viewer {
       mvpMatrix.copy(this.camera.matrixWorld).invert();
       const mvpCamera = this.perspectiveCamera || this.camera;
       mvpMatrix.premultiply(mvpCamera.projectionMatrix);
-      mvpMatrix.multiply(this.splatMesh.matrixWorld);
+      if (!this.splatMesh.dynamicMode)
+        mvpMatrix.multiply(this.splatMesh.matrixWorld);
 
       let gpuAcceleratedSortPromise = Promise.resolve(true);
       if (
@@ -16730,7 +16776,8 @@ class Viewer {
 
       if (splatTree) {
         baseModelView.copy(this.camera.matrixWorld).invert();
-        baseModelView.multiply(this.splatMesh.matrixWorld);
+        if (!this.splatMesh.dynamicMode)
+          baseModelView.multiply(this.splatMesh.matrixWorld);
 
         let nodeRenderCount = 0;
         let splatRenderCount = 0;
@@ -16856,7 +16903,6 @@ class DropInViewer extends THREE.Group {
     options.selfDrivenMode = false;
     options.useBuiltInControls = false;
     options.rootElement = null;
-    options.ignoreDevicePixelRatio = false;
     options.dropInMode = true;
     options.camera = undefined;
     options.renderer = undefined;

@@ -169,7 +169,7 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/garden/cu.splat",
+            path: "assets/data/garden/cuc.splat",
             rotation: [0, 0, 0, 0],
             scale: [100, 100, 100],
             position: [0, 0, 0],
@@ -302,16 +302,31 @@
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
           // 줌 인
-          viewer.camera.zoom = Math.min(viewer.camera.zoom + zoomSpeed, maxZoom);
+          viewer.camera.zoom = Math.min(
+            viewer.camera.zoom + zoomSpeed,
+            maxZoom
+          );
         } else {
           // 줌 아웃
-          viewer.camera.zoom = Math.max(viewer.camera.zoom - zoomSpeed, minZoom);
+          viewer.camera.zoom = Math.max(
+            viewer.camera.zoom - zoomSpeed,
+            minZoom
+          );
         }
 
         // 카메라의 위치가 설정된 범위를 넘지 않도록 제한
-        viewer.camera.position.x = Math.max(-450, Math.min(350, viewer.camera.position.x));
-        viewer.camera.position.y = Math.max(-50, Math.min(350, viewer.camera.position.y));
-        viewer.camera.position.z = Math.max(-550, Math.min(350, viewer.camera.position.z));
+        viewer.camera.position.x = Math.max(
+          -450,
+          Math.min(350, viewer.camera.position.x)
+        );
+        viewer.camera.position.y = Math.max(
+          -50,
+          Math.min(350, viewer.camera.position.y)
+        );
+        viewer.camera.position.z = Math.max(
+          -550,
+          Math.min(350, viewer.camera.position.z)
+        );
 
         viewer.camera.updateProjectionMatrix();
 
