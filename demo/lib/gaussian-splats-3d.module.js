@@ -6099,7 +6099,9 @@ class OrbitControls extends EventDispatcher {
     };
 
     // Touch fingers
-    this.touches = { ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN };
+    this.touches = { ONE: TOUCH.ROTATE
+                      //, TWO: TOUCH.DOLLY_PAN 
+                    };
 
     // for reset
     this.target0 = this.target.clone();
