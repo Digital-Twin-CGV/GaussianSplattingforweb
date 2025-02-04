@@ -19,7 +19,15 @@ async function getPassword() {
   return password;
 }
 
-getPassword();
+async function getRobot() {
+  const { data, error } = await client.from('toWeb').select('*');
+
+  if (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  return data;
+}
 
 export default supabase;
-export { getPassword };
+export { getPassword, getRobot };

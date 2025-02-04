@@ -172,6 +172,7 @@
         font-weight: bold;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
@@ -253,35 +254,43 @@
       </div>
     </div>
 
-    <script>
+    <script type="module">
+      import { getRobot } from './supaDatabase/connectDatabase.js';
       // 페이지 이동
       function openPage(page) {
         let url = page + '.html';
         window.location = url;
       }
 
-      // JSON 파일에서 로봇 데이터 가져오기
-      fetch('robotdata.json')
-        .then((response) => response.json())
-        .then((data) => {
-          data.forEach((robot) => {
-            const marker = createRobotMarker(robot);
-            document.querySelector('.managerMap_map').appendChild(marker);
-            console.log(robot);
-          });
+      // 시간마다 로봇 데이터 갱신
+      setInterval(robotData, 1000);
+
+      async function robotData() {
+        const robots = await getRobot();
+        console.log('robot:', robots);
+
+        // 기존 마커 제거
+        const markers = document.querySelectorAll('.robot_marker');
+        markers.forEach((marker) => marker.remove());
+
+        robots.forEach((robot) => {
+          const marker = createRobotMarker(robot);
+          document.querySelector('.managerMap_map').appendChild(marker);
+          console.log(robot);
         });
+      }
 
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
         const marker = document.createElement('div');
         marker.className = 'robot_marker';
-        marker.style.top = robot.top;
-        marker.style.left = robot.left;
+        marker.style.top = robot.robotData.coord_y + '%';
+        marker.style.left = robot.robotData.coord_x + '%';
         marker.style.backgroundColor = applyColor(robot);
 
         // 로봇 ID 표시
         const label = document.createElement('span');
-        label.innerHTML = `로봇 ${robot.robotId}<br>${robot.battery}%`;
+        label.innerHTML = `로봇 ${robot.robotId}<br>${robot.robotData.battery}%`;
         label.style.position = 'absolute';
         label.style.left = '60px'; // 마커 오른쪽
         label.style.color = 'black';
@@ -299,10 +308,14 @@
 
       // 로봇 상태에 따른 색상
       function applyColor(robot) {
-        if (robot.available) {
+        if (
+          robot.robotData.status === '주행 중' ||
+          robot.robotData.status === '사용 불가' ||
+          robot.robotData.status === '비상 정지'
+        ) {
           // 사용중이라면?
           return '#ff0000';
-        } else if (robot.battery < 30) {
+        } else if (robot.robotData.battery < 30) {
           // 배터리가 30 이하라면?
           return '#f2d406';
         } else {
@@ -350,10 +363,10 @@
 
         robotId.innerHTML = `로봇${robot.robotId}`;
 
-        useRobot.innerHTML = robot.available ? '사용중' : '사용 가능';
+        useRobot.innerHTML = robot.robotData.status;
         useRobot.style.color = applyColor(robot);
 
-        robotCamera.innerHTML = `<img src="${robot.camera}" style = "width: 100%; border-radius: 10px;"/>`;
+        robotCamera.innerHTML = `<img src="${robot.robotData.camera}" style = "width: 100%; border-radius: 10px;"/>`;
 
         robotLogs.innerHTML = logs.map((log) => `<div>${log}</div>`).join('');
 
@@ -393,7 +406,11 @@
 
       // 로봇 제어 버튼
       function controlRobot(robot) {
-        if (robot.available) {
+        if (
+          robot.robotData.status === '주행중' ||
+          robot.robotData.status === '사용 불가' ||
+          robot.robotData.status === '비상 정지'
+        ) {
           alert('로봇이 이미 사용중입니다.');
         } else {
           openPage('minimap');
