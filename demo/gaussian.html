@@ -152,7 +152,11 @@
           initialCameraPosition.y = -30;
           initialCameraPosition.z = selectedCoordinates.y; // 기본 z값 설정 2차원에서는 y값임
         }
+
+        simulateZoom();
         resetCamera();
+        
+        
       });
 
       const viewer = new GaussianSplats3D.Viewer({
@@ -169,9 +173,9 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/garden/cuc.splat",
+            path: "assets/data/garden/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
-            scale: [100, 100, 100],
+            scale: [50, 50, 50],
             position: [0, 0, 0],
           },
         ])
@@ -182,6 +186,10 @@
       // 카메라 이동 속도 및 회전 속도 설정
       const moveSpeed = 0.01;
       const rotationSpeed = 0.002; // 회전 속도 조정
+
+      let maxZoom = 50; // 최대 줌 레벨
+      let minZoom = 0.1; // 최소 줌 레벨
+
 
       //==============임시 카메라위치
       const cameraInfoDisplay = document.getElementById(
@@ -194,14 +202,9 @@
 
         cameraInfoDisplay.innerHTML = `
         <strong>Camera Info:</strong><br>
-        <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(
-          2
-        )}, z=${z.toFixed(2)}<br>
+        <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}<br>
         <strong>Rotation:</strong> x=${((rx * 180) / Math.PI).toFixed(2)}°, 
-        y=${((ry * 180) / Math.PI).toFixed(2)}°, z=${(
-          (rz * 180) /
-          Math.PI
-        ).toFixed(2)}°
+        y=${((ry * 180) / Math.PI).toFixed(2)}°, z=${((rz * 180) / Math.PI).toFixed(2)}°
       `;
       }
 
@@ -239,6 +242,10 @@
           updateCameraInfo();
         }
       }
+
+
+      
+
 
       // 화살표 키로 카메라 이동 처리
       document.addEventListener("keydown", function (event) {
@@ -296,49 +303,47 @@
         updateCameraInfo();
       });
 
-      // 휠로 확대/축소 처리
+
       // 휠로 확대/축소 처리
       document.addEventListener("wheel", function (event) {
+        console.log("wheel event");
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
           // 줌 인
-          viewer.camera.zoom = Math.min(
-            viewer.camera.zoom + zoomSpeed,
-            maxZoom
-          );
+          viewer.camera.zoom = Math.min(viewer.camera.zoom + zoomSpeed, maxZoom);
         } else {
           // 줌 아웃
-          viewer.camera.zoom = Math.max(
-            viewer.camera.zoom - zoomSpeed,
-            minZoom
-          );
+          viewer.camera.zoom = Math.max(viewer.camera.zoom - zoomSpeed, minZoom);
         }
 
         // 카메라의 위치가 설정된 범위를 넘지 않도록 제한
-        viewer.camera.position.x = Math.max(
-          -450,
-          Math.min(350, viewer.camera.position.x)
-        );
-        viewer.camera.position.y = Math.max(
-          -50,
-          Math.min(350, viewer.camera.position.y)
-        );
-        viewer.camera.position.z = Math.max(
-          -550,
-          Math.min(350, viewer.camera.position.z)
-        );
+        viewer.camera.position.x = Math.max(-450, Math.min(350, viewer.camera.position.x));
+        viewer.camera.position.y = Math.max(-50, Math.min(350, viewer.camera.position.y));
+        viewer.camera.position.z = Math.max(-550, Math.min(350, viewer.camera.position.z));
 
         viewer.camera.updateProjectionMatrix();
 
         //==============임시 카메라 위치
         updateCameraInfo(); // 위치 업데이트
         //==============임시 카메라 위치
+        console.log(`Current Zoom Level: ${viewer.camera.zoom}`);
+
       });
 
       const markerTop = urlParams.get("top");
       const markerLeft = urlParams.get("left");
 
       console.log(`top: ${markerTop}, left: ${markerLeft}`);
+
+
+
+
+      function simulateZoom() {
+        for (let count = 0; count < 13; count++) {
+          dollyIn(getZoomScale());
+        }
+      }
+
 
       function openDemo(page) {
         let url = page + ".html";
