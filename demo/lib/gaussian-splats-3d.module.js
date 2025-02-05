@@ -14307,7 +14307,7 @@ class Viewer {
   constructor(options = {}) {
     // The natural 'up' vector for viewing the scene (only has an effect when used with orbit controls and
     // when the viewer uses its own camera).
-    if (!options.cameraUp) options.cameraUp = [0, 1, 0];
+    if (!options.cameraUp) options.cameraUp = [0, -1, 0];
     this.cameraUp = new THREE.Vector3().fromArray(options.cameraUp);
 
     // The camera's initial position (only used when the viewer uses its own camera).
@@ -14645,8 +14645,13 @@ class Viewer {
     this.initialized = true;
   }
 
+  // 카메라
   setupCamera() {
     if (!this.usingExternalCamera) {
+      if (this.initialized) return;
+
+      this.initialized = true;
+
       const renderDimensions = new THREE.Vector2();
       this.getRenderDimensions(renderDimensions);
 
@@ -14668,28 +14673,55 @@ class Viewer {
         ? this.orthographicCamera
         : this.perspectiveCamera;
       // this.camera.position.copy(this.initialCameraPosition);
-      // this.camera.up.copy(this.cameraUp).normalize();
+      this.camera.up.copy(this.cameraUp).normalize(); // 얘가 없으면 모델이 뒤집어져요
       // this.camera.lookAt(this.initialCameraLookAt);
+
       this.radius = 5; // 중심축에서의 거리
       this.angle = 0; // 초기 각도
-      this.camera.position.set(this.radius, 0, 0); // 초기 위치 설정
-      this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // 중심을 바라보게 설정
 
-      this.startCameraRotation(); // 카메라 회전 함수 실행
+      this.pivot = new THREE.Vector3(0, 0, 0); // 중심점 초기값 설정
+
+      console.log("Initial pivot value: ", this.pivot);
+
+      this.updateCameraPosition(); // 카메라 위치 업데이트
+      this.camera.lookAt(this.pivot); // 카메라가 pivot을 바라보도록 설정
+
+      // setupCamera()가 제대로 호출되었는지 확인
+      console.log("Camera initialized and looking at pivot:", this.pivot);
     }
   }
 
-  startCameraRotation() {
-    const rotateCamera = () => {
-      this.angle += 0.01; // 회전 속도 조절 가능
-      this.camera.position.x = this.radius * Math.cos(this.angle);
-      this.camera.position.z = this.radius * Math.sin(this.angle);
-      this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // 항상 중심을 바라봄
+  rotateCamera(deltaX, deltaY) {
+    const rotationSpeed = 0.005;
 
-      requestAnimationFrame(rotateCamera);
-    };
+    // X축 기준 회전 (좌우)
+    this.angle -= deltaX * rotationSpeed;
 
-    rotateCamera(); // 애니메이션 실행
+    // Y축 기준 회전 (위아래 제한)
+    const newY = Math.max(
+      -Math.PI / 3,
+      Math.min(Math.PI / 2, this.camera.position.y + deltaY * rotationSpeed)
+    );
+
+    // 새로운 카메라 위치 계산 (pivot을 중심으로)
+    const x = this.pivot.x + this.radius * Math.sin(this.angle);
+    const z = this.pivot.z + this.radius * Math.cos(this.angle);
+
+    this.camera.position.set(x, newY, z);
+    this.camera.lookAt(this.pivot);
+  }
+
+  movePivot(newX, newY, newZ) {
+    this.pivot.set(newX, newY, newZ);
+    this.updateCameraPosition();
+  }
+
+  updateCameraPosition() {
+    const x = this.pivot.x + this.radius * Math.sin(this.angle);
+    const z = this.pivot.z + this.radius * Math.cos(this.angle);
+    this.camera.position.set(x, this.pivot.y, z);
+
+    this.camera.lookAt(this.pivot);
   }
 
   setupRenderer() {
@@ -14788,24 +14820,78 @@ class Viewer {
 
   setupEventHandlers() {
     if (this.useBuiltInControls && this.webXRMode === WebXRMode.None) {
-      this.mouseMoveListener = this.onMouseMove.bind(this);
-      this.renderer.domElement.addEventListener(
-        "pointermove",
-        this.mouseMoveListener,
-        false
-      );
-      this.mouseDownListener = this.onMouseDown.bind(this);
+      this.mouseDown = false; // 마우스가 눌려있는지 체크
+      this.isDragging = false; // 드래그 감지
+      this.lastMouseX = 0;
+      this.lastMouseY = 0;
+
+      this.mouseDownListener = (event) => {
+        this.mouseDown = true;
+        this.isDragging = false;
+        this.lastMouseX = event.clientX;
+        this.lastMouseY = event.clientY;
+
+        // 기존 onMouseDown() 기능 호출
+        this.onMouseDown(event);
+      };
       this.renderer.domElement.addEventListener(
         "pointerdown",
         this.mouseDownListener,
         false
       );
-      this.mouseUpListener = this.onMouseUp.bind(this);
+
+      this.mouseMoveListener = (event) => {
+        if (this.mouseDown) {
+          this.isDragging = true;
+          const deltaX = event.clientX - this.lastMouseX;
+          const deltaY = event.clientY - this.lastMouseY;
+
+          // 드래그 거리 체크
+          if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+            this.isDragging = true;
+          }
+
+          // 회전 로직 추가
+          this.camera.rotation.y -= deltaX * 0.002;
+          this.camera.rotation.x -= deltaY * 0.002;
+
+          this.lastMouseX = event.clientX;
+          this.lastMouseY = event.clientY;
+
+          // 카메라 위치 업데이트
+          this.camera.updateMatrixWorld(true);
+          this.camera.updateProjectionMatrix();
+
+          // 카메라가 업데이트된 후 setupCamera() 호출하여 카메라 상태 업데이트
+          this.setupCamera();
+        }
+      };
+      this.renderer.domElement.addEventListener(
+        "pointermove",
+        this.mouseMoveListener,
+        false
+      );
+
+      this.mouseUpListener = (event) => {
+        this.mouseDown = false;
+        if (this.isDragging) {
+          // 드래그가 끝난 후 카메라 위치 업데이트
+          this.camera.updateMatrixWorld(true);
+          this.camera.updateProjectionMatrix();
+
+          // 카메라가 업데이트된 후 setupCamera() 호출하여 카메라 상태 업데이트
+          this.setupCamera();
+        } else {
+          // 드래그가 아니라면 클릭으로 간주하고 onMouseClick 실행
+          this.onMouseClick(event);
+        }
+      };
       this.renderer.domElement.addEventListener(
         "pointerup",
         this.mouseUpListener,
         false
       );
+
       this.keyDownListener = this.onKeyDown.bind(this);
       window.addEventListener("keydown", this.keyDownListener, false);
     }
