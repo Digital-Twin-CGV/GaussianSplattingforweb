@@ -255,15 +255,27 @@
     </div>
 
     <script type="module">
-      import { getRobot } from './supaDatabase/connectDatabase.js';
+      import { getRobot, client } from './supaDatabase/connectDatabase.js';
+
+      client
+        .channel('room1')
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'toWeb' },
+          (payload) => {
+            robotData();
+          }
+        )
+        .subscribe();
+
       // 페이지 이동
       function openPage(page) {
         let url = page + '.html';
         window.location = url;
       }
 
-      // 시간마다 로봇 데이터 갱신
-      setInterval(robotData, 1000);
+      // 로봇 데이터 가져오기
+      robotData();
 
       async function robotData() {
         const robots = await getRobot();
