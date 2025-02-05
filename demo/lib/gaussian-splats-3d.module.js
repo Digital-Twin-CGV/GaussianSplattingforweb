@@ -14667,10 +14667,29 @@ class Viewer {
       this.camera = this.startInOrthographicMode
         ? this.orthographicCamera
         : this.perspectiveCamera;
-      this.camera.position.copy(this.initialCameraPosition);
-      this.camera.up.copy(this.cameraUp).normalize();
-      this.camera.lookAt(this.initialCameraLookAt);
+      // this.camera.position.copy(this.initialCameraPosition);
+      // this.camera.up.copy(this.cameraUp).normalize();
+      // this.camera.lookAt(this.initialCameraLookAt);
+      this.radius = 5; // 중심축에서의 거리
+      this.angle = 0; // 초기 각도
+      this.camera.position.set(this.radius, 0, 0); // 초기 위치 설정
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // 중심을 바라보게 설정
+
+      this.startCameraRotation(); // 카메라 회전 함수 실행
     }
+  }
+
+  startCameraRotation() {
+    const rotateCamera = () => {
+      this.angle += 0.01; // 회전 속도 조절 가능
+      this.camera.position.x = this.radius * Math.cos(this.angle);
+      this.camera.position.z = this.radius * Math.sin(this.angle);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // 항상 중심을 바라봄
+
+      requestAnimationFrame(rotateCamera);
+    };
+
+    rotateCamera(); // 애니메이션 실행
   }
 
   setupRenderer() {
