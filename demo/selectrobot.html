@@ -102,9 +102,7 @@
         <button class="selectrobot_check_btn" type="button">선택 완료</button>
       </div>
     </div>
-    <script type="module">
-      import { getRobot, client } from './supaDatabase/connectDatabase.js';
-
+    <script>
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
           .then((response) => response.text())
@@ -113,6 +111,19 @@
           })
           .catch((error) => console.error('Error loading header:', error));
       });
+
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        console.log('뒤로가기');
+        history.back();
+      }
+    </script>
+    <script type="module">
+      import { getRobot, client } from './supaDatabase/connectDatabase.js';
 
       document.addEventListener('DOMContentLoaded', () => {
         document
