@@ -147,16 +147,49 @@
         const selectedCoordinates = JSON.parse(
           localStorage.getItem("selectedCoordinates")
         );
+
         if (selectedCoordinates) {
           initialCameraPosition.x = selectedCoordinates.x;
           initialCameraPosition.y = -30;
-          initialCameraPosition.z = selectedCoordinates.y; // 기본 z값 설정 2차원에서는 y값임
+          initialCameraPosition.z = selectedCoordinates.y;
+
+          /* const geometry = new THREE.SphereGeometry(50, 32, 32); // 반지름 10, 세분화도 32
+            const material = new THREE.MeshBasicMaterial({
+              color: 0x00ff00,
+              wireframe: true,
+            }); */
+
+          /* const sphere = new THREE.Mesh(geometry, material); */
+
+          /* sphere.position.set(
+              initialCameraPosition.x,
+              initialCameraPosition.y,
+              initialCameraPosition.z
+            ); */
+
+          const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+          const sphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+          });
+
+          const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          sphereMesh.position.set(
+            initialCameraPosition.x,
+            initialCameraPosition.y,
+            initialCameraPosition.z
+          );
+          viewer.splatMesh.add(sphereMesh);
+          console.log(
+            `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+          );
+
+          /* 카메라가 구를 바라보도록 */
+          viewer.camera.position.set(0, 0, 50);
+          viewer.camera.lookAt(sphereMesh.position);
         }
 
         simulateZoom();
         resetCamera();
-        
-        
       });
 
       const viewer = new GaussianSplats3D.Viewer({
@@ -173,14 +206,94 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/garden/cu_plus_all.splat",
+            path: "assets/data/garden/cu2.splat",
+//             path: "assets/data/garden/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
             position: [0, 0, 0],
           },
         ])
-        .then(() => {
+        .then(async () => {
           viewer.start();
+
+          // 좌표를 읽은 후 박스 생성
+          const coordinates = await loadCoordinates();
+          createTransparentBox(coordinates);
+
+          // JSON 파일에서 좌표를 읽어오는 함수
+          async function loadCoordinates() {
+            const response = await fetch("./box_coord.json");
+            const data = await response.json();
+            /* console.log("좌표", data); */
+            return data;
+          }
+
+          // 투명 박스를 생성하는 함수
+          function createTransparentBox(coordinates) {
+            const { leftTop, rightBottom } = coordinates;
+            /* console.log("좌표", coordinates);
+            console.log("leftTop:", coordinates.leftTop);
+            console.log("rightBottom:", coordinates.rightBottom); */
+
+            const sizeOffset = 0.3;
+            const width = rightBottom.x - leftTop.x * (1 + sizeOffset);
+            const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
+            const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
+            console.log(
+              `박스 크기 - width: ${width}, height: ${height}, depth: ${depth}`
+            );
+
+            const boxGeometry = new THREE.BoxGeometry(width, height, depth);
+            const boxMaterial = new THREE.MeshBasicMaterial({
+              color: 0x0000ff,
+              transparent: true,
+              /* opacity: 1, */
+            });
+            const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+
+            const centerX = (leftTop.x + rightBottom.x) / 2;
+            const centerY = (leftTop.y + rightBottom.y) / 2;
+            const centerZ = (leftTop.z + rightBottom.z) / 2;
+
+            boxMesh.position.set(centerX, centerY, centerZ);
+            boxMesh.rotation.set(0, 0, 0);
+
+            viewer.splatMesh.add(boxMesh);
+            /* viewer.scene.add(boxMesh); */
+            console.log(
+              `박스 추가됨 {x: ${boxMesh.position.x}, y: ${boxMesh.position.y}, z: ${boxMesh.position.z}}`
+            );
+
+            // 박스 클릭
+            boxMesh.userData = { clickable: true };
+            boxMesh.onClick = () => {
+              console.log("박스가 클릭되었습니다!");
+            };
+
+            // Raycaster를 사용하여 클릭 이벤트 처리
+            viewer.renderer.domElement.addEventListener("click", (event) => {
+              const mouse = new THREE.Vector2();
+              mouse.x =
+                (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
+                1;
+              mouse.y =
+                -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
+                1;
+
+              const raycaster = new THREE.Raycaster();
+              raycaster.setFromCamera(mouse, viewer.camera);
+
+              const intersects = raycaster.intersectObjects(
+                viewer.splatMesh.children,
+                true
+              );
+              if (intersects.length > 0) {
+                if (intersects[0].object.userData.clickable) {
+                  intersects[0].object.onClick();
+                }
+              }
+            });
+          }
         });
 
       // 카메라 이동 속도 및 회전 속도 설정
@@ -201,11 +314,16 @@
         const { x: rx, y: ry, z: rz } = viewer.camera.rotation; // 회전
 
         cameraInfoDisplay.innerHTML = `
-        <strong>Camera Info:</strong><br>
-        <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}<br>
-        <strong>Rotation:</strong> x=${((rx * 180) / Math.PI).toFixed(2)}°, 
-        y=${((ry * 180) / Math.PI).toFixed(2)}°, z=${((rz * 180) / Math.PI).toFixed(2)}°
-      `;
+          <strong>Camera Info:</strong><br>
+          <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(
+            2
+          )}, z=${z.toFixed(2)}<br>
+          <strong>Rotation:</strong> x=${((rx * 180) / Math.PI).toFixed(2)}°,
+          y=${((ry * 180) / Math.PI).toFixed(2)}°, z=${(
+            (rz * 180) /
+            Math.PI
+          ).toFixed(2)}°
+        `;
       }
 
       // 초기 위치 표시
