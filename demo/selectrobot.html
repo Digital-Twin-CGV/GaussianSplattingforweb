@@ -103,7 +103,7 @@
       </div>
     </div>
     <script type="module">
-      import { getRobot } from './supaDatabase/connectDatabase.js';
+      import { getRobot, client } from './supaDatabase/connectDatabase.js';
 
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
@@ -121,8 +121,21 @@
       });
 
       // 시간마다 로봇 데이터 갱신
-      setInterval(robotData, 1000);
+      robotData();
 
+      // 실시간으로 DB 지켜보기기
+      client
+        .channel('room1')
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'toWeb' },
+          (payload) => {
+            robotData();
+          }
+        )
+        .subscribe();
+
+      // 로봇 데이터 가져오기
       async function robotData() {
         const robots = await getRobot();
 
@@ -133,26 +146,6 @@
         robots.forEach((robot) => {
           const marker = createRobotMarker(robot);
           document.querySelector('.selectrobot_map').appendChild(marker);
-          /*if (robotElement) {
-            robotElement.style.top = robot.robotData.coord_x;
-            robotElement.style.left = robot.robotData.coord_y;
-
-            const button = robotElement.querySelector('.selectrobot_robot_btn');
-            if (robot.robotData.status === '사용 가능') {
-              // 사용 가능한 경우
-              button.style.backgroundColor = 'green';
-            } else {
-              button.style.backgroundColor = 'red';
-            }
-
-            button.onclick = () =>
-              updateTitle(
-                robot.robotId,
-                robot.robotData.coord_x,
-                robot.robotData.coord_y,
-                robot.robotData.status
-              );
-          }*/
         });
       }
 

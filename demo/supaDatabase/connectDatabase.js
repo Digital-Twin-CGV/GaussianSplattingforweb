@@ -30,4 +30,4 @@ async function getRobot() {
 }
 
 export default supabase;
-export { getPassword, getRobot };
+export { getPassword, getRobot, client };
