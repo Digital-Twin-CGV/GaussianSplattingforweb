@@ -194,21 +194,27 @@
       function convertCoordinates(x, y, width, height) {
         // 이미지 상의 클릭 범위를 기준으로 실제 좌표를 계산
 
-        // 좌측 상단 (-450, -50)부터 우측 하단 (350, -550)까지 설정
-        const leftTop = { x: -450, y: -50 }; // 좌측 상단
-        const rightBottom = { x: 350, y: -550 }; // 우측 하단
+        const leftTop = { x: -410, y: 212 }; // 좌측 상단
+        const rightBottom = { x: 485, y: -512 }; // 우측 하단
 
         // 화면 기준 X, Y를 0~1로 정규화 (이미지의 크기를 기준으로 비율을 계산)
-        const normalizedX = x / width; // 화면의 X 좌표를 0 ~ 1로 정규화
-        const normalizedY = y / height; // 화면의 Y 좌표를 0 ~ 1로 정규화
+        // const normalizedX = x / width; // 화면의 X 좌표를 0 ~ 1로 정규화
+        // const normalizedY = y / height; // 화면의 Y 좌표를 0 ~ 1로 정규화
 
-        // 실제 X 좌표 계산
+        const miniMapWidth = window.innerWidth;
+        const miniMapHeight = window.innerHeight;
+
+        // 미니맵의 X, Y 좌표를 0 ~ 1로 정규화
+        const normalizedX = x / miniMapWidth;
+        const normalizedY = y / miniMapHeight;
+
+        // const worldX = leftTop.x + normalizedX * (rightBottom.x - leftTop.x);
+        // const worldY = leftTop.y + normalizedY * (rightBottom.y - leftTop.y);
         const worldX = leftTop.x + normalizedX * (rightBottom.x - leftTop.x);
-        // 실제 Y 좌표 계산
         const worldY = leftTop.y + normalizedY * (rightBottom.y - leftTop.y);
 
         // 소수점 두 자리까지 반환
-        return { x: worldX.toFixed(2), y: worldY.toFixed(2) };
+        return { x: worldX.toFixed(6), y: worldY.toFixed(6) };
       }
 
       let isLandMarkSelected = false; // 랜드마크를 선택했는지..
@@ -326,7 +332,7 @@
           const convertedCoordinates = { x: converted.x, y: converted.y };
 
           localStorage.setItem(
-            'selectedCoordinates',
+            "selectedCoordinates",
             JSON.stringify(convertedCoordinates)
           );
         } else {
