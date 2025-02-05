@@ -109,6 +109,7 @@
         padding-bottom: 30px;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
@@ -181,13 +182,13 @@
     </div>
     <canvas id="colorCanvas" style="display: none"></canvas>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        fetch("header.html")
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
           .then((response) => response.text())
           .then((data) => {
-            document.getElementById("header").innerHTML = data;
+            document.getElementById('header').innerHTML = data;
           })
-          .catch((error) => console.error("Error loading header:", error));
+          .catch((error) => console.error('Error loading header:', error));
       });
 
       function convertCoordinates(x, y, width, height) {
@@ -226,22 +227,23 @@
         isMarkerSelected = isSelected;
       }
 
+      // URL 파라미터 가져오기
       function getUrlParams() {
         const params = new URLSearchParams(window.location.search);
-        const robot = params.get("robot");
-        const top = params.get("top");
-        const left = params.get("left");
+        const robot = params.get('robot');
+        const top = params.get('top');
+        const left = params.get('left');
 
         return { robot, top, left };
       }
 
-      const minimap = document.getElementById("minimap_map");
-      const background = document.getElementById("minimap_gaussian");
-      const canvas = document.getElementById("colorCanvas");
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const minimap = document.getElementById('minimap_map');
+      const background = document.getElementById('minimap_gaussian');
+      const canvas = document.getElementById('colorCanvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       let marker = null;
 
-      background.addEventListener("load", () => {
+      background.addEventListener('load', () => {
         canvas.width = background.width;
         canvas.height = background.height;
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
@@ -249,7 +251,7 @@
 
       let selectedX = null;
       let selectedY = null;
-      minimap.addEventListener("click", (event) => {
+      minimap.addEventListener('click', (event) => {
         const minimapRect = minimap.getBoundingClientRect();
         const x = event.clientX - minimapRect.left;
         const y = event.clientY - minimapRect.top;
@@ -257,7 +259,7 @@
         selectedY = y;
 
         const landmarkButton = document.querySelectorAll(
-          ".minimap_landmark_btn"
+          '.minimap_landmark_btn'
         );
         let clickedLandmarkButton = null;
 
@@ -276,13 +278,13 @@
             marker = null;
           }
 
-          clickedLandmarkButton.classList.add("selected");
-          console.log("랜드마크 건설!!");
+          clickedLandmarkButton.classList.add('selected');
+          console.log('랜드마크 건설!!');
 
           // 기존에 선택했던 랜드마크 선택 삭제
           landmarkButton.forEach((btn) => {
             if (btn !== clickedLandmarkButton) {
-              btn.classList.remove("selected");
+              btn.classList.remove('selected');
             }
           });
 
@@ -295,10 +297,10 @@
         const pixelData = ctx.getImageData(x, y, 1, 1).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
 
-        if (color !== "rgb(255, 255, 255)") {
+        if (color !== 'rgb(255, 255, 255)') {
           // 기존 랜드마크가 있으면 제거
           landmarkButton.forEach((btn) => {
-            btn.classList.remove("selected");
+            btn.classList.remove('selected');
           });
 
           if (marker) {
@@ -306,15 +308,15 @@
           }
 
           // 마커 생성
-          marker = document.createElement("div");
-          marker.style.position = "absolute";
+          marker = document.createElement('div');
+          marker.style.position = 'absolute';
           marker.style.top = `${y - 15}px`;
           marker.style.left = `${x - 15}px`;
-          marker.style.width = "25px";
-          marker.style.height = "25px";
-          marker.style.backgroundColor = "red";
-          marker.style.borderRadius = "50%";
-          marker.style.zIndex = "10";
+          marker.style.width = '25px';
+          marker.style.height = '25px';
+          marker.style.backgroundColor = 'red';
+          marker.style.borderRadius = '50%';
+          marker.style.zIndex = '10';
 
           minimap.appendChild(marker);
 
@@ -334,7 +336,7 @@
             JSON.stringify(convertedCoordinates)
           );
         } else {
-          console.log("흰색인데요");
+          console.log('흰색인데요');
         }
       });
 
@@ -351,7 +353,7 @@
       let selectedLandmarkButton = null;
       function toggleLandmarkSelection(button) {
         if (selectedLandmarkButton && selectedLandmarkButton !== button) {
-          selectedLandmarkButton.classList.remove("selected");
+          selectedLandmarkButton.classList.remove('selected');
         }
 
         if (marker) {
@@ -359,11 +361,11 @@
           marker = null;
         }
         // 현재 버튼을 선택/해제
-        if (button.classList.contains("selected")) {
-          button.classList.remove("selected");
+        if (button.classList.contains('selected')) {
+          button.classList.remove('selected');
           selectedLandmarkButton = null; // 선택 해제
         } else {
-          button.classList.add("selected");
+          button.classList.add('selected');
           selectedLandmarkButton = button; // 새로 선택한 버튼 저장
         }
 
@@ -371,13 +373,13 @@
         setMarkerSelected(false); // 마커는 선택되지 않음
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener('DOMContentLoaded', () => {
         canvas.width = background.width;
         canvas.height = background.height;
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener('DOMContentLoaded', () => {
         const { robot, top, left } = getUrlParams();
         if (robot && top && left) console.log(`${robot}, ${top}, ${left}`);
 
@@ -389,20 +391,20 @@
       });
 
       function openHome(page) {
-        let url = page + ".html";
+        let url = page + '.html';
         window.location = url;
       }
 
       function goBack() {
-        console.log("뒤로가기");
+        console.log('뒤로가기');
         history.back();
       }
 
       function openPage() {
-        if (isLandMarkSelected) window.location.href = "moving.html";
-        else if (isMarkerSelected) window.location.href = "gaussian.html";
+        if (isLandMarkSelected) window.location.href = 'moving.html';
+        else if (isMarkerSelected) window.location.href = 'gaussian.html';
         if (isLandMarkSelected) {
-          window.location.href = "moving.html";
+          window.location.href = 'moving.html';
         } else if (isMarkerSelected) {
           const markerTop = selectedX;
           const markerLeft = selectedY;
