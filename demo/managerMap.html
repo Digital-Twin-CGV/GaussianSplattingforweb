@@ -257,6 +257,15 @@
     <script type="module">
       import { getRobot, client } from './supaDatabase/connectDatabase.js';
 
+      // 페이지 이동
+      function openPage(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      // 로봇 데이터 가져오기
+      robotData();
+      // 실시간으로 DB 지켜보기
       client
         .channel('room1')
         .on(
@@ -268,15 +277,7 @@
         )
         .subscribe();
 
-      // 페이지 이동
-      function openPage(page) {
-        let url = page + '.html';
-        window.location = url;
-      }
-
       // 로봇 데이터 가져오기
-      robotData();
-
       async function robotData() {
         const robots = await getRobot();
         console.log('robot:', robots);
