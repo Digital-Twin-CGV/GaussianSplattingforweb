@@ -30,5 +30,19 @@ async function getRobots() {
   return data;
 }
 
+async function insertRequest(robotId, drive, goalPosition) {
+  // request 테이블에 데이터 추가
+  const { data, error } = await client
+    .from('request')
+    .insert([{ robot_id: robotId, drive: drive, goal_position: goalPosition }])
+    .select();
+  console.log(data);
+  if (error) {
+    console.error('Error insert data:', error);
+  }
+
+  return data;
+}
+
 export default supabase;
-export { getPassword, getRobots, client };
+export { getPassword, getRobots, insertRequest, client };
