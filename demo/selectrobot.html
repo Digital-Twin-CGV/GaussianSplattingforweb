@@ -102,9 +102,7 @@
         <button class="selectrobot_check_btn" type="button">선택 완료</button>
       </div>
     </div>
-    <script type="module">
-      import { getRobot, client } from './supaDatabase/connectDatabase.js';
-
+    <script>
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
           .then((response) => response.text())
@@ -113,6 +111,19 @@
           })
           .catch((error) => console.error('Error loading header:', error));
       });
+
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        console.log('뒤로가기');
+        history.back();
+      }
+    </script>
+    <script type="module">
+      import { getRobots, client } from './supaDatabase/connectDatabase.js';
 
       document.addEventListener('DOMContentLoaded', () => {
         document
@@ -123,12 +134,12 @@
       // 시간마다 로봇 데이터 갱신
       robotData();
 
-      // 실시간으로 DB 지켜보기기
+      // 실시간으로 DB 지켜보기
       client
         .channel('room1')
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'toWeb' },
+          { event: 'UPDATE', schema: 'public', table: 'robots' },
           (payload) => {
             robotData();
           }
@@ -137,7 +148,7 @@
 
       // 로봇 데이터 가져오기
       async function robotData() {
-        const robots = await getRobot();
+        const robots = await getRobots();
 
         // 기존 마커 제거
         const markers = document.querySelectorAll('.robot_marker');
@@ -150,14 +161,10 @@
       }
 
       function applyColor(robot) {
-        if (
-          robot.robotData.status === '주행 중' ||
-          robot.robotData.status === '사용 불가' ||
-          robot.robotData.status === '비상 정지'
-        ) {
+        if (robot.status === 1) {
           // 사용중이라면?
           return '#ff0000';
-        } else if (robot.robotData.battery < 30) {
+        } else if (robot.battery < 30) {
           // 배터리가 30 이하라면?
           return '#f2d406';
         } else {
@@ -170,13 +177,13 @@
       function createRobotMarker(robot) {
         const marker = document.createElement('div');
         marker.className = 'robot_marker';
-        marker.style.top = robot.robotData.coord_y + '%';
-        marker.style.left = robot.robotData.coord_x + '%';
+        marker.style.top = robot.position[1] + '%';
+        marker.style.left = robot.position[0] + '%';
         marker.style.backgroundColor = applyColor(robot);
 
         // 로봇 ID 표시
         const label = document.createElement('span');
-        label.innerHTML = `로봇 ${robot.robotId}<br>${robot.robotData.battery}%`;
+        label.innerHTML = `로봇 ${robot.robot_id}<br>${robot.battery}%`;
         label.style.position = 'absolute';
         label.style.left = '35px'; // 마커 오른쪽
         label.style.color = 'black';
@@ -188,10 +195,10 @@
 
         marker.addEventListener('click', () => {
           updateTitle(
-            robot.robotId,
-            robot.robotData.coord_y,
-            robot.robotData.coord_x,
-            robot.robotData.status
+            robot.robot_id,
+            robot.position[1],
+            robot.position[0],
+            robot.status
           );
         });
 
