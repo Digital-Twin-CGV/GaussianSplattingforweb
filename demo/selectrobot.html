@@ -123,7 +123,7 @@
       }
     </script>
     <script type="module">
-      import { getRobot, client } from './supaDatabase/connectDatabase.js';
+      import { getRobots, client } from './supaDatabase/connectDatabase.js';
 
       document.addEventListener('DOMContentLoaded', () => {
         document
@@ -134,12 +134,12 @@
       // 시간마다 로봇 데이터 갱신
       robotData();
 
-      // 실시간으로 DB 지켜보기기
+      // 실시간으로 DB 지켜보기
       client
         .channel('room1')
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'toWeb' },
+          { event: 'UPDATE', schema: 'public', table: 'robots' },
           (payload) => {
             robotData();
           }
@@ -148,7 +148,7 @@
 
       // 로봇 데이터 가져오기
       async function robotData() {
-        const robots = await getRobot();
+        const robots = await getRobots();
 
         // 기존 마커 제거
         const markers = document.querySelectorAll('.robot_marker');
