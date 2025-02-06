@@ -1,7 +1,7 @@
-const supabaseUrl = 'https://ocfxzzwdonwyyolcomii.supabase.co';
+const supabaseUrl = 'https://mehftlxjzwhcwtfdkffs.supabase.co';
 const supabaseKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZnh6endkb253eXlvbGNvbWlpI' +
-  'iwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc1MTk3NzgsImV4cCI6MjA1MzA5NTc3OH0.9CvzDp5t5Atn7UU9dJqXRaps6SrtMWBZQnKW3FnEA1Y';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1laGZ0bHhqendoY3d0ZmRrZmZzIiwic' +
+  'm9sZSI6ImFub24iLCJpYXQiOjE3Mzg3Mzk2MDYsImV4cCI6MjA1NDMxNTYwNn0.bhkGt85MTdWgfuPjma8DjIXF8mXFSuXVHcSLNmtB-sQ';
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
 async function getPassword() {
@@ -19,8 +19,9 @@ async function getPassword() {
   return password;
 }
 
-async function getRobot() {
-  const { data, error } = await client.from('toWeb').select('*');
+async function getRobots() {
+  // 로봇 정보 가져오기
+  const { data, error } = await client.from('robots').select('*');
 
   if (error) {
     console.error('Error fetching data:', error);
@@ -30,4 +31,4 @@ async function getRobot() {
 }
 
 export default supabase;
-export { getPassword, getRobot, client };
+export { getPassword, getRobots, client };
