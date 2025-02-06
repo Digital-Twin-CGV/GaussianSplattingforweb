@@ -262,7 +262,11 @@
     </div>
 
     <script type="module">
-      import { getRobots, client } from './supaDatabase/connectDatabase.js';
+      import {
+        getRobots,
+        insertRequest,
+        client,
+      } from './supaDatabase/connectDatabase.js';
       // 페이지 이동
       function openPage(page) {
         let url = page + '.html';
@@ -380,7 +384,7 @@
 
         // 로봇 ID 표시
         const label = document.createElement('span');
-        label.innerHTML = `로봇 ${robot.robot_id}<br>${robot.battery}%`;
+        label.innerHTML = `로봇 ${robot.id}<br>${robot.battery}%`;
         label.style.position = 'absolute';
         label.style.left = '35px'; // 마커 오른쪽
         label.style.color = 'black';
@@ -422,7 +426,7 @@
         stopRobotHandler = () => stopRobot(robot);
         robotStopBtn.addEventListener('click', stopRobotHandler);
 
-        robotId.innerHTML = `로봇${robot.robot_id}`;
+        robotId.innerHTML = `로봇${robot.id}`;
 
         useRobot.innerHTML = robot.status === 1 ? '사용 불가' : '사용 가능';
 
@@ -478,7 +482,8 @@
 
       // 로봇 정지 버튼
       function stopRobot(robot) {
-        alert(`로봇${robot.robot_id}을 즉시 정지합니다.`);
+        insertRequest(robot.id, false);
+        alert(`로봇${robot.id}을 즉시 정지합니다.`);
       }
     </script>
   </body>
