@@ -6080,13 +6080,13 @@ class OrbitControls extends EventDispatcher {
     this.enablePan = true;
     this.panSpeed = 1.0;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
-    this.keyPanSpeed = 7.0; // pixels moved per arrow key push
+    this.keyPanSpeed = 1000.0; // pixels moved per arrow key push
     this.zoomToCursor = false;
 
     // Set to true to automatically rotate around the target
     // If auto-rotate is enabled, you must call controls.update() in your animation loop
     this.autoRotate = false;
-    this.autoRotateSpeed = 2.0; // 30 seconds per orbit when fps is 60
+    this.autoRotateSpeed = 10.0; // 30 seconds per orbit when fps is 60
 
     // The four arrow keys
     this.keys = { LEFT: "KeyA", UP: "KeyW", RIGHT: "KeyD", BOTTOM: "KeyS" };
@@ -6454,7 +6454,7 @@ class OrbitControls extends EventDispatcher {
     }
 
     function rotateLeft(angle) {
-      sphericalDelta.theta -= angle;
+      sphericalDelta.theta -= angle;     
     }
 
     function rotateUp(angle) {
@@ -6730,6 +6730,95 @@ class OrbitControls extends EventDispatcher {
         scope.update();
       }
     }
+
+    let count=0;
+    let rotation_count=0;
+    let ratationfirst=0;
+    let first_is_minus=true;
+    let second_is_minus=true;
+
+
+    //이동기능
+    function printSelectedCoordinates(event) {
+      const { x: targetX, y: targetY } = event.detail;
+      console.log("y: ",targetY);
+      if(targetY==0){
+        count=2;
+      }
+      adjustCoordinates(targetX, targetY, targetX, targetY, count);
+    }
+    
+    function adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count) {
+      let needsUpdate = true;
+      if(count==0){
+        if (targetX > 0) {
+          pan(scope.keyPanSpeed, 0);
+          calctargetX -= 5;
+        } 
+        else if (targetX < 0) {
+          if(first_is_minus){
+            calctargetX=-calctargetX;
+            first_is_minus=false;
+          }
+          pan(-scope.keyPanSpeed, 0);
+          calctargetX -= 5;
+        }
+        else{
+          count++;
+        }
+        if(calctargetX<=1){ //편차를 위해 1로 잡음. 수정가능함
+          count++;
+        }
+        rotation_count=180;
+      }
+
+      else if(count==1){
+        if (rotation_count!=0) { //회전
+          rotateLeft(
+            (-0.018 * scope.rotateSpeed));
+          //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
+          rotation_count--;
+          console.log(rotation_count);
+        }
+        else {
+          count++
+        }    
+      }
+
+      else if(count==2){
+        if(targetY > 0) {
+          console.log("큼");
+          pan(scope.keyPanSpeed, 0);
+          calctargetY -= 5;
+        }
+        else if(targetY < 0) {
+          if(second_is_minus){
+            calctargetY=-calctargetY;
+            second_is_minus=false;
+          }
+
+          pan(-scope.keyPanSpeed, 0);
+          calctargetY -= 5;
+        }
+        else{
+          count++;
+        }
+        // console.log(count);
+        // console.log(calctargetY);
+        if(calctargetY<=1){ //편차를 위해 1로 잡음. 수정가능함
+          count++;
+        }
+      }
+
+
+    
+      if(count!=3){
+        requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
+      }
+    }
+    // 커스텀 이벤트 수신
+    window.addEventListener("selectedCoordinatesEvent", printSelectedCoordinates);
+
 
     function handleTouchStartRotate() {
       if (pointers.length === 1) {

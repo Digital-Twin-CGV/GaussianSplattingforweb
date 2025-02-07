@@ -138,6 +138,7 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const mode = parseInt(urlParams.get("mode")) || 0;
+      
 
       //원위치 좌표
       let initialCameraPosition = { x: 0, y: -30, z: 0 };
@@ -149,23 +150,10 @@
         );
 
         if (selectedCoordinates) {
-          initialCameraPosition.x = selectedCoordinates.x;
-          initialCameraPosition.y = -30;
-          initialCameraPosition.z = selectedCoordinates.y;
-
-          /* const geometry = new THREE.SphereGeometry(50, 32, 32); // 반지름 10, 세분화도 32
-            const material = new THREE.MeshBasicMaterial({
-              color: 0x00ff00,
-              wireframe: true,
-            }); */
-
-          /* const sphere = new THREE.Mesh(geometry, material); */
-
-          /* sphere.position.set(
-              initialCameraPosition.x,
-              initialCameraPosition.y,
-              initialCameraPosition.z
-            ); */
+          const event = new CustomEvent("selectedCoordinatesEvent", {
+            detail: selectedCoordinates,
+          });
+          window.dispatchEvent(event); // 이벤트 디스패치
 
           const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
           const sphereMaterial = new THREE.MeshBasicMaterial({
@@ -184,29 +172,27 @@
           );
 
           /* 카메라가 구를 바라보도록 */
-          viewer.camera.position.set(0, 0, 50);
-          viewer.camera.lookAt(sphereMesh.position);
+          /* viewer.camera.position.set(0, 0, 50);
+          viewer.camera.lookAt(sphereMesh.position); */
         }
 
-        simulateZoom();
-        resetCamera();
       });
 
       const viewer = new GaussianSplats3D.Viewer({
-        cameraUp: [0, -1, -0.54],
+        cameraUp: [0, -1, 0],
         initialCameraPosition: [
           initialCameraPosition.x,
           initialCameraPosition.y,
           initialCameraPosition.z,
         ],
         initialCameraLookAt: [0, 0, 0],
-        sphericalHarmonicsDegree: 2,
+        sphericalHarmonicsDegree: 0,
       });
 
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/garden/cu2.splat",
+            path: "assets/data/garden/cu3.splat",
             //             path: "assets/data/garden/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
@@ -296,10 +282,6 @@
           }
         });
 
-      // 카메라 이동 속도 및 회전 속도 설정
-      const moveSpeed = 0.01;
-      const rotationSpeed = 0.002; // 회전 속도 조정
-
       let maxZoom = 50; // 최대 줌 레벨
       let minZoom = 0.1; // 최소 줌 레벨
 
@@ -307,27 +289,34 @@
       const cameraInfoDisplay = document.getElementById(
         "cameraPositionDisplay"
       );
-      // 카메라 정보 업데이트 함수
+
+        
       function updateCameraInfo() {
-        const { x, y, z } = viewer.camera.position; // 위치
-        const { x: rx, y: ry, z: rz } = viewer.camera.rotation; // 회전
-
-        cameraInfoDisplay.innerHTML = `
-          <strong>Camera Info:</strong><br>
-          <strong>Position:</strong> x=${x.toFixed(2)}, y=${y.toFixed(
-            2
-          )}, z=${z.toFixed(2)}<br>
-          <strong>Rotation:</strong> x=${((rx * 180) / Math.PI).toFixed(2)}°,
-          y=${((ry * 180) / Math.PI).toFixed(2)}°, z=${(
-            (rz * 180) /
-            Math.PI
-          ).toFixed(2)}°
-        `;
+      const position = viewer.camera.position;
+      const rotation = viewer.camera.rotation;
+      cameraInfoDisplay.innerHTML = `
+        <strong>카메라 위치:</strong>
+        <br>X: ${position.x.toFixed(2)}
+        <br>Y: ${position.y.toFixed(2)}
+        <br>Z: ${position.z.toFixed(2)}
+        <br><strong>카메라 회전:</strong>
+        <br>X: ${THREE.MathUtils.radToDeg(rotation.x).toFixed(2)}°
+        <br>Y: ${THREE.MathUtils.radToDeg(rotation.y).toFixed(2)}°
+        <br>Z: ${THREE.MathUtils.radToDeg(rotation.z).toFixed(2)}°
+      `;
       }
+      function animate() {
+  requestAnimationFrame(animate);
+  
+  // 기존의 애니메이션 처리 코드가 여기에 들어갑니다.
+  
+  updateCameraInfo(); // 카메라 정보 업데이트
+}
 
-      // 초기 위치 표시
-      updateCameraInfo();
-      //==============임시 카메라위치
+animate();
+
+
+
 
       //임시
       window.updateCameraPosition = function () {
@@ -339,26 +328,11 @@
           viewer.camera.position.set(x, y, z);
           viewer.camera.updateMatrixWorld(true); // 월드 행렬 업데이트
           viewer.camera.updateProjectionMatrix(); // 프로젝션 행렬 업데이트
-          updateCameraInfo(); // 카메라 정보를 화면에 반영
+          updateCameraInfo();
         } else {
           alert("유효한 값을 입력해주세요.");
         }
       };
-      //임시
-
-      function resetCamera() {
-        if (viewer.camera) {
-          // 초기 위치와 회전값으로 설정
-          viewer.camera.position.set(
-            initialCameraPosition.x,
-            initialCameraPosition.y,
-            initialCameraPosition.z
-          );
-          viewer.camera.rotation.set(10, 0, 0);
-
-          updateCameraInfo();
-        }
-      }
 
       // 화살표 키로 카메라 이동 처리
       document.addEventListener("keydown", function (event) {
@@ -372,48 +346,9 @@
 
         const moveDirection = new THREE.Vector3(0, 0, 0);
 
-        // W, A, S, D로 이동 처리
-        if (event.key === "w" || event.key === "W") {
-          moveDirection.add(forward.clone());
-        } else if (event.key === "s" || event.key === "S") {
-          moveDirection.add(forward.clone().multiplyScalar(-1));
-        } else if (event.key === "a" || event.key === "A") {
-          moveDirection.add(right.clone().multiplyScalar(-1));
-        } else if (event.key === "d" || event.key === "D") {
-          moveDirection.add(right.clone());
-        }
-
-        // E 키로 상승
-        if (event.key === "e" || event.key === "E") {
-          viewer.camera.position.y += moveSpeed;
-        }
-
-        // Q 키로 하강
-        if (event.key === "q" || event.key === "Q") {
-          viewer.camera.position.y -= moveSpeed;
-        }
-
-        // 회전 계산 (위치 이동 없이 회전만)
-        if (event.key === "ArrowLeft") {
-          viewer.camera.rotation.y += rotationSpeed; // Y축 기준으로 좌회전
-        } else if (event.key === "ArrowRight") {
-          viewer.camera.rotation.y -= rotationSpeed; // Y축 기준으로 우회전
-        }
-
-        if (event.key === "ArrowUp") {
-          viewer.camera.rotation.x += rotationSpeed; // X축 기준으로 상향 회전
-        } else if (event.key === "ArrowDown") {
-          viewer.camera.rotation.x -= rotationSpeed; // X축 기준으로 하향 회전
-        }
-        if (event.key === "r" || event.key === "R") {
-          resetCamera(); // 카메라를 초기화 위치로 설정
-        }
-
         // 카메라 이동 처리
         viewer.camera.position.add(moveDirection);
 
-        // 카메라 정보 업데이트
-        updateCameraInfo();
       });
 
       // 휠로 확대/축소 처리
@@ -449,11 +384,6 @@
         );
 
         viewer.camera.updateProjectionMatrix();
-
-        //==============임시 카메라 위치
-        updateCameraInfo(); // 위치 업데이트
-        //==============임시 카메라 위치
-        console.log(`Current Zoom Level: ${viewer.camera.zoom}`);
       });
 
       const markerTop = urlParams.get("top");
@@ -461,11 +391,6 @@
 
       console.log(`top: ${markerTop}, left: ${markerLeft}`);
 
-      function simulateZoom() {
-        for (let count = 0; count < 13; count++){
-          dollyIn(getZoomScale());
-        }
-      }
 
       function openDemo(page) {
         let url = page + ".html";
