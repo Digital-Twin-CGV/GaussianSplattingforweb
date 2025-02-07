@@ -6741,7 +6741,6 @@ class OrbitControls extends EventDispatcher {
     //이동기능
     function printSelectedCoordinates(event) {
       const { x: targetX, y: targetY } = event.detail;
-      console.log("y: ",targetY);
       if(targetY==0){
         count=2;
       }
@@ -6778,7 +6777,6 @@ class OrbitControls extends EventDispatcher {
             (-0.018 * scope.rotateSpeed));
           //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
           rotation_count--;
-          console.log(rotation_count);
         }
         else {
           count++
@@ -6787,7 +6785,6 @@ class OrbitControls extends EventDispatcher {
 
       else if(count==2){
         if(targetY > 0) {
-          console.log("큼");
           pan(scope.keyPanSpeed, 0);
           calctargetY -= 5;
         }
@@ -6803,8 +6800,6 @@ class OrbitControls extends EventDispatcher {
         else{
           count++;
         }
-        // console.log(count);
-        // console.log(calctargetY);
         if(calctargetY<=1){ //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
