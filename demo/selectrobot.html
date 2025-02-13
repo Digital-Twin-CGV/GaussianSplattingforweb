@@ -176,8 +176,13 @@
       function createRobotMarker(robot) {
         const marker = document.createElement('div');
         marker.className = 'robot_marker';
-        marker.style.top = robot.position[1] + '%';
-        marker.style.left = robot.position[0] + '%';
+        // %로 표현하기 위해 사진의 width, hegith로 나눔
+        // 로봇 원점이 이동한 거리만큼 더하기
+        // + 15는 마커의 크기를 고려한 것
+        marker.style.bottom =
+          ((robot.position[1] + 377 - 15) * 100) / 485 + '%';
+        marker.style.left =
+          ((robot.position[0] + 1188 - 15) * 100) / 1441 + '%';
         marker.style.backgroundColor = applyColor(robot);
 
         // 로봇 ID 표시
@@ -221,11 +226,11 @@
 
       function openDemo(page) {
         if (
-          selectedAvailable === '주행 중' ||
-          selectedAvailable === '사용 불가' ||
-          selectedAvailable === '비상 정지'
+          selectedAvailable === 1 ||
+          selectedAvailable === 2 ||
+          selectedAvailable === 3
         ) {
-          alert('현재 사용중인 로봇입니다. 다른 로봇을 선택해주세요.');
+          alert('현재 사용이 불가능한 로봇입니다. 다른 로봇을 선택해주세요.');
         } else {
           if (selectedRobot && selectedTop && selectedLeft) {
             const url =
