@@ -6768,13 +6768,13 @@ class OrbitControls extends EventDispatcher {
         if(calctargetX<=1){ //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-        rotation_count=180;
+        rotation_count=45;
       }
 
       else if(count==1){
         if (rotation_count!=0) { //회전
           rotateLeft(
-            (-0.018 * scope.rotateSpeed));
+            (-0.078 * scope.rotateSpeed));
           //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
           rotation_count--;
         }
