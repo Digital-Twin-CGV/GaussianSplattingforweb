@@ -89,6 +89,7 @@
   </head>
 
   <body>
+    <div id="header"></div>
     <div class="manage_container">
       <img class="manage_bao" src="assets/images/won_bao.png" />
       <div class="manage_inputbox">
@@ -100,7 +101,26 @@
       <button id="manage_check_btn">확인</button>
       <p id="error_message" class="error"></p>
     </div>
+    <script>
+      // 헤더에 필요한 script
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById('header').innerHTML = data;
+          })
+          .catch((error) => console.error('Error loading header:', error));
+      });
 
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        history.back();
+      }
+    </script>
     <script type="module">
       import { getPassword } from './supaDatabase/connectDatabase.js';
 

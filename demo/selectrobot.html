@@ -103,6 +103,7 @@
       </div>
     </div>
     <script>
+      // 헤더에 필요한 script
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
           .then((response) => response.text())
@@ -190,7 +191,7 @@
         label.innerHTML = `로봇 ${robot.id}<br>${robot.battery}%`;
         label.style.position = 'absolute';
         label.style.left = '35px'; // 마커 오른쪽
-        label.style.color = 'black';
+        label.style.color = applyColor(robot);
         label.style.fontSize = '15px';
         label.style.width = '50px';
 
@@ -200,8 +201,8 @@
         marker.addEventListener('click', () => {
           updateTitle(
             robot.id,
-            robot.position[1],
-            robot.position[0],
+            ((robot.position[1] + 377 - 15) * 100) / 485,
+            ((robot.position[0] + 1188 - 15) * 100) / 1441,
             robot.status
           );
         });

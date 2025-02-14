@@ -170,10 +170,6 @@
         overflow-y: auto;
       }
 
-      span {
-        font-weight: bold;
-      }
-
       /* 경로 선 */
       .path_line {
         stroke: black;
@@ -184,6 +180,7 @@
   </head>
 
   <body>
+    <div id="header"></div>
     <div class="managerMap_container">
       <div class="managerMap_map">
         <div class="managerMap_battery">
@@ -258,7 +255,26 @@
         </div>
       </div>
     </div>
+    <script>
+      // 헤더에 필요한 script
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById('header').innerHTML = data;
+          })
+          .catch((error) => console.error('Error loading header:', error));
+      });
 
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        history.back();
+      }
+    </script>
     <script type="module">
       import {
         getRobots,
