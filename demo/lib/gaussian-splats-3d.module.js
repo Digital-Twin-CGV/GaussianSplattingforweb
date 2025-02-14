@@ -15123,6 +15123,30 @@ class Viewer {
     const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
     const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
+
+    function createTextSprite(message) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const size = 256;
+      canvas.width = size;
+      canvas.height = size;
+  
+      ctx.font = "70px Arial";
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(message, size / 2, size / 2);
+  
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+  
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.scale.set(10, 5, 1); // 크기 조절
+  
+      return sprite;
+    }
+
     return function () {
       if (!this.transitioningCameraTarget) {
         this.getRenderDimensions(renderDimensions);
@@ -15154,6 +15178,13 @@ class Viewer {
             intersectionPoint.z
           );
           this.splatMesh.add(sphereMesh);
+
+          // 글씨(SPRITE) 추가
+          const textSprite = createTextSprite("글씨써라"); // 원하는 숫자 입력
+          textSprite.position.copy(intersectionPoint);
+          textSprite.position.y += 10; // 구보다 약간 위로 이동
+          this.splatMesh.add(textSprite);
+
         }
       }
     };
