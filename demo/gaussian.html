@@ -279,66 +279,88 @@
               }
             });
           }
-          function createRectangleWithText(boxMesh, info) {
-            /* 사각형 생성 */
-            const rectGeometry = new THREE.PlaneGeometry(
-              boxMesh.geometry.parameters.width * 0.5,
-              20
-            );
-            const rectMaterial = new THREE.MeshBasicMaterial({
-              color: 0xffffff,
-              transparent: true,
-              opacity: 0.7,
-            });
-            const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
+          
+          
 
-            /* 텍스트 모달? 생성 */
+          function createRectangleWithText(boxMesh, info) {
+            const scaleFactor = 3; // 글씨 크기 조절
+            const fontSize = 16 * scaleFactor; // 폰트 크기
+            const padding = 10 * scaleFactor; // 텍스트 주변 패딩
+
+            /* 텍스트 캔버스 생성 */
             const textCanvas = document.createElement("canvas");
             const textCtx = textCanvas.getContext("2d");
+
             /* 폰트 설정 */
-            textCtx.font = "bold 16px Arial";
+            textCtx.font = `bold ${fontSize}px Arial`;
 
-            /* 텍스트 크기 측정 */
-            const textMetrics = textCtx.measureText(info.name);
-            textCanvas.width = textMetrics.width + 20; /* 캔버스 width 설정 */
-            textCanvas.height = 20; /* 캔버스 height 설정 */
-            textCtx.font = "bold 16px Arial"; /* 폰트 */
-            textCtx.fillStyle = "black"; /* 색상 */
-            textCtx.fillText(info.name, 10, 20); /* 텍스트 채우기 */
+            
+            // 텍스트 크기에 따라 캔버스 가로 크기를 결정
+            const charWidth = fontSize * 0.18; // 평균 글자 너비 (글꼴과 크기에 따라 다를 수 있음)
+            const textWidth = info.name.length * charWidth + padding * 2; // 글자 수에 비례하여 너비 계산
+            const textHeight = fontSize; // 텍스트 높이와 패딩을 고려한 높이
 
+            /* 캔버스 크기 설정 */
+            textCanvas.width = textWidth;
+            textCanvas.height = textHeight;
+
+            /* 텍스트 채우기 */
+            textCtx.fillStyle = "black";
+            textCtx.textAlign = "center";
+            textCtx.textBaseline = "middle";
+            textCtx.fillText(info.name, textWidth / 2, textHeight / 2);
+
+            /* 텍스처 생성 */
             const textTexture = new THREE.CanvasTexture(textCanvas);
+            textTexture.anisotropy = viewer.renderer.capabilities.getMaxAnisotropy();
+
+            /* 텍스트 메시 생성 */
             const textMaterial = new THREE.MeshBasicMaterial({
               map: textTexture,
               transparent: true,
             });
 
-            const textWidth = Math.min(
-              textMetrics.width,
-              boxMesh.geometry.parameters.width * 0.5
-            );
-            const textGeometry = new THREE.PlaneGeometry(textMetrics.width, 30);
+            const textGeometry = new THREE.PlaneGeometry(textWidth / scaleFactor, textHeight / scaleFactor);
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
-            /* 위치 설정 (3d box 위 중앙) */
-            /* rectMesh.position.set(
+            /* 배경 메시(Plane) 생성 */
+            const backgroundGeometry = new THREE.PlaneGeometry(textWidth / scaleFactor, textHeight / scaleFactor);
+            const backgroundMaterial = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              transparent: true,
+              opacity: 0.7,
+            });
+            const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+
+            /* 위치 설정 */
+            backgroundMesh.position.set(
               boxMesh.position.x,
-              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
               boxMesh.position.z
-            ); */
+            );
+
             textMesh.position.set(
               boxMesh.position.x,
-              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
               boxMesh.position.z + 0.1
             );
-            /* 생성 시 카메라를 바라보도록 설정 */
-            /* rectMesh.lookAt(viewer.camera.position); */
-            textMesh.lookAt(viewer.camera.position);
-            textMesh.rotation.z += Math.PI;
-            /* textMesh.rotation.set(0, 0, Math.PI); */
 
-            /* viewer.splatMesh.add(rectMesh); */
+            /* 카메라를 바라보도록 설정 */
+            textMesh.lookAt(viewer.camera.position);
+            backgroundMesh.lookAt(viewer.camera.position);
+            textMesh.rotation.z += Math.PI;
+            backgroundMesh.rotation.z += Math.PI;
+
+            /* 씬에 추가 */
+            viewer.splatMesh.add(backgroundMesh);
             viewer.splatMesh.add(textMesh);
           }
+
+
+
+
+
+
         });
 
       let maxZoom = 50; // 최대 줌 레벨
