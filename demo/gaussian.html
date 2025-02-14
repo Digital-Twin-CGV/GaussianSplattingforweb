@@ -138,7 +138,6 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const mode = parseInt(urlParams.get("mode")) || 0;
-      
 
       //원위치 좌표
       let initialCameraPosition = { x: 0, y: -30, z: 0 };
@@ -175,7 +174,6 @@
           /* viewer.camera.position.set(0, 0, 50);
           viewer.camera.lookAt(sphereMesh.position); */
         }
-
       });
 
       const viewer = new GaussianSplats3D.Viewer({
@@ -214,9 +212,9 @@
             return data;
           }
 
-          // 투명 박스를 생성하는 함수
+          // 3d 박스를 생성하는 함수
           function createTransparentBox(coordinates) {
-            const { leftTop, rightBottom } = coordinates;
+            const { leftTop, rightBottom, info } = coordinates;
             /* console.log("좌표", coordinates);
             console.log("leftTop:", coordinates.leftTop);
             console.log("rightBottom:", coordinates.rightBottom); */
@@ -251,9 +249,10 @@
             );
 
             // 박스 클릭
-            boxMesh.userData = { clickable: true };
+            boxMesh.userData = { clickable: true, info: info };
             boxMesh.onClick = () => {
               console.log("박스가 클릭되었습니다!");
+              createRectangleWithText(boxMesh, info);
             };
 
             // Raycaster를 사용하여 클릭 이벤트 처리
@@ -280,6 +279,64 @@
               }
             });
           }
+          function createRectangleWithText(boxMesh, info) {
+            /* 사각형 생성 */
+            const rectGeometry = new THREE.PlaneGeometry(
+              boxMesh.geometry.parameters.width * 0.5,
+              20
+            );
+            const rectMaterial = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              transparent: true,
+              opacity: 0.7,
+            });
+            const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
+
+            // 텍스트 모달? 생성
+            const textCanvas = document.createElement("canvas");
+            const textCtx = textCanvas.getContext("2d");
+            /* 폰트 설정 */
+            textCtx.font = "bold 16px Arial"; // 폰트 설정
+            const textMetrics = textCtx.measureText(info.name); // 텍스트 크기 측정
+            textCanvas.width = textMetrics.width + 20; // 캔버스 width 설정
+            textCanvas.height = 30; // 캔버스 height 설정
+            textCtx.font = "bold 16px Arial"; // 폰트 설정
+            textCtx.fillStyle = "black"; // 텍스트 색상
+            textCtx.fillText(info.name, 10, 20); // 텍스트 그리기
+
+            const textTexture = new THREE.CanvasTexture(textCanvas);
+            const textMaterial = new THREE.MeshBasicMaterial({
+              map: textTexture,
+              transparent: true,
+            });
+
+            const textWidth = Math.min(
+              textMetrics.width,
+              boxMesh.geometry.parameters.width * 0.5
+            );
+            const textGeometry = new THREE.PlaneGeometry(textMetrics.width, 30);
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+            // 위치 설정 (박스 위 중앙)
+            rectMesh.position.set(
+              boxMesh.position.x,
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
+              boxMesh.position.z
+            );
+            textMesh.position.set(
+              boxMesh.position.x,
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
+              boxMesh.position.z + 0.1
+            );
+            // 카메라를 바라보도록 설정
+            rectMesh.lookAt(viewer.camera.position);
+            textMesh.lookAt(viewer.camera.position);
+            textMesh.rotation.z += Math.PI;
+            /* textMesh.rotation.set(0, 0, Math.PI); */
+
+            viewer.splatMesh.add(rectMesh);
+            viewer.splatMesh.add(textMesh);
+          }
         });
 
       let maxZoom = 50; // 최대 줌 레벨
@@ -290,11 +347,10 @@
         "cameraPositionDisplay"
       );
 
-        
       function updateCameraInfo() {
-      const position = viewer.camera.position;
-      const rotation = viewer.camera.rotation;
-      cameraInfoDisplay.innerHTML = `
+        const position = viewer.camera.position;
+        const rotation = viewer.camera.rotation;
+        cameraInfoDisplay.innerHTML = `
         <strong>카메라 위치:</strong>
         <br>X: ${position.x.toFixed(2)}
         <br>Y: ${position.y.toFixed(2)}
@@ -305,18 +361,15 @@
         <br>Z: ${THREE.MathUtils.radToDeg(rotation.z).toFixed(2)}°
       `;
       }
-      function animate() {
-  requestAnimationFrame(animate);
-  
-  // 기존의 애니메이션 처리 코드가 여기에 들어갑니다.
-  
-  updateCameraInfo(); // 카메라 정보 업데이트
-}
+      /* function animate() {
+        requestAnimationFrame(animate);
 
-animate();
+        // 기존의 애니메이션 처리 코드가 여기에 들어갑니다.
 
+        updateCameraInfo(); // 카메라 정보 업데이트
+      }
 
-
+      animate(); */
 
       //임시
       window.updateCameraPosition = function () {
@@ -348,7 +401,6 @@ animate();
 
         // 카메라 이동 처리
         viewer.camera.position.add(moveDirection);
-
       });
 
       // 휠로 확대/축소 처리
@@ -390,7 +442,6 @@ animate();
       const markerLeft = urlParams.get("left");
 
       console.log(`top: ${markerTop}, left: ${markerLeft}`);
-
 
       function openDemo(page) {
         let url = page + ".html";
