@@ -279,8 +279,9 @@
               }
             });
           }
+
+          /* 사각형 생성 */
           function createRectangleWithText(boxMesh, info) {
-            /* 사각형 생성 */
             const rectGeometry = new THREE.PlaneGeometry(
               boxMesh.geometry.parameters.width * 0.5,
               20
@@ -292,17 +293,19 @@
             });
             const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
-            // 텍스트 모달? 생성
+            /* 텍스트 모달? 생성 */
             const textCanvas = document.createElement("canvas");
             const textCtx = textCanvas.getContext("2d");
             /* 폰트 설정 */
-            textCtx.font = "bold 16px Arial"; // 폰트 설정
-            const textMetrics = textCtx.measureText(info.name); // 텍스트 크기 측정
-            textCanvas.width = textMetrics.width + 20; // 캔버스 width 설정
-            textCanvas.height = 30; // 캔버스 height 설정
-            textCtx.font = "bold 16px Arial"; // 폰트 설정
-            textCtx.fillStyle = "black"; // 텍스트 색상
-            textCtx.fillText(info.name, 10, 20); // 텍스트 그리기
+            textCtx.font = "bold 16px Arial";
+
+            /* 텍스트 크기 측정 */
+            const textMetrics = textCtx.measureText(info.name);
+            textCanvas.width = textMetrics.width + 20; /* 캔버스 width 설정 */
+            textCanvas.height = 20; /* 캔버스 height 설정 */
+            textCtx.font = "bold 16px Arial"; /* 폰트 */
+            textCtx.fillStyle = "black"; /* 색상 */
+            textCtx.fillText(info.name, 10, 20); /* 텍스트 채우기 */
 
             const textTexture = new THREE.CanvasTexture(textCanvas);
             const textMaterial = new THREE.MeshBasicMaterial({
@@ -317,24 +320,24 @@
             const textGeometry = new THREE.PlaneGeometry(textMetrics.width, 30);
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
-            // 위치 설정 (박스 위 중앙)
-            rectMesh.position.set(
+            /* 위치 설정 (3d box 위 중앙) */
+            /* rectMesh.position.set(
               boxMesh.position.x,
               boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
               boxMesh.position.z
-            );
+            ); */
             textMesh.position.set(
               boxMesh.position.x,
               boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
               boxMesh.position.z + 0.1
             );
-            // 카메라를 바라보도록 설정
-            rectMesh.lookAt(viewer.camera.position);
+            /* 생성 시 카메라를 바라보도록 설정 */
+            /* rectMesh.lookAt(viewer.camera.position); */
             textMesh.lookAt(viewer.camera.position);
             textMesh.rotation.z += Math.PI;
             /* textMesh.rotation.set(0, 0, Math.PI); */
 
-            viewer.splatMesh.add(rectMesh);
+            /* viewer.splatMesh.add(rectMesh); */
             viewer.splatMesh.add(textMesh);
           }
         });
