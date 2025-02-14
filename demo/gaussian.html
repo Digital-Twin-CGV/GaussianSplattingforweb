@@ -253,7 +253,8 @@
             boxMesh.userData = { clickable: true, info: info };
             boxMesh.onClick = (clickPoint) => {
               if (currentTextMesh) {
-                viewer.splatMesh.remove(currentTextMesh);
+                viewer.splatMesh.remove(currentTextMesh.text);
+                viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
               console.log("박스가 클릭되었습니다!");
@@ -296,6 +297,11 @@
           }
 
           function createRectangleWithText(boxMesh, info, clickPoint) {
+            if (currentTextMesh) {
+              viewer.splatMesh.remove(currentTextMesh.text);
+              viewer.splatMesh.remove(currentTextMesh.background);
+              currentTextMesh = null;
+            }
             /* 사각형 생성 */
             const rectGeometry = new THREE.PlaneGeometry(
               boxMesh.geometry.parameters.width * 0.5,
@@ -369,15 +375,19 @@
 
             /* 위치 설정 */
             backgroundMesh.position.set(
-              boxMesh.position.x,
+              clickPoint.x,
+              /* boxMesh.position.x, */
               boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
-              boxMesh.position.z
+              /* boxMesh.position.z */
+              clickPoint.z
             );
 
             textMesh.position.set(
-              boxMesh.position.x,
+              clickPoint.x,
+              /* boxMesh.position.x, */
               boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
-              boxMesh.position.z + 0.1
+              /* boxMesh.position.z + 0.1 */
+              clickPoint.z + 0.1
             );
 
             /* 카메라를 바라보도록 설정 */
@@ -389,7 +399,8 @@
             /* 씬에 추가 */
             viewer.splatMesh.add(backgroundMesh);
             viewer.splatMesh.add(textMesh);
-            currentTextMesh = textMesh;
+
+            currentTextMesh = { text: textMesh, background: backgroundMesh };
           }
         });
 
