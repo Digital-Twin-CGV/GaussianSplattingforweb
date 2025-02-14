@@ -289,7 +289,8 @@
               } else {
                 // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
                 if (currentTextMesh) {
-                  viewer.splatMesh.remove(currentTextMesh);
+                  viewer.splatMesh.remove(currentTextMesh.text);
+                  viewer.splatMesh.remove(currentTextMesh.background);
                   currentTextMesh = null;
                 }
               }
