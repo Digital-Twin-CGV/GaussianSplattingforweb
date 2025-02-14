@@ -308,6 +308,9 @@
             });
             const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
+            const scaleFactor = 3; // 글씨 크기 조절
+            const fontSize = 16 * scaleFactor; // 폰트 크기
+            const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
             /* 텍스트 캔버스 생성 */
             const textCanvas = document.createElement("canvas");
@@ -316,7 +319,6 @@
             /* 폰트 설정 */
             textCtx.font = `bold ${fontSize}px Arial`;
 
-            
             // 텍스트 크기에 따라 캔버스 가로 크기를 결정
             const charWidth = fontSize * 0.18; // 평균 글자 너비 (글꼴과 크기에 따라 다를 수 있음)
             const textWidth = info.name.length * charWidth + padding * 2; // 글자 수에 비례하여 너비 계산
@@ -334,7 +336,8 @@
 
             /* 텍스처 생성 */
             const textTexture = new THREE.CanvasTexture(textCanvas);
-            textTexture.anisotropy = viewer.renderer.capabilities.getMaxAnisotropy();
+            textTexture.anisotropy =
+              viewer.renderer.capabilities.getMaxAnisotropy();
 
             /* 텍스트 메시 생성 */
             const textMaterial = new THREE.MeshBasicMaterial({
@@ -343,18 +346,26 @@
               depthTest: false,
             });
 
-
-            const textGeometry = new THREE.PlaneGeometry(textWidth / scaleFactor, textHeight / scaleFactor);
+            const textGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
             /* 배경 메시(Plane) 생성 */
-            const backgroundGeometry = new THREE.PlaneGeometry(textWidth / scaleFactor, textHeight / scaleFactor);
+            const backgroundGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
             const backgroundMaterial = new THREE.MeshBasicMaterial({
               color: 0xffffff,
               transparent: true,
               opacity: 0.7,
             });
-            const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+            const backgroundMesh = new THREE.Mesh(
+              backgroundGeometry,
+              backgroundMaterial
+            );
 
             /* 위치 설정 */
             backgroundMesh.position.set(
@@ -380,12 +391,6 @@
             viewer.splatMesh.add(textMesh);
             currentTextMesh = textMesh;
           }
-
-
-
-
-
-
         });
 
       let maxZoom = 50; // 최대 줌 레벨
