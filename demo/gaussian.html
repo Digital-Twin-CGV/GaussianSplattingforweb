@@ -212,6 +212,8 @@
             return data;
           }
 
+          let currentTextMesh = null;
+
           // 3d 박스를 생성하는 함수
           function createTransparentBox(coordinates) {
             const { leftTop, rightBottom, info } = coordinates;
@@ -219,8 +221,8 @@
             console.log("leftTop:", coordinates.leftTop);
             console.log("rightBottom:", coordinates.rightBottom); */
 
-            const sizeOffset = 0.1;
-            const width = rightBottom.x - leftTop.x * (1 + sizeOffset);
+            const sizeOffset = 0.2;
+            const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
             const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
             const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
             console.log(
@@ -238,7 +240,6 @@
             const centerX = (leftTop.x + rightBottom.x) / 2;
             const centerY = (leftTop.y + rightBottom.y) / 2;
             const centerZ = (leftTop.z + rightBottom.z) / 2;
-
             boxMesh.position.set(centerX, centerY, centerZ);
             boxMesh.rotation.set(0, 0, 0);
 
@@ -250,9 +251,13 @@
 
             // 박스 클릭
             boxMesh.userData = { clickable: true, info: info };
-            boxMesh.onClick = () => {
+            boxMesh.onClick = (clickPoint) => {
+              if (currentTextMesh) {
+                viewer.splatMesh.remove(currentTextMesh);
+                currentTextMesh = null;
+              }
               console.log("박스가 클릭되었습니다!");
-              createRectangleWithText(boxMesh, info);
+              createRectangleWithText(boxMesh, info, clickPoint);
             };
 
             // Raycaster를 사용하여 클릭 이벤트 처리
@@ -272,14 +277,25 @@
                 viewer.splatMesh.children,
                 true
               );
-              if (intersects.length > 0) {
-                if (intersects[0].object.userData.clickable) {
-                  intersects[0].object.onClick();
+
+              // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
+              if (
+                intersects.length > 0 &&
+                intersects[0].object.userData.clickable
+              ) {
+                // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
+                intersects[0].object.onClick(intersects[0].point);
+              } else {
+                // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+                if (currentTextMesh) {
+                  viewer.splatMesh.remove(currentTextMesh);
+                  currentTextMesh = null;
                 }
               }
             });
           }
-          function createRectangleWithText(boxMesh, info) {
+
+          function createRectangleWithText(boxMesh, info, clickPoint) {
             /* 사각형 생성 */
             const rectGeometry = new THREE.PlaneGeometry(
               boxMesh.geometry.parameters.width * 0.5,
@@ -310,26 +326,24 @@
             const textMaterial = new THREE.MeshBasicMaterial({
               map: textTexture,
               transparent: true,
+              depthTest: false,
             });
 
-            const textWidth = Math.min(
-              textMetrics.width,
-              boxMesh.geometry.parameters.width * 0.5
-            );
             const textGeometry = new THREE.PlaneGeometry(textMetrics.width, 30);
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
             /* 위치 설정 (3d box 위 중앙) */
-            /* rectMesh.position.set(
-              boxMesh.position.x,
-              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
-              boxMesh.position.z
-            ); */
             textMesh.position.set(
-              boxMesh.position.x,
-              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 25,
-              boxMesh.position.z + 0.1
+              clickPoint.x, // 클릭한 x 좌표
+              400, // 박스 상단에서 오프셋
+              clickPoint.z // 클릭한 z 좌표
             );
+
+            /* textMesh.position.set(
+              clickPoint.x,
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 100,
+              clickPoint.z
+            ); */
             /* 생성 시 카메라를 바라보도록 설정 */
             /* rectMesh.lookAt(viewer.camera.position); */
             textMesh.lookAt(viewer.camera.position);
@@ -338,6 +352,7 @@
 
             /* viewer.splatMesh.add(rectMesh); */
             viewer.splatMesh.add(textMesh);
+            currentTextMesh = textMesh;
           }
         });
 
