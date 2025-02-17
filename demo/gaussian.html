@@ -324,8 +324,8 @@
             );
             const rectMaterial = new THREE.MeshBasicMaterial({
               color: 0xffffff,
-              transparent: true,
-              opacity: 0.7,
+              /* transparent: true, */
+              opacity: 0,
             });
             const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
@@ -396,8 +396,9 @@
             );
             const backgroundMaterial = new THREE.MeshBasicMaterial({
               color: 0xffffff,
-              transparent: true,
-              opacity: 0.7,
+              /* 이걸 해제해야 글씨가 잘보임 */
+              /* transparent: true, */
+              opacity: 0,
             });
             const backgroundMesh = new THREE.Mesh(
               backgroundGeometry,
