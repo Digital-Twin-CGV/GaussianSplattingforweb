@@ -126,7 +126,7 @@
         <img
           id="minimap_gaussian"
           alt="gaussian_img"
-          src="assets/images/minimap_temp.png"
+          src="assets/images/2dmap.png"
         />
 
         <!-- 선택된 로봇 위치 -->
@@ -258,6 +258,8 @@
         selectedX = x;
         selectedY = y;
 
+        console.log('x:', x, 'y:', y);
+
         const landmarkButton = document.querySelectorAll(
           '.minimap_landmark_btn'
         );
@@ -297,7 +299,7 @@
         const pixelData = ctx.getImageData(x, y, 1, 1).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
 
-        if (color !== 'rgb(255, 255, 255)') {
+        if (color !== 'rgb(0, 0, 0)') {
           // 기존 랜드마크가 있으면 제거
           landmarkButton.forEach((btn) => {
             btn.classList.remove('selected');
@@ -332,11 +334,11 @@
           const convertedCoordinates = { x: converted.x, y: converted.y };
 
           localStorage.setItem(
-            "selectedCoordinates",
+            'selectedCoordinates',
             JSON.stringify(convertedCoordinates)
           );
         } else {
-          console.log('흰색인데요');
+          console.log('깜장인데요');
         }
       });
 

@@ -44,5 +44,15 @@ async function insertRequest(robotId, drive, goalPosition) {
   return data;
 }
 
+async function getRequest() {
+  const { data, error } = await client.from('request').select('*');
+
+  if (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  return data;
+}
+
 export default supabase;
-export { getPassword, getRobots, insertRequest, client };
+export { getPassword, getRobots, getRequest, insertRequest, client };

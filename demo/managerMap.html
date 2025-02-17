@@ -170,10 +170,6 @@
         overflow-y: auto;
       }
 
-      span {
-        font-weight: bold;
-      }
-
       /* 경로 선 */
       .path_line {
         stroke: black;
@@ -184,6 +180,7 @@
   </head>
 
   <body>
+    <div id="header"></div>
     <div class="managerMap_container">
       <div class="managerMap_map">
         <div class="managerMap_battery">
@@ -258,7 +255,26 @@
         </div>
       </div>
     </div>
+    <script>
+      // 헤더에 필요한 script
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById('header').innerHTML = data;
+          })
+          .catch((error) => console.error('Error loading header:', error));
+      });
 
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        history.back();
+      }
+    </script>
     <script type="module">
       import {
         getRobots,
@@ -322,7 +338,7 @@
 
       const logs = [];
 
-      // request 데이터
+      // log를 만들 response, request 데이터
       async function requestData() {
         const requests = await getRequest();
       }
@@ -439,7 +455,7 @@
 
         robotId.innerHTML = `로봇${robot.id}`;
 
-        useRobot.innerHTML = robot.status === 1 ? '사용 불가' : '사용 가능';
+        useRobot.innerHTML = robot.status === 0 ? '사용 가능' : '사용 불가';
 
         useRobot.style.color = applyColor(robot);
 
