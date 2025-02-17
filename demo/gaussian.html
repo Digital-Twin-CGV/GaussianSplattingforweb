@@ -199,20 +199,34 @@
         ])
         .then(async () => {
           viewer.start();
+          createBoxes();
 
           // 좌표를 읽은 후 박스 생성
-          const coordinates = await loadCoordinates();
-          createTransparentBox(coordinates);
+          /* const coordinates = await loadCoordinates();
+          createTransparentBox(coordinates); */
+          const coordinatesArray = await loadCoordinates();
+          coordinatesArray.forEach((coordinates) => {
+            createTransparentBox(coordinates);
+          });
 
           // JSON 파일에서 좌표를 읽어오는 함수
           async function loadCoordinates() {
             const response = await fetch("./box_coord.json");
             const data = await response.json();
             /* console.log("좌표", data); */
-            return data;
+            /* return data; */
+            return Array.isArray(data) ? data : [data];
           }
 
           let currentTextMesh = null;
+
+          async function createBoxes() {
+            const coordinatesArray = await loadCoordinates();
+
+            coordinatesArray.forEach((coordinates) => {
+              createTransparentBox(coordinates);
+            });
+          }
 
           // 3d 박스를 생성하는 함수
           function createTransparentBox(coordinates) {
@@ -221,13 +235,13 @@
             console.log("leftTop:", coordinates.leftTop);
             console.log("rightBottom:", coordinates.rightBottom); */
 
-            const sizeOffset = 0.2;
+            const sizeOffset = 0;
             const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
             const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
             const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
-            console.log(
+            /* console.log(
               `박스 크기 - width: ${width}, height: ${height}, depth: ${depth}`
-            );
+            ); */
 
             const boxGeometry = new THREE.BoxGeometry(width, height, depth);
             const boxMaterial = new THREE.MeshBasicMaterial({
@@ -331,15 +345,14 @@
             const textWidth = info.name.length * charWidth + padding * 2; // 글자 수에 비례하여 너비 계산
             const textHeight = fontSize; // 텍스트 높이와 패딩을 고려한 높이 */
 
+            const lines = info.name.split("\n");
 
-            const lines = info.name.split('\n');
-    
             // 각 줄에 대해 텍스트 크기 계산
-            const lineHeight = fontSize // 줄 간격
-            const textWidth = Math.max(...lines.map(line => line.length * fontSize * 0.18)) + padding * 2; // 가장 긴 줄의 너비
-            const textHeight = lines.length * (lineHeight-40); // 모든 줄의 높이
-
-
+            const lineHeight = fontSize; // 줄 간격
+            const textWidth =
+              Math.max(...lines.map((line) => line.length * fontSize * 0.18)) +
+              padding * 2; // 가장 긴 줄의 너비
+            const textHeight = lines.length * (lineHeight - 40); // 모든 줄의 높이
 
             /* 캔버스 크기 설정 */
             textCanvas.width = textWidth;
@@ -351,7 +364,11 @@
             textCtx.textBaseline = "middle";
             // 각 줄을 캔버스에 그리기
             lines.forEach((line, index) => {
-                textCtx.fillText(line, textWidth / 2, index * (lineHeight-40)+padding/3);
+              textCtx.fillText(
+                line,
+                textWidth / 2,
+                index * (lineHeight - 40) + padding / 3
+              );
             });
 
             /* 텍스처 생성 */
