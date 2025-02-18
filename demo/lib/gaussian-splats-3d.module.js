@@ -6894,7 +6894,7 @@ class OrbitControls extends EventDispatcher {
 
       else if(count==1){
         if(targetY > 0) {
-          pan(0, 0, scope.keyPanSpeed);
+          pan(0, 0, -scope.keyPanSpeed);
           calctargetY -= 5;
         }
         else if(targetY < 0) {
@@ -6903,7 +6903,7 @@ class OrbitControls extends EventDispatcher {
             second_is_minus=false;
           }
 
-          pan(0, 0, -scope.keyPanSpeed);
+          pan(0, 0, scope.keyPanSpeed);
           calctargetY -= 5;
         }
         else{
@@ -6916,7 +6916,7 @@ class OrbitControls extends EventDispatcher {
 
 
     
-      if(count!=3){
+      if(count!=2){
         requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
       }
     }
