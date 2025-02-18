@@ -6786,7 +6786,7 @@ class OrbitControls extends EventDispatcher {
     document.body.appendChild(controlsContainer);
 
     // 버튼 생성 함수
-    function createButton(label, onClick) {
+    function createButton(label, keyCode) {
       const button = document.createElement("button");
       button.textContent = label;
       button.style.margin = "5px";
@@ -6796,40 +6796,48 @@ class OrbitControls extends EventDispatcher {
       button.style.border = "1px solid black";
       button.style.borderRadius = "5px";
       button.style.background = "#fff";
-      button.addEventListener("click", onClick);
+
+      // 클릭 시 해당 키 코드로 처리
+      button.addEventListener("click", () => triggerKeyEvent(keyCode));
+      
       return button;
     }
 
-    // 버튼 클릭 시 팬 기능 추가
-    const upButton = createButton("↑", () => handlePanEvent({ code: 'FORWARD' }));
-    const downButton = createButton("↓", () => handlePanEvent({ code: 'BACK' }));
-    const leftButton = createButton("←", () => handlePanEvent({ code: 'LEFT' }));
-    const rightButton = createButton("→", () => handlePanEvent({ code: 'RIGHT' }));
+    // 키 이벤트를 수동으로 트리거하는 함수
+    function triggerKeyEvent(keyCode) {
+      const event = new KeyboardEvent('keydown', {
+        key: keyCode, 
+        code: keyCode.toUpperCase(),  // 대소문자 구분을 위해
+        bubbles: true, 
+        cancelable: true,
+      });
+      window.dispatchEvent(event);
+    }
 
-    // 팬을 위한 함수 (화살표 방향에 맞춰)
+    // 팬을 위한 함수 (키 코드에 맞춰)
     function handlePanEvent(event) {
       let needsUpdate = false;
 
-      switch (event.code) {
-        case 'FORWARD':
+      switch (event.key) {
+        case 'r':  // forward
           console.log("앞");
           pan(0, 0, scope.keyPanSpeed);  // 위쪽 화살표
           needsUpdate = true;
           break;
 
-        case 'BACK':
+        case 'f':  // back
           console.log("뒤");
           pan(0, 0, -scope.keyPanSpeed);  // 아래쪽 화살표
           needsUpdate = true;
           break;
 
-        case 'LEFT':
+        case 'a':  // left
           console.log("왼");
           pan(scope.keyPanSpeed, 0, 0);  // 왼쪽 화살표
           needsUpdate = true;
           break;
 
-        case 'RIGHT':
+        case 'd':  // right
           console.log("오");
           pan(-scope.keyPanSpeed, 0, 0);  // 오른쪽 화살표
           needsUpdate = true;
@@ -6844,6 +6852,15 @@ class OrbitControls extends EventDispatcher {
       }
     }
 
+    // 키 이벤트 리스너 추가
+    window.addEventListener("keydown", handlePanEvent);
+
+    // 버튼 클릭 시 트리거할 키 코드 매핑
+    const upButton = createButton("↑", 'r');
+    const downButton = createButton("↓", 'f');
+    const leftButton = createButton("←", 'a');
+    const rightButton = createButton("→", 'd');
+
     // 버튼 레이아웃 정렬
     const row = document.createElement("div");
     row.style.display = "flex";
@@ -6853,6 +6870,7 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(upButton);
     controlsContainer.appendChild(row);
     controlsContainer.appendChild(downButton);
+
 
 
 
