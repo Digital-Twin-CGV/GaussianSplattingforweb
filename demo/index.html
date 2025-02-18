@@ -74,28 +74,36 @@
     <script>
       function openDemo(page) {
         // 창 넘어가는 함수
-        let url = page + ".html"; // url 만들기기
+        let url;
+        if (page == 'selectrobot') {
+          // 로봇 선택 페이지로 넘어갈 때
+          // 출발지 선택 페이지 : destin=0, 목적지 선택 페이지 : destin=1
+          url = page + '.html?destin=0';
+        } else {
+          // 관리자 페이지로 넘어갈 때
+          url = page + '.html'; // url 만들기
+        }
         window.location = url;
       }
 
       function checkMobile() {
         // 모바일인지
-        var mobileMessage = document.getElementById("mobileMessage");
-        var buttons = document.getElementById("buttons");
+        var mobileMessage = document.getElementById('mobileMessage');
+        var buttons = document.getElementById('buttons');
 
         if (window.innerWidth < window.innerHeight) {
           // 세로 모드일 때는 "화면을 가로로 돌려주세요" 메시지만 보이게
-          mobileMessage.style.display = "flex";
-          buttons.style.display = "none"; // 버튼 숨기기
+          mobileMessage.style.display = 'flex';
+          buttons.style.display = 'none'; // 버튼 숨기기
         } else {
           // 가로 모드일 때는 버튼만 보이게
-          mobileMessage.style.display = "none";
-          buttons.style.display = "block"; // 버튼 보이기
+          mobileMessage.style.display = 'none';
+          buttons.style.display = 'block'; // 버튼 보이기
         }
       }
 
       // 화면 크기 변경 시마다 실행
-      window.addEventListener("resize", checkMobile);
+      window.addEventListener('resize', checkMobile);
 
       // 페이지 로드 시에도 실행
       checkMobile();
