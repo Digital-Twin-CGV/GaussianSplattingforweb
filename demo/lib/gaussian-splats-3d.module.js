@@ -6873,7 +6873,7 @@ class OrbitControls extends EventDispatcher {
       let needsUpdate = true;
       if(count==0){
         if (targetX > 0) {
-          pan(0, scope.keyPanSpeed, 0);
+          pan(scope.keyPanSpeed, 0, 0);
           calctargetX -= 5;
         } 
         else if (targetX < 0) {
@@ -6881,7 +6881,7 @@ class OrbitControls extends EventDispatcher {
             calctargetX=-calctargetX;
             first_is_minus=false;
           }
-          pan(0, -scope.keyPanSpeed, 0);
+          pan(-scope.keyPanSpeed, 0, 0);
           calctargetX -= 5;
         }
         else{
@@ -6890,24 +6890,11 @@ class OrbitControls extends EventDispatcher {
         if(calctargetX<=1){ //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-        rotation_count=45;
       }
 
       else if(count==1){
-        if (rotation_count!=0) { //회전
-          rotateLeft(
-            (-0.078 * scope.rotateSpeed));
-          //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
-          rotation_count--;
-        }
-        else {
-          count++
-        }    
-      }
-
-      else if(count==2){
         if(targetY > 0) {
-          pan(0, scope.keyPanSpeed, 0);
+          pan(0, 0, scope.keyPanSpeed);
           calctargetY -= 5;
         }
         else if(targetY < 0) {
@@ -6916,7 +6903,7 @@ class OrbitControls extends EventDispatcher {
             second_is_minus=false;
           }
 
-          pan(0 -scope.keyPanSpeed, 0);
+          pan(0, 0, -scope.keyPanSpeed);
           calctargetY -= 5;
         }
         else{
@@ -7017,7 +7004,7 @@ class OrbitControls extends EventDispatcher {
         panEnd.set(x, y);
       }
 
-      panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
+      panDelta.subVectors(panEnd, panStart, 0).multiplyScalar(scope.panSpeed);
 
       pan(panDelta.x, panDelta.y, 0);
 
