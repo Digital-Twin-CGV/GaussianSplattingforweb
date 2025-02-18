@@ -6089,7 +6089,7 @@ class OrbitControls extends EventDispatcher {
     this.autoRotateSpeed = 10.0; // 30 seconds per orbit when fps is 60
 
     // The four arrow keys
-    this.keys = { LEFT: "KeyA", UP: "KeyW", RIGHT: "KeyD", BOTTOM: "KeyS" };
+    this.keys = { LEFT: "KeyA", UP: "KeyW", RIGHT: "KeyD", BOTTOM: "KeyS" , FORWARD: "KeyR", BACK: "KeyF"};
 
     // Mouse buttons
     this.mouseButtons = {
@@ -6430,9 +6430,9 @@ class OrbitControls extends EventDispatcher {
     const rotateEnd = new Vector2();
     const rotateDelta = new Vector2();
 
-    const panStart = new Vector2();
-    const panEnd = new Vector2();
-    const panDelta = new Vector2();
+    const panStart = new Vector3();
+    const panEnd = new Vector3();
+    const panDelta = new Vector3();
 
     const dollyStart = new Vector2();
     const dollyEnd = new Vector2();
@@ -6472,6 +6472,17 @@ class OrbitControls extends EventDispatcher {
       };
     })();
 
+    const panForward = (function () {
+      const v = new Vector3();
+    
+      return function panForward(distance, objectMatrix) {
+        v.setFromMatrixColumn(objectMatrix, 2); // get Z column of objectMatrix
+        v.multiplyScalar(-distance);
+    
+        panOffset.add(v);
+      };
+    })();
+
     const panUp = (function () {
       const v = new Vector3();
 
@@ -6489,11 +6500,12 @@ class OrbitControls extends EventDispatcher {
       };
     })();
 
+    
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (function () {
       const offset = new Vector3();
 
-      return function pan(deltaX, deltaY) {
+      return function pan(deltaX, deltaY, deltaZ) {
         const element = scope.domElement;
 
         if (scope.object.isPerspectiveCamera) {
@@ -6516,6 +6528,10 @@ class OrbitControls extends EventDispatcher {
             (2 * deltaY * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
+          panForward(
+            (2 * deltaZ * targetDistance) / element.clientHeight,
+            scope.object.matrix
+          );
         } else if (scope.object.isOrthographicCamera) {
           // orthographic
           panLeft(
@@ -6530,6 +6546,12 @@ class OrbitControls extends EventDispatcher {
               element.clientHeight,
             scope.object.matrix
           );
+          panForward( // 추가된 Z축 이동
+            (deltaZ * (scope.object.near - scope.object.far)) /
+              scope.object.zoom /
+              element.clientHeight,
+            scope.object.matrix
+          );
         } else {
           // camera neither orthographic nor perspective
           console.warn(
@@ -6539,6 +6561,7 @@ class OrbitControls extends EventDispatcher {
         }
       };
     })();
+
 
     function dollyOut(dollyScale) {
       if (
@@ -6649,9 +6672,9 @@ class OrbitControls extends EventDispatcher {
     function handleMouseMovePan(event) {
       panEnd.set(event.clientX, event.clientY);
 
-      panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
+      panDelta.subVectors(panEnd, panStart, 0).multiplyScalar(scope.panSpeed);
 
-      pan(panDelta.x, panDelta.y);
+      pan(panDelta.x, panDelta.y, panDelta.z);
 
       panStart.copy(panEnd);
 
@@ -6680,7 +6703,7 @@ class OrbitControls extends EventDispatcher {
               (2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight
             );
           } else {
-            pan(0, scope.keyPanSpeed);
+            pan(0, scope.keyPanSpeed,0);
           }
 
           needsUpdate = true;
@@ -6692,7 +6715,7 @@ class OrbitControls extends EventDispatcher {
               (-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight
             );
           } else {
-            pan(0, -scope.keyPanSpeed);
+            pan(0, -scope.keyPanSpeed, 0);
           }
 
           needsUpdate = true;
@@ -6704,7 +6727,7 @@ class OrbitControls extends EventDispatcher {
               (2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight
             );
           } else {
-            pan(scope.keyPanSpeed, 0);
+            pan(scope.keyPanSpeed, 0, 0);
           }
 
           needsUpdate = true;
@@ -6716,11 +6739,22 @@ class OrbitControls extends EventDispatcher {
               (-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight
             );
           } else {
-            pan(-scope.keyPanSpeed, 0);
+            pan(-scope.keyPanSpeed, 0, 0);
           }
+          needsUpdate = true;
+          break;
+
+        case scope.keys.FORWARD:
+          pan(0, 0, scope.keyPanSpeed);
 
           needsUpdate = true;
           break;
+
+        case scope.keys.BACK:
+        pan(0, 0, -scope.keyPanSpeed);
+
+        needsUpdate = true;
+        break;
       }
 
       if (needsUpdate) {
@@ -6738,6 +6772,94 @@ class OrbitControls extends EventDispatcher {
     let second_is_minus=true;
 
 
+
+    //화살표버튼
+    // HTML에 버튼 추가
+    const controlsContainer = document.createElement("div");
+    controlsContainer.style.position = "absolute";
+    controlsContainer.style.bottom = "20px";
+    controlsContainer.style.left = "50%";
+    controlsContainer.style.transform = "translateX(-50%)";
+    controlsContainer.style.display = "flex";
+    controlsContainer.style.flexDirection = "column";
+    controlsContainer.style.alignItems = "center";
+    document.body.appendChild(controlsContainer);
+
+    // 버튼 생성 함수
+    function createButton(label, onClick) {
+      const button = document.createElement("button");
+      button.textContent = label;
+      button.style.margin = "5px";
+      button.style.padding = "10px 15px";
+      button.style.fontSize = "16px";
+      button.style.cursor = "pointer";
+      button.style.border = "1px solid black";
+      button.style.borderRadius = "5px";
+      button.style.background = "#fff";
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    // 버튼 클릭 시 팬 기능 추가
+    const upButton = createButton("↑", () => handlePanEvent({ code: 'FORWARD' }));
+    const downButton = createButton("↓", () => handlePanEvent({ code: 'BACK' }));
+    const leftButton = createButton("←", () => handlePanEvent({ code: 'LEFT' }));
+    const rightButton = createButton("→", () => handlePanEvent({ code: 'RIGHT' }));
+
+    // 팬을 위한 함수 (화살표 방향에 맞춰)
+    function handlePanEvent(event) {
+      let needsUpdate = false;
+
+      switch (event.code) {
+        case 'FORWARD':
+          console.log("앞");
+          pan(0, 0, scope.keyPanSpeed);  // 위쪽 화살표
+          needsUpdate = true;
+          break;
+
+        case 'BACK':
+          console.log("뒤");
+          pan(0, 0, -scope.keyPanSpeed);  // 아래쪽 화살표
+          needsUpdate = true;
+          break;
+
+        case 'LEFT':
+          console.log("왼");
+          pan(scope.keyPanSpeed, 0, 0);  // 왼쪽 화살표
+          needsUpdate = true;
+          break;
+
+        case 'RIGHT':
+          console.log("오");
+          pan(-scope.keyPanSpeed, 0, 0);  // 오른쪽 화살표
+          needsUpdate = true;
+          break;
+
+        default:
+          break;
+      }
+
+      if (needsUpdate) {
+        scope.update();  // 상태 업데이트
+      }
+    }
+
+    // 버튼 레이아웃 정렬
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.appendChild(leftButton);
+    row.appendChild(rightButton);
+
+    controlsContainer.appendChild(upButton);
+    controlsContainer.appendChild(row);
+    controlsContainer.appendChild(downButton);
+
+
+
+
+
+
+
     //이동기능
     function printSelectedCoordinates(event) {
       const { x: targetX, y: targetY } = event.detail;
@@ -6751,7 +6873,7 @@ class OrbitControls extends EventDispatcher {
       let needsUpdate = true;
       if(count==0){
         if (targetX > 0) {
-          pan(scope.keyPanSpeed, 0);
+          pan(0, scope.keyPanSpeed, 0);
           calctargetX -= 5;
         } 
         else if (targetX < 0) {
@@ -6759,7 +6881,7 @@ class OrbitControls extends EventDispatcher {
             calctargetX=-calctargetX;
             first_is_minus=false;
           }
-          pan(-scope.keyPanSpeed, 0);
+          pan(0, -scope.keyPanSpeed, 0);
           calctargetX -= 5;
         }
         else{
@@ -6785,7 +6907,7 @@ class OrbitControls extends EventDispatcher {
 
       else if(count==2){
         if(targetY > 0) {
-          pan(scope.keyPanSpeed, 0);
+          pan(0, scope.keyPanSpeed, 0);
           calctargetY -= 5;
         }
         else if(targetY < 0) {
@@ -6794,7 +6916,7 @@ class OrbitControls extends EventDispatcher {
             second_is_minus=false;
           }
 
-          pan(-scope.keyPanSpeed, 0);
+          pan(0 -scope.keyPanSpeed, 0);
           calctargetY -= 5;
         }
         else{
@@ -6897,7 +7019,7 @@ class OrbitControls extends EventDispatcher {
 
       panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
 
-      pan(panDelta.x, panDelta.y);
+      pan(panDelta.x, panDelta.y, 0);
 
       panStart.copy(panEnd);
     }
