@@ -28,7 +28,7 @@
         border-radius: 100px;
         width: 30px;
         height: 30px;
-        background-color: green;
+        background-color: #1dd200;
       }
 
       .minimap_robot_name {
@@ -116,7 +116,7 @@
     <div id="header"></div>
     <div class="minimap_container">
       <div class="minimap_title">
-        <h1 id="robot-info">호출할 위치를 선택해주세요</h1>
+        <h1 id="robot-info"></h1>
         <h3>
           랜드마크 선택 시 상세 위치 설정 없이 바로 로봇이 해당 위치로
           이동합니다.
@@ -131,7 +131,7 @@
 
         <!-- 선택된 로봇 위치 -->
         <div class="minimap_robot">
-          <button class="minimap_robot_btn" , type="button"></button>
+          <div class="minimap_robot_btn"></div>
           <div class="minimap_robot_name">로봇 위치</div>
         </div>
 
@@ -230,12 +230,23 @@
       // URL 파라미터 가져오기
       function getUrlParams() {
         const params = new URLSearchParams(window.location.search);
+        const destin = params.get('destin');
         const robot = params.get('robot');
-        const top = params.get('top');
-        const left = params.get('left');
+        const bottom = ((Number(params.get('bottom')) + 377 - 15) * 100) / 485;
+        const left = ((Number(params.get('left')) + 1188 - 15) * 100) / 1441;
 
-        return { robot, top, left };
+        // 페이지 목적에 따른 제목
+        const titleElement = document.getElementById('robot-info');
+        if (destin === '0') {
+          titleElement.textContent = '출발지 선택를 선택해주세요';
+        } else if (destin === '1') {
+          titleElement.textContent = '목적지 선택를 선택해주세요';
+        }
+
+        return { destin, robot, bottom, left };
       }
+
+      const destinMode = getUrlParams().destin;
 
       const minimap = document.getElementById('minimap_map');
       const background = document.getElementById('minimap_gaussian');
@@ -251,14 +262,18 @@
 
       let selectedX = null;
       let selectedY = null;
+      // 클릭한 부분
       minimap.addEventListener('click', (event) => {
+        // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
-        const x = event.clientX - minimapRect.left;
-        const y = event.clientY - minimapRect.top;
+
+        // 이미지에서 %로 좌표 표현
+        const x = (100 * (event.clientX - 15)) / minimapRect.width;
+        const y =
+          (100 * (event.clientY - minimapRect.top - 15)) / minimapRect.height;
+
         selectedX = x;
         selectedY = y;
-
-        console.log('x:', x, 'y:', y);
 
         const landmarkButton = document.querySelectorAll(
           '.minimap_landmark_btn'
@@ -281,7 +296,7 @@
           }
 
           clickedLandmarkButton.classList.add('selected');
-          console.log('랜드마크 건설!!');
+          //console.log('랜드마크 건설!!');
 
           // 기존에 선택했던 랜드마크 선택 삭제
           landmarkButton.forEach((btn) => {
@@ -296,50 +311,55 @@
         }
 
         // 클릭한 위치의 색 가져오기
-        const pixelData = ctx.getImageData(x, y, 1, 1).data;
+        const pixelData = ctx.getImageData(
+          (x * minimapRect.width) / 100 + 15,
+          (y * minimapRect.height) / 100 + 15,
+          1,
+          1
+        ).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
+        console.log(color);
+        //if (color !== 'rgb(0, 0, 0)') {
+        // 기존 랜드마크가 있으면 제거
+        landmarkButton.forEach((btn) => {
+          btn.classList.remove('selected');
+        });
 
-        if (color !== 'rgb(0, 0, 0)') {
-          // 기존 랜드마크가 있으면 제거
-          landmarkButton.forEach((btn) => {
-            btn.classList.remove('selected');
-          });
-
-          if (marker) {
-            minimap.removeChild(marker);
-          }
-
-          // 마커 생성
-          marker = document.createElement('div');
-          marker.style.position = 'absolute';
-          marker.style.top = `${y - 15}px`;
-          marker.style.left = `${x - 15}px`;
-          marker.style.width = '25px';
-          marker.style.height = '25px';
-          marker.style.backgroundColor = 'red';
-          marker.style.borderRadius = '50%';
-          marker.style.zIndex = '10';
-
-          minimap.appendChild(marker);
-
-          setMarkerSelected(true);
-          setLandmarkSelected(false); // 랜드마크 선택 해제
-
-          const converted = convertCoordinates(
-            x,
-            y,
-            background.offsetWidth,
-            background.offsetHeight
-          );
-          const convertedCoordinates = { x: converted.x, y: converted.y };
-
-          localStorage.setItem(
-            'selectedCoordinates',
-            JSON.stringify(convertedCoordinates)
-          );
-        } else {
-          console.log('깜장인데요');
+        if (marker) {
+          minimap.removeChild(marker);
         }
+
+        // 마커 생성
+        marker = document.createElement('div');
+        marker.style.position = 'absolute';
+        marker.style.top = `${y}%`;
+        marker.style.left = `${x}%`;
+        marker.style.width = '25px';
+        marker.style.height = '25px';
+        marker.style.backgroundColor = 'red';
+        marker.style.borderRadius = '50%';
+        marker.style.zIndex = '10';
+
+        minimap.appendChild(marker);
+
+        setMarkerSelected(true);
+        setLandmarkSelected(false); // 랜드마크 선택 해제
+
+        const converted = convertCoordinates(
+          x,
+          y,
+          background.offsetWidth,
+          background.offsetHeight
+        );
+        const convertedCoordinates = { x: converted.x, y: converted.y };
+
+        localStorage.setItem(
+          'selectedCoordinates',
+          JSON.stringify(convertedCoordinates)
+        );
+        /* } else {
+          console.log('깜장인데요');
+        }*/
       });
 
       function isClickInside(event, element) {
@@ -382,13 +402,12 @@
       });
 
       document.addEventListener('DOMContentLoaded', () => {
-        const { robot, top, left } = getUrlParams();
-        if (robot && top && left) console.log(`${robot}, ${top}, ${left}`);
+        const { destin, robot, bottom, left } = getUrlParams();
 
         const robotElement = document.querySelector(`.minimap_robot`);
         if (robotElement) {
-          robotElement.style.top = `${top}`;
-          robotElement.style.left = `${left}`;
+          robotElement.style.bottom = `${bottom}%`;
+          robotElement.style.left = `${left}%`;
         }
       });
 
@@ -408,9 +427,9 @@
         if (isLandMarkSelected) {
           window.location.href = 'moving.html';
         } else if (isMarkerSelected) {
-          const markerTop = selectedX;
+          const markerBottom = selectedX;
           const markerLeft = selectedY;
-          window.location.href = `gaussian.html?top=${markerTop}&left=${markerLeft}`;
+          window.location.href = `gaussian.html?destin=${destinMode}&bottom=${markerBottom}&left=${markerLeft}`;
           // window.location.href = "gaussian.html";
         }
       }
