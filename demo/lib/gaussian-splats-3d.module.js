@@ -6773,6 +6773,7 @@ class OrbitControls extends EventDispatcher {
 
 
 
+    //화살표이동
     // HTML에 버튼 추가
     const controlsContainer = document.createElement("div");
     controlsContainer.style.position = "absolute";
@@ -6799,7 +6800,8 @@ class OrbitControls extends EventDispatcher {
       // 클릭 시 해당 키 코드로 처리
       button.addEventListener("mousedown", () => triggerKeyEvent(keyCode, 'keydown'));  // mousedown -> keydown
       button.addEventListener("mouseup", () => triggerKeyEvent(keyCode, 'keyup'));    // mouseup -> keyup
-      
+      button.addEventListener("touchstart", () => triggerKeyEvent(keyCode, 'keydown'));
+      button.addEventListener("touchend", () => triggerKeyEvent(keyCode, 'keyup'));
       return button;
     }
 
@@ -6816,7 +6818,7 @@ class OrbitControls extends EventDispatcher {
 
     // 팬을 위한 함수 (키 코드에 맞춰)
     let isKeyPressed = {};  // 각 키에 대한 상태를 저장 (누름 상태)
-    let panInterval = null;  // 팬 반복을 위한 변수
+    let panInterval = null;
 
     // 팬을 위한 함수 (키 코드에 맞춰)
     function handlePanEvent(event) {
