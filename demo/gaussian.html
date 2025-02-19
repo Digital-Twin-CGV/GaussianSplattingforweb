@@ -18,138 +18,62 @@
       body {
         margin: 0px;
       }
-
-      .gaussian_container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .gaussian_statebar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #fff2c5;
-        padding: 20px;
-      }
-
-      .gaussian_complete {
+      .gaussian_header {
+        width: 100%;
+        height: 60px;
+        z-index: 1;
         position: absolute;
-        right: 0;
+
+        background-color: white;
+        opacity: 0.7;
+
         display: flex;
+        justify-content: space-between;
       }
-
-      .gaussian_complete_btn {
-        padding: 10px 15px;
-        margin: 0 10px;
-        background-color: #c0c0c0;
-        border-radius: 20px;
-        cursor: pointer;
-      }
-
-      #gaussian_complete_btn_cancel {
-        background-color: #ff9090;
-      }
-
-      <!--임시-->
-      /* 스타일 추가: 카메라 이동 수동 입력칸 */
-      #manualCameraControls {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 10px;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-      }
-
-      #manualCameraControls input {
-        width: 60px;
-        margin: 5px;
-        padding: 5px;
-        font-size: 14px;
-        text-align: center;
-      }
-
-      #manualCameraControls button {
-        padding: 5px 10px;
-        font-size: 14px;
-        cursor: pointer;
-        background-color: #c0c0c0;
-        border-radius: 5px;
-      }
-      <!--임시-->
     </style>
   </head>
 
   <body>
-    <div class="gaussian_container">
-      <div class="gaussian_statebar">
-        <div>드래그하여 정확한 위치를 선택해주세요</div>
-        <div class="gaussian_complete">
-          <div
-            class="gaussian_complete_btn"
-            id="gaussian_complete_btn_cancel"
-            onClick="openDemo('minimap')"
-          >
-            취소
-          </div>
-          <div class="gaussian_complete_btn" onClick="openDemo('moving')">
-            선택 완료
-          </div>
-        </div>
-      </div>
+    <div class="gaussian_header">
+      <div id="header"></div>
+      <div id="gaussian_complete_btn" onclick="openDemo()">선택 완료</div>
     </div>
+    <script>
+      // 헤더
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById('header').innerHTML = data;
+          })
+          .catch((error) => console.error('Error loading header:', error));
+      });
 
-    <!--임시-->
-    <div
-      id="cameraPositionDisplay"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 10px;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-      "
-    >
-      Loading camera position...
-    </div>
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
 
-    <!-- 카메라 위치 수동 입력칸 -->
-    <div id="manualCameraControls">
-      <div>카메라 위치 입력</div>
-      <div>
-        X: <input type="number" id="manualX" step="0.01" /> Y:
-        <input type="number" id="manualY" step="0.01" /> Z:
-        <input type="number" id="manualZ" step="0.01" />
-      </div>
-      <button onclick="updateCameraPosition()">이동</button>
-    </div>
-    <!--임시-->
-
+      function goBack() {
+        console.log('뒤로가기');
+        history.back();
+      }
+    </script>
     <script type="module">
-      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
-      import * as THREE from "three";
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const mode = parseInt(urlParams.get("mode")) || 0;
+      import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+      import * as THREE from 'three';
 
       //원위치 좌표
       let initialCameraPosition = { x: 0, y: -30, z: 0 };
       const initialCameraRotation = { x: 0, y: 0, z: 0 };
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener('DOMContentLoaded', () => {
         const selectedCoordinates = JSON.parse(
-          localStorage.getItem("selectedCoordinates")
+          localStorage.getItem('selectedCoordinates')
         );
 
         if (selectedCoordinates) {
-          const event = new CustomEvent("selectedCoordinatesEvent", {
+          const event = new CustomEvent('selectedCoordinatesEvent', {
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
@@ -190,7 +114,7 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/cu2.splat",
+            path: 'assets/data/cu2.splat',
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
@@ -211,7 +135,7 @@
 
           // JSON 파일에서 좌표를 읽어오는 함수
           async function loadCoordinates() {
-            const response = await fetch("./box_coord.json");
+            const response = await fetch('./box_coord.json');
             const data = await response.json();
             /* console.log("좌표", data); */
             /* return data; */
@@ -271,12 +195,12 @@
                 viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
-              console.log("박스가 클릭되었습니다!");
+              console.log('박스가 클릭되었습니다!');
               createRectangleWithText(boxMesh, info, clickPoint);
             };
 
             // Raycaster를 사용하여 클릭 이벤트 처리
-            viewer.renderer.domElement.addEventListener("click", (event) => {
+            viewer.renderer.domElement.addEventListener('click', (event) => {
               const mouse = new THREE.Vector2();
               mouse.x =
                 (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
@@ -334,8 +258,8 @@
             const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
             /* 텍스트 캔버스 생성 */
-            const textCanvas = document.createElement("canvas");
-            const textCtx = textCanvas.getContext("2d");
+            const textCanvas = document.createElement('canvas');
+            const textCtx = textCanvas.getContext('2d');
 
             /* 폰트 설정 */
             textCtx.font = `bold ${fontSize}px Arial`;
@@ -345,7 +269,7 @@
             const textWidth = info.name.length * charWidth + padding * 2; // 글자 수에 비례하여 너비 계산
             const textHeight = fontSize; // 텍스트 높이와 패딩을 고려한 높이 */
 
-            const lines = info.name.split("\n");
+            const lines = info.name.split('\n');
 
             // 각 줄에 대해 텍스트 크기 계산
             const lineHeight = fontSize; // 줄 간격
@@ -359,9 +283,9 @@
             textCanvas.height = textHeight;
 
             /* 텍스트 채우기 */
-            textCtx.fillStyle = "black";
-            textCtx.textAlign = "center";
-            textCtx.textBaseline = "middle";
+            textCtx.fillStyle = 'black';
+            textCtx.textAlign = 'center';
+            textCtx.textBaseline = 'middle';
             // 각 줄을 캔버스에 그리기
             lines.forEach((line, index) => {
               textCtx.fillText(
@@ -441,7 +365,7 @@
 
       //==============임시 카메라위치
       const cameraInfoDisplay = document.getElementById(
-        "cameraPositionDisplay"
+        'cameraPositionDisplay'
       );
 
       function updateCameraInfo() {
@@ -470,9 +394,9 @@
 
       //임시
       window.updateCameraPosition = function () {
-        const x = parseFloat(document.getElementById("manualX").value);
-        const y = parseFloat(document.getElementById("manualY").value);
-        const z = parseFloat(document.getElementById("manualZ").value);
+        const x = parseFloat(document.getElementById('manualX').value);
+        const y = parseFloat(document.getElementById('manualY').value);
+        const z = parseFloat(document.getElementById('manualZ').value);
 
         if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
           viewer.camera.position.set(x, y, z);
@@ -480,12 +404,12 @@
           viewer.camera.updateProjectionMatrix(); // 프로젝션 행렬 업데이트
           updateCameraInfo();
         } else {
-          alert("유효한 값을 입력해주세요.");
+          alert('유효한 값을 입력해주세요.');
         }
       };
 
       // 화살표 키로 카메라 이동 처리
-      document.addEventListener("keydown", function (event) {
+      document.addEventListener('keydown', function (event) {
         const forward = new THREE.Vector3();
         const right = new THREE.Vector3();
         const up = new THREE.Vector3(0, 1, 0);
@@ -501,8 +425,8 @@
       });
 
       // 휠로 확대/축소 처리
-      document.addEventListener("wheel", function (event) {
-        console.log("wheel event");
+      document.addEventListener('wheel', function (event) {
+        console.log('wheel event');
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
           // 줌 인
@@ -535,15 +459,38 @@
         viewer.camera.updateProjectionMatrix();
       });
 
-      const markerTop = urlParams.get("top");
-      const markerLeft = urlParams.get("left");
+      // url 파라미터 가져오기
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const destin = params.get('destin');
+        const robot = params.get('robot');
+        const bottom = params.get('bottom');
+        const left = params.get('left');
 
-      console.log(`top: ${markerTop}, left: ${markerLeft}`);
+        return { destin, robot, bottom, left };
+      }
 
-      function openDemo(page) {
-        let url = page + ".html";
+      // 페이지 이동
+      // 만약 destin이 0이면 목적지 선택으로 이동
+      // 만약 destin이 1이면 이동 시작
+      function openDemo() {
+        const { destin, robot, bottom, left } = getUrlParams();
+        let url;
+        if (destin === '0') {
+          url = `minimap.html?destin=1&robot=${robot}`;
+        } else if (destin === '1') {
+          url = 'moving.html';
+        }
+        //찍은 위치 로컬 스토리지에 저장
+        localStorage.setItem(
+          destin === '0' ? 'start' : 'end',
+          JSON.stringify({ bottom, left })
+        );
+
+        // 페이지 이동
         window.location = url;
       }
+      window.openDemo = openDemo;
     </script>
   </body>
 </html>

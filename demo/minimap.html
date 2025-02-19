@@ -178,10 +178,15 @@
         >
           선택 완료
         </button>
+        <button class="test_btn" type="button">실험 버튼</button>
       </div>
     </div>
     <canvas id="colorCanvas" style="display: none"></canvas>
-    <script>
+    <script type="module">
+      //test
+      import { insertRequest } from './supaDatabase/connectDatabase.js';
+      //
+
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
           .then((response) => response.text())
@@ -246,8 +251,6 @@
         return { destin, robot, bottom, left };
       }
 
-      const destinMode = getUrlParams().destin;
-
       const minimap = document.getElementById('minimap_map');
       const background = document.getElementById('minimap_gaussian');
       const canvas = document.getElementById('colorCanvas');
@@ -262,6 +265,12 @@
 
       let selectedX = null;
       let selectedY = null;
+
+      // test 테스트 좌표
+      let test_a = null;
+      let test_b = null;
+      //
+
       // 클릭한 부분
       minimap.addEventListener('click', (event) => {
         // 미니맵의 정보
@@ -272,8 +281,27 @@
         const y =
           (100 * (event.clientY - minimapRect.top - 15)) / minimapRect.height;
 
-        selectedX = x;
-        selectedY = y;
+        // 원점 : (1188, -108)
+        // 테스트를 위한 좌표 계산
+        // test
+        const a =
+          (((100 * event.clientX) / minimapRect.width - (1188 * 100) / 1441) *
+            1441) /
+          100;
+
+        const b =
+          (((100 * (minimapRect.bottom - event.clientY)) / minimapRect.height -
+            (377 * 100) / 485) *
+            485) /
+          100;
+
+        test_a = a;
+        test_b = b;
+        console.log('a', a, 'b', b);
+        // 여기까지 test
+
+        selectedX = a;
+        selectedY = b;
 
         const landmarkButton = document.querySelectorAll(
           '.minimap_landmark_btn'
@@ -401,6 +429,7 @@
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
       });
 
+      // 로봇 위치
       document.addEventListener('DOMContentLoaded', () => {
         const { destin, robot, bottom, left } = getUrlParams();
 
@@ -422,17 +451,34 @@
       }
 
       function openPage() {
-        if (isLandMarkSelected) window.location.href = 'moving.html';
-        else if (isMarkerSelected) window.location.href = 'gaussian.html';
+        const { destin, robot } = getUrlParams();
         if (isLandMarkSelected) {
           window.location.href = 'moving.html';
         } else if (isMarkerSelected) {
           const markerBottom = selectedX;
           const markerLeft = selectedY;
-          window.location.href = `gaussian.html?destin=${destinMode}&bottom=${markerBottom}&left=${markerLeft}`;
+          window.location.href = `gaussian.html?destin=${destin}&robot=${robot}&bottom=${markerBottom}&left=${markerLeft}`;
           // window.location.href = "gaussian.html";
         }
       }
+
+      window.openHome = openHome;
+      window.goBack = goBack;
+      window.openPage = openPage;
+      // test
+
+      const test = document.getElementById('test');
+
+      function goRobot(a, b) {
+        const { robot } = getUrlParams();
+        insertRequest(robot, true, [a, b]);
+      }
+
+      document
+        .querySelector('.test_btn')
+        .addEventListener('click', () => goRobot(test_a, test_b));
+
+      //
     </script>
   </body>
 </html>
