@@ -6517,38 +6517,27 @@ class OrbitControls extends EventDispatcher {
       const MIN_Y = -15;
       const MAX_Z = 200;
       const MIN_Z = -260;
+      const temp_rotation=0;
+
 
       return function pan(deltaX, deltaY, deltaZ) {
         const element = scope.domElement;
 
         // 현재 위치 가져오기
         const currentPos = scope.object.position;
-
-        // 이동 범위 제한 (범위를 벗어나면 이동을 중지)
-        if (currentPos.x < MIN_X || currentPos.x > MAX_X) {
-          // console.log(
-          //   "X 범위 벗어남:",
-          //   currentPos.x,
-          //   "MIN_X:",
-          //   MIN_X,
-          //   "MAX_X:",
-          //   MAX_X
-          // );
-          // deltaX = 0; // Stop further movement in this direction
-        }
-
-        // 새로운 위치 계산
-        // scope.object.position.set(
-        //   currentPos.x + deltaX,
-        //   currentPos.y + deltaY,
-        //   currentPos.z + deltaZ
-        // );
+        const currentrotate = scope.object.rotation;
+        //console.log(currentrotate);
 
         if (scope.object.isPerspectiveCamera) {
           // perspective
           const position = scope.object.position;
           offset.copy(position).sub(scope.target);
-          let targetDistance = offset.length();
+          let targetDistance = offset.length(); 
+
+          //회전방향 확인
+          let check_rotation = Math.abs(currentrotate.x-temp_rotation);
+
+          console.log(check_rotation);
 
           // half of the fov is center to top of screen
           targetDistance *= Math.tan(
@@ -6556,15 +6545,14 @@ class OrbitControls extends EventDispatcher {
           );
 
           if (scope.object.isPerspectiveCamera) {
-            if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
-              console.log(
-                "Z 범위 벗어남:",
-                currentPos.y,
-                "MIN_Z:",
-                MIN_Z,
-                "MAX_Z:",
-                MAX_Z
-              );
+            if((currentPos.z < MIN_Z || currentPos.z > MAX_Z)) {//회전 기반으로 작동하게할거라 후에 추가
+              if(check_rotation>0.5){
+                panForward(
+                  (2 * deltaZ * targetDistance) / element.clientHeight,
+                  scope.object.matrix
+                );
+              }
+              console.log("Z 범위 벗어남, 각도 부족");
               // deltaZ = 0;
             } else {
               panForward(
@@ -6913,25 +6901,21 @@ class OrbitControls extends EventDispatcher {
           panInterval = setInterval(() => {
             // 눌린 키에 따른 팬 처리
             if (isKeyPressed['r']) {  // forward
-              console.log("앞");
               pan(0, 0, scope.keyPanSpeed);  // forward
               needsUpdate = true;
             }
 
             if (isKeyPressed['f']) {  // back
-              console.log("뒤");
               pan(0, 0, -scope.keyPanSpeed);  // back
               needsUpdate = true;
             }
 
             if (isKeyPressed['a']) {  // left
-              console.log("왼");
               pan(scope.keyPanSpeed, 0, 0);  // left
               needsUpdate = true;
             }
 
             if (isKeyPressed['d']) {  // right
-              console.log("오");
               pan(-scope.keyPanSpeed, 0, 0);  // right
               needsUpdate = true;
             }
