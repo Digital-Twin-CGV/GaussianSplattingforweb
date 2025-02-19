@@ -88,5 +88,20 @@
         }
       )
       .subscribe();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 출발지 마커 표시
+      const startMarker = document.createElement('div');
+      startMarker.style.position = 'relative';
+      startMarker.className = 'moving_start_marker';
+      startMarker.style.bottom = start.bottom;
+      startMarker.style.left = start.left;
+      startMarker.style.backgroundColor = 'blue';
+      startMarker.style.width = '15px';
+      startMarker.style.height = '15px';
+      startMarker.style.borderRadius = '15px';
+      console.log(start);
+      document.querySelector('.moving_map_container').appendChild(startMarker);
+    });
   </script>
 </html>
