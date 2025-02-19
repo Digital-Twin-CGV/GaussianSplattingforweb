@@ -18,79 +18,67 @@
       body {
         margin: 0px;
       }
-
-      .gaussian_container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .gaussian_statebar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #fff2c5;
-        padding: 20px;
-      }
-
-      .gaussian_complete {
+      .gaussian_header {
+        width: 100%;
+        height: 60px;
+        z-index: 1;
         position: absolute;
-        right: 0;
+
+        background-color: white;
+        opacity: 0.7;
+
         display: flex;
-      }
-
-      .gaussian_complete_btn {
-        padding: 10px 15px;
-        margin: 0 10px;
-        background-color: #c0c0c0;
-        border-radius: 20px;
-        cursor: pointer;
-      }
-
-      #gaussian_complete_btn_cancel {
-        background-color: #ff9090;
+        justify-content: space-between;
       }
     </style>
   </head>
 
   <body>
-    <div class="gaussian_container">
-      <div class="gaussian_statebar">
-        <div>드래그하여 정확한 위치를 선택해주세요</div>
-        <div class="gaussian_complete">
-          <div
-            class="gaussian_complete_btn"
-            id="gaussian_complete_btn_cancel"
-            onClick="openDemo('minimap')"
-          >
-            취소
-          </div>
-          <div class="gaussian_complete_btn" onClick="openDemo('moving')">
-            선택 완료
-          </div>
-        </div>
-      </div>
+    <div class="gaussian_header">
+      <div id="header"></div>
+      <div id="gaussian_complete_btn" onclick="openDemo()">선택 완료</div>
     </div>
+    <script>
+      // 헤더
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch('header.html')
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById('header').innerHTML = data;
+          })
+          .catch((error) => console.error('Error loading header:', error));
+      });
 
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
+      function goBack() {
+        console.log('뒤로가기');
+        history.back();
+      }
+    </script>
     <script type="module">
-      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
-      import * as THREE from "three";
+      import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+      import * as THREE from 'three';
+
 
       const urlParams = new URLSearchParams(window.location.search);
-      //const mode = parseInt(urlParams.get("mode")) || 0; //후에 분리된 모델 불러올때 사용
 
       //원위치 좌표
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
       const initialCameraRotation = { x: 0, y: -50, z: 0 };
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener('DOMContentLoaded', () => {
         const selectedCoordinates = JSON.parse(
-          localStorage.getItem("selectedCoordinates")
+          localStorage.getItem('selectedCoordinates')
         );
         
         
 
         if (selectedCoordinates) {
-          const event = new CustomEvent("selectedCoordinatesEvent", {
+          const event = new CustomEvent('selectedCoordinatesEvent', {
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
@@ -200,7 +188,7 @@
 
           // JSON 파일에서 좌표를 읽어오는 함수
           async function loadCoordinates() {
-            const response = await fetch("./box_coord.json");
+            const response = await fetch('./box_coord.json');
             const data = await response.json();
             /* console.log("좌표", data); */
             /* return data; */
@@ -260,12 +248,12 @@
                 viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
-              console.log("박스가 클릭되었습니다!");
+              console.log('박스가 클릭되었습니다!');
               createRectangleWithText(boxMesh, info, clickPoint);
             };
 
             // Raycaster를 사용하여 클릭 이벤트 처리
-            viewer.renderer.domElement.addEventListener("click", (event) => {
+            viewer.renderer.domElement.addEventListener('click', (event) => {
               const mouse = new THREE.Vector2();
               mouse.x =
                 (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
@@ -323,11 +311,12 @@
             const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
             /* 텍스트 캔버스 생성 */
-            const textCanvas = document.createElement("canvas");
-            const textCtx = textCanvas.getContext("2d");
+            const textCanvas = document.createElement('canvas');
+            const textCtx = textCanvas.getContext('2d');
 
             /* 폰트 설정 */
             textCtx.font = `bold ${fontSize}px Arial`;
+
             const lines = info.name.split("\n");
 
             // 각 줄에 대해 텍스트 크기 계산
@@ -424,7 +413,7 @@
       let minZoom = 0.1; // 최소 줌 레벨
 
       // 화살표 키로 카메라 이동 처리
-      document.addEventListener("keydown", function (event) {
+      document.addEventListener('keydown', function (event) {
         const forward = new THREE.Vector3();
         const right = new THREE.Vector3();
         const up = new THREE.Vector3(0, 1, 0);
@@ -440,8 +429,8 @@
       });
 
       // 휠로 확대/축소 처리
-      document.addEventListener("wheel", function (event) {
-        console.log("wheel event");
+      document.addEventListener('wheel', function (event) {
+        console.log('wheel event');
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
           // 줌 인
@@ -474,15 +463,40 @@
         viewer.camera.updateProjectionMatrix();
       });
 
-      const markerTop = urlParams.get("top");
-      const markerLeft = urlParams.get("left");
+      // url 파라미터 가져오기
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const destin = params.get('destin');
+        const robot = params.get('robot');
+        const bottom = params.get('bottom');
+        const left = params.get('left');
 
-      console.log(`top: ${markerTop}, left: ${markerLeft}`);
+        return { destin, robot, bottom, left };
+      }
 
-      function openDemo(page) {
-        let url = page + ".html";
+      // 페이지 이동
+      // 만약 destin이 0이면 목적지 선택으로 이동
+      // 만약 destin이 1이면 이동 시작
+      function openDemo() {
+        const { destin, robot, bottom, left } = getUrlParams();
+        let url;
+        if (destin === '0') {
+          // 목적지 페이지로
+          url = `minimap.html?destin=1&robot=${robot}`;
+        } else if (destin === '1') {
+          // moving 페이지로
+          url = `moving.html?robot=${robot}`;
+        }
+        //찍은 위치 로컬 스토리지에 저장
+        localStorage.setItem(
+          destin === '0' ? 'start' : 'end',
+          JSON.stringify({ bottom, left })
+        );
+
+        // 페이지 이동
         window.location = url;
       }
+      window.openDemo = openDemo;
     </script>
   </body>
 </html>
