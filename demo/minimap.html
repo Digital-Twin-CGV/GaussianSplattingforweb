@@ -127,7 +127,7 @@
       </h3>
     </div>
     <div class="minimap_map" id="minimap_map">
-      <img id="minimap_gaussian" alt="gaussian_img" src="assets/images/2dmap.png" />
+      <img id="minimap_gaussian" alt="gaussian_img" src="assets/images/minimap_3rdfloor.png" />
 
       <!-- 선택된 로봇 위치 -->
       <div class="minimap_robot">
@@ -421,7 +421,7 @@
       }
 
       if (isMarkerSelected) {
-        // 선택된 미니맵 좌표를 가우시안 스플래팅 좌표로 변환
+        // 선택된 미니맵 좌표(비율 기준 %)를 가우시안 스플래팅 좌표로 변환
         const { x: gaussianX, z: gaussianZ } = convertToGaussian(selectedX, selectedY);
 
         // 변환된 좌표를 URL 파라미터로 전달
@@ -429,12 +429,18 @@
       }
     }
 
-    // 미니맵 좌표(% 단위) → 가우시안 스플래팅 좌표 변환 함수
+    /**
+     * 미니맵 좌표(% 단위)를 가우시안 스플래팅 좌표로 변환하는 함수
+     * @param {number} xPercent - 미니맵 x 좌표 (%)
+     * @param {number} yPercent - 미니맵 y 좌표 (%)
+     * @returns {Object} { x: 가우시안 x 좌표, z: 가우시안 z 좌표 }
+     */
     function convertToGaussian(xPercent, yPercent) {
-      const gaussianX = -27.94 * xPercent + 2268.09;
-      const gaussianZ = 10.82 * yPercent - 158.49;
+      const gaussianX = -39.63 * xPercent + 2633.22;
+      const gaussianZ = 42.22 * yPercent - 3434.66;
       return { x: gaussianX, z: gaussianZ };
     }
+
 
 
 
