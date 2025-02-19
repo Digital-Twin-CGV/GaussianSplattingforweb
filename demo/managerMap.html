@@ -31,7 +31,7 @@
         position: absolute;
         width: 30px;
         height: 30px;
-        border-radius: 50%;
+        border-radius: 20px;
 
         cursor: pointer;
       }
@@ -39,7 +39,7 @@
       .managerMap_circle {
         width: 18px;
         height: 18px;
-        border-radius: 50%;
+        border-radius: 20px;
 
         margin-right: 10px;
       }
@@ -295,7 +295,7 @@
         window.location = url;
       }
 
-      // 데이터 불러오기기
+      // 데이터 불러오기
       robotData();
       requestData();
 
@@ -331,15 +331,9 @@
         const markers = document.querySelectorAll('.robot_marker');
         markers.forEach((marker) => marker.remove());
 
-        const lines = document.querySelectorAll('.path_line');
-        lines.forEach((line) => line.remove());
-
         robots.forEach((robot) => {
           const marker = createRobotMarker(robot);
           document.querySelector('.managerMap_map').appendChild(marker);
-          if (robot.status === '주행 중') {
-            //robotPath(robot);
-          }
         });
       }
 
@@ -372,9 +366,9 @@
         // 로봇 원점이 이동한 거리만큼 더하기
         // + 15는 마커의 크기를 고려한 것
         marker.style.bottom =
-          ((robot.position[1] + 377 - 15) * 100) / 485 + '%';
+          ((robot.position[1] + 642 - 15) * 100) / 3462 + '%';
         marker.style.left =
-          ((robot.position[0] + 1188 - 15) * 100) / 1441 + '%';
+          ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
 
         marker.style.backgroundColor = applyColor(robot);
 

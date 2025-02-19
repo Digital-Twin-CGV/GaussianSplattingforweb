@@ -65,7 +65,7 @@
       }
 
       /* 마커 */
-      .robot_marker {
+      .selectrobot_robot_marker {
         position: absolute;
         width: 30px;
         height: 30px;
@@ -90,12 +90,6 @@
           alt="gaussian_img"
           src="assets/images/2dmap.png"
         />
-        <!-- 로봇 선택 버튼 -->
-
-        <!-- 랜드마크 버튼 -->
-        <!-- <div class="selectrobot_landmark">
-          <button class="selectrobot_landmark_btn" , type="button"></button>
-        </div> -->
       </div>
 
       <div class="selectrobot_check">
@@ -131,7 +125,7 @@
           .addEventListener('click', () => openDemo('minimap'));
       });
 
-      // 시간마다 로봇 데이터 갱신
+      // 로봇 데이터
       robotData();
 
       // 실시간으로 DB 지켜보기
@@ -151,7 +145,7 @@
         const robots = await getRobots();
 
         // 기존 마커 제거
-        const markers = document.querySelectorAll('.robot_marker');
+        const markers = document.querySelectorAll('.selectrobot_robot_marker');
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
@@ -176,14 +170,14 @@
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
         const marker = document.createElement('div');
-        marker.className = 'robot_marker';
+        marker.className = 'selectrobot_robot_marker';
         // %로 표현하기 위해 사진의 width, hegith로 나눔
         // 로봇 원점이 이동한 거리만큼 더하기
         // + 15는 마커의 크기를 고려한 것
         marker.style.bottom =
-          ((robot.position[1] + 377 - 15) * 100) / 485 + '%';
+          ((robot.position[1] + 642 - 15) * 100) / 3462 + '%';
         marker.style.left =
-          ((robot.position[0] + 1188 - 15) * 100) / 1441 + '%';
+          ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
         marker.style.backgroundColor = applyColor(robot);
 
         // 로봇 ID 표시
@@ -199,22 +193,13 @@
         marker.appendChild(label);
 
         marker.addEventListener('click', () => {
-          updateTitle(
-            robot.id,
-            robot.position[1],
-            robot.position[0],
-            // ((robot.position[1] + 377 - 15) * 100) / 485,
-            // ((robot.position[0] + 1188 - 15) * 100) / 1441,
-            robot.status
-          );
+          updateTitle(robot.id, robot.status);
         });
 
         return marker;
       }
 
       let selectedRobot = null;
-      let selectedBottom = null;
-      let selectedLeft = null;
       let selectedAvailable = null;
 
       function updateTitle(robotName, bottom, left, available) {
@@ -222,9 +207,6 @@
         title.textContent = `호출할 로봇을 선택해주세요 (로봇 ${robotName})`;
         selectedRobot = robotName;
         selectedAvailable = available;
-
-        selectedLeft = `${left}`;
-        selectedBottom = `${bottom}`;
       }
 
       // URL 파라미터 가져오기
@@ -243,12 +225,10 @@
         ) {
           alert('현재 사용이 불가능한 로봇입니다. 다른 로봇을 선택해주세요.');
         } else {
-          if (selectedRobot && selectedBottom && selectedLeft) {
+          if (selectedRobot) {
             // destin = 0. 출발지 선택 모드, destin = 1. 목적지 선택 모드
             const { destin } = getUrlParams();
-            const url =
-              page +
-              `.html?destin=${destin}&robot=${selectedRobot}&bottom=${selectedBottom}&left=${selectedLeft}`;
+            const url = page + `.html?destin=${destin}&robot=${selectedRobot}`;
             window.location.href = url;
           } else {
             alert('로봇을 선택해주세요');

@@ -25,7 +25,7 @@
 
       .minimap_robot_btn {
         z-index: 10;
-        border-radius: 100px;
+        border-radius: 20px;
         width: 30px;
         height: 30px;
         background-color: #1dd200;
@@ -41,7 +41,7 @@
 
       .minimap_landmark_btn {
         z-index: 10;
-        border-radius: 100px;
+        border-radius: 20px;
         width: 30px;
         height: 30px;
       }
@@ -108,6 +108,18 @@
         font-weight: bold;
         padding-bottom: 30px;
       }
+
+      /* 시작 마커 */
+      .start_marker {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+
+        background-color: aqua;
+
+        cursor: pointer;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
@@ -117,10 +129,6 @@
     <div class="minimap_container">
       <div class="minimap_title">
         <h1 id="robot-info"></h1>
-        <h3>
-          랜드마크 선택 시 상세 위치 설정 없이 바로 로봇이 해당 위치로
-          이동합니다.
-        </h3>
       </div>
       <div class="minimap_map" id="minimap_map">
         <img
@@ -133,38 +141,6 @@
         <div class="minimap_robot">
           <div class="minimap_robot_btn"></div>
           <div class="minimap_robot_name">로봇 위치</div>
-        </div>
-
-        <!-- 랜드마크 버튼 -->
-        <div class="minimap_landmark">
-          <button
-            class="minimap_landmark_btn minimap_landmark_btn1"
-            ,
-            type="button"
-            ,
-            onclick="toggleLandmarkSelection(this)"
-          ></button>
-          <button
-            class="minimap_landmark_btn minimap_landmark_btn2"
-            ,
-            type="button"
-            ,
-            onclick="toggleLandmarkSelection(this)"
-          ></button>
-          <button
-            class="minimap_landmark_btn minimap_landmark_btn3"
-            ,
-            type="button"
-            ,
-            onclick="toggleLandmarkSelection(this)"
-          ></button>
-          <button
-            class="minimap_landmark_btn minimap_landmark_btn4"
-            ,
-            type="button"
-            ,
-            onclick="toggleLandmarkSelection(this)"
-          ></button>
         </div>
       </div>
 
@@ -183,9 +159,34 @@
     </div>
     <canvas id="colorCanvas" style="display: none"></canvas>
     <script type="module">
-      //test
-      import { insertRequest } from './supaDatabase/connectDatabase.js';
-      //
+      import {
+        insertRequest,
+        getRobots,
+        client,
+      } from './supaDatabase/connectDatabase.js';
+
+      const params = new URLSearchParams(window.location.search);
+      const destin = params.get('destin'); // 출발지인지 목적지인지
+      const robotId = params.get('robot'); // 선택된 로봇 번호
+
+      // 제목 설정
+      const titleElement = document.getElementById('robot-info');
+      if (destin === '0') {
+        titleElement.textContent = '출발지 선택를 선택해주세요';
+      } else if (destin === '1') {
+        titleElement.textContent = '목적지 선택를 선택해주세요';
+      }
+
+      // 출발지 보이게
+      document.addEventListener('DOMContentLoaded', () => {
+        const start = document.createElement('div');
+        const startCoordin = JSON.parse(localStorage.getItem('start'));
+        start.className = 'start_marker';
+        start.style.bottom =
+          ((startCoordin.bottom + 377 - 15) * 100) / 485 + '%';
+        start.style.left = ((startCoordin.left + 1188 - 15) * 100) / 1441 + '%';
+        document.querySelector('.minimap_map').appendChild(start);
+      });
 
       document.addEventListener('DOMContentLoaded', () => {
         fetch('header.html')
@@ -198,7 +199,6 @@
 
       function convertCoordinates(x, y, width, height) {
         // 이미지 상의 클릭 범위를 기준으로 실제 좌표를 계산
-
         const leftTop = { x: -410, y: 212 }; // 좌측 상단
         const rightBottom = { x: 485, y: -512 }; // 우측 하단
 
@@ -222,33 +222,10 @@
         return { x: worldX.toFixed(6), y: worldY.toFixed(6) };
       }
 
-      let isLandMarkSelected = false; // 랜드마크를 선택했는지..
       let isMarkerSelected = null;
 
-      function setLandmarkSelected(isSelected) {
-        isLandMarkSelected = isSelected;
-      }
       function setMarkerSelected(isSelected) {
         isMarkerSelected = isSelected;
-      }
-
-      // URL 파라미터 가져오기
-      function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        const destin = params.get('destin');
-        const robot = params.get('robot');
-        const bottom = ((Number(params.get('bottom')) + 377 - 15) * 100) / 485;
-        const left = ((Number(params.get('left')) + 1188 - 15) * 100) / 1441;
-
-        // 페이지 목적에 따른 제목
-        const titleElement = document.getElementById('robot-info');
-        if (destin === '0') {
-          titleElement.textContent = '출발지 선택를 선택해주세요';
-        } else if (destin === '1') {
-          titleElement.textContent = '목적지 선택를 선택해주세요';
-        }
-
-        return { destin, robot, bottom, left };
       }
 
       const minimap = document.getElementById('minimap_map');
@@ -285,14 +262,14 @@
         // 테스트를 위한 좌표 계산
         // test
         const a =
-          (((100 * event.clientX) / minimapRect.width - (1188 * 100) / 1441) *
-            1441) /
+          (((100 * event.clientX) / minimapRect.width - (2238 * 100) / 3118) *
+            3118) /
           100;
 
         const b =
           (((100 * (minimapRect.bottom - event.clientY)) / minimapRect.height -
-            (377 * 100) / 485) *
-            485) /
+            (642 * 100) / 3462) *
+            3462) /
           100;
 
         test_a = a;
@@ -306,37 +283,6 @@
         const landmarkButton = document.querySelectorAll(
           '.minimap_landmark_btn'
         );
-        let clickedLandmarkButton = null;
-
-        // 랜드마크 버튼 클릭 여부 확인
-        landmarkButton.forEach((btn) => {
-          if (isClickInside(event, btn)) {
-            clickedLandmarkButton = btn;
-          }
-        });
-
-        // 랜드마크 버튼 클릭 시
-        if (clickedLandmarkButton) {
-          // 기존에 찍혀있는 마커 제거
-          if (marker) {
-            minimap.removeChild(marker);
-            marker = null;
-          }
-
-          clickedLandmarkButton.classList.add('selected');
-          //console.log('랜드마크 건설!!');
-
-          // 기존에 선택했던 랜드마크 선택 삭제
-          landmarkButton.forEach((btn) => {
-            if (btn !== clickedLandmarkButton) {
-              btn.classList.remove('selected');
-            }
-          });
-
-          setLandmarkSelected(true);
-          setMarkerSelected(false);
-          return;
-        }
 
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
@@ -348,10 +294,6 @@
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
         console.log(color);
         //if (color !== 'rgb(0, 0, 0)') {
-        // 기존 랜드마크가 있으면 제거
-        landmarkButton.forEach((btn) => {
-          btn.classList.remove('selected');
-        });
 
         if (marker) {
           minimap.removeChild(marker);
@@ -365,13 +307,12 @@
         marker.style.width = '25px';
         marker.style.height = '25px';
         marker.style.backgroundColor = 'red';
-        marker.style.borderRadius = '50%';
+        marker.style.borderRadius = '10px';
         marker.style.zIndex = '10';
 
         minimap.appendChild(marker);
 
         setMarkerSelected(true);
-        setLandmarkSelected(false); // 랜드마크 선택 해제
 
         const converted = convertCoordinates(
           x,
@@ -429,16 +370,43 @@
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
       });
 
-      // 로봇 위치
-      document.addEventListener('DOMContentLoaded', () => {
-        const { destin, robot, bottom, left } = getUrlParams();
+      // 로봇 데이터
+      robotData();
 
+      // 실시간으로 DB 지켜보기
+      client
+        .channel('room1')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'robots',
+          },
+          (payload) => {
+            robotData();
+          }
+        )
+        .subscribe();
+
+      // 로봇 위치
+      async function robotData() {
+        const robots = await getRobots();
         const robotElement = document.querySelector(`.minimap_robot`);
-        if (robotElement) {
-          robotElement.style.bottom = `${bottom}%`;
-          robotElement.style.left = `${left}%`;
+
+        robots.forEach((robot) => {
+          if (robot.id === parseInt(robotId)) {
+            robotElement.style.bottom =
+              ((robot.position[1] + 624 - 15) * 100) / 3462 + '%';
+            robotElement.style.left =
+              ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
+          }
+        });
+
+        // 목적지를 선택하는 페이지일 때, 출발지를 보여줌
+        if (destin === '1') {
         }
-      });
+      }
 
       function openHome(page) {
         let url = page + '.html';
@@ -446,19 +414,15 @@
       }
 
       function goBack() {
-        console.log('뒤로가기');
         history.back();
       }
 
       function openPage() {
-        const { destin, robot } = getUrlParams();
-        if (isLandMarkSelected) {
-          window.location.href = 'moving.html';
-        } else if (isMarkerSelected) {
+        if (isMarkerSelected) {
+          // 사람이 선택한 부분
           const markerBottom = selectedX;
           const markerLeft = selectedY;
-          window.location.href = `gaussian.html?destin=${destin}&robot=${robot}&bottom=${markerBottom}&left=${markerLeft}`;
-          // window.location.href = "gaussian.html";
+          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&bottom=${markerBottom}&left=${markerLeft}`;
         }
       }
 
@@ -470,8 +434,7 @@
       const test = document.getElementById('test');
 
       function goRobot(a, b) {
-        const { robot } = getUrlParams();
-        insertRequest(robot, true, [a, b]);
+        insertRequest(robotId, true, [a, b]);
       }
 
       document

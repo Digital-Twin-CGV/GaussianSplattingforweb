@@ -477,9 +477,11 @@
         const { destin, robot, bottom, left } = getUrlParams();
         let url;
         if (destin === '0') {
+          // 목적지 페이지로
           url = `minimap.html?destin=1&robot=${robot}`;
         } else if (destin === '1') {
-          url = 'moving.html';
+          // moving 페이지로
+          url = `moving.html?robot=${robot}`;
         }
         //찍은 위치 로컬 스토리지에 저장
         localStorage.setItem(
