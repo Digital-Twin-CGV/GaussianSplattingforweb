@@ -423,7 +423,13 @@
       if (isMarkerSelected) {
         // 선택된 미니맵 좌표(비율 기준 %)를 가우시안 스플래팅 좌표로 변환
         const { x: gaussianX, z: gaussianZ } = convertToGaussian(selectedX, selectedY);
-
+        
+        
+        const convertedCoordinates = { x: gaussianX, y: gaussianZ };
+        localStorage.setItem(
+            "selectedCoordinates",
+            JSON.stringify(convertedCoordinates)
+          );
         // 변환된 좌표를 URL 파라미터로 전달
         window.location.href = `gaussian.html?destin=${destinMode}&bottom=${gaussianZ}&left=${gaussianX}`;
       }

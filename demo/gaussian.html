@@ -76,92 +76,94 @@
       import * as THREE from "three";
 
       const urlParams = new URLSearchParams(window.location.search);
-      const mode = parseInt(urlParams.get("mode")) || 0;
+      //const mode = parseInt(urlParams.get("mode")) || 0; //후에 분리된 모델 불러올때 사용
 
       //원위치 좌표
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
       const initialCameraRotation = { x: 0, y: -50, z: 0 };
 
-      // document.addEventListener("DOMContentLoaded", () => {
-      //   const selectedCoordinates = JSON.parse(
-      //     localStorage.getItem("selectedCoordinates")
-      //   );
-
-      //   if (selectedCoordinates) {
-      //     const event = new CustomEvent("selectedCoordinatesEvent", {
-      //       detail: selectedCoordinates,
-      //     });
-      //     window.dispatchEvent(event); // 이벤트 디스패치
-
-      //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-      //     const sphereMaterial = new THREE.MeshBasicMaterial({
-      //       color: 0x00ff00,
-      //     });
-
-      //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-      //     sphereMesh.position.set(
-      //       initialCameraPosition.x,
-      //       initialCameraPosition.y,
-      //       initialCameraPosition.z
-      //     );
-      //     viewer.splatMesh.add(sphereMesh);
-      //     console.log(
-      //       `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-      //     );
-
-      //   }
-      // });
-
       document.addEventListener("DOMContentLoaded", () => {
-        // URL 파라미터에서 좌표 데이터 읽어오기
-        const params = new URLSearchParams(window.location.search);
-        const gaussianX = parseFloat(params.get("left")); // minimap.html에서 left에 해당하는 값
-        const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
+        const selectedCoordinates = JSON.parse(
+          localStorage.getItem("selectedCoordinates")
+        );
+        
+        
 
-        // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
-        const destinMode = params.get("destin");
+        if (selectedCoordinates) {
+          const event = new CustomEvent("selectedCoordinatesEvent", {
+            detail: selectedCoordinates,
+          });
+          window.dispatchEvent(event); // 이벤트 디스패치
 
-        // 좌표가 정상적으로 전달되었는지 확인
-        if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
-          // 카메라 초기 위치 설정
-          // - X는 그대로 사용
-          // - Y(높이)는 고정 (예: 5)
-          // - Z는 약간의 오프셋(10)을 주어 배치
-          const initialCameraPosition = {
-            x: gaussianX,
-            y: -30,
-            z: gaussianZ,
-          };
-
-          // viewer 객체가 이미 생성되어 있다고 가정
-          viewer.camera.position.set(
-            initialCameraPosition.x,
-            initialCameraPosition.y,
-            initialCameraPosition.z
-          );
-          // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
-          viewer.camera.lookAt(gaussianX, 0, gaussianZ);
-
-          // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
           const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
           const sphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
           });
+
           const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
           sphereMesh.position.set(
-            gaussianX,
+            initialCameraPosition.x,
             initialCameraPosition.y,
-            gaussianZ
+            initialCameraPosition.z
           );
           viewer.splatMesh.add(sphereMesh);
-
           console.log(
-            `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+            `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
           );
-        } else {
-          console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
+
         }
       });
+
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   // URL 파라미터에서 좌표 데이터 읽어오기
+      //   const params = new URLSearchParams(window.location.search);
+      //   const gaussianX = parseFloat(params.get("left")); // minimap.html에서 left에 해당하는 값
+      //   const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
+
+      //   // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
+      //   const destinMode = params.get("destin");
+
+      //   // 좌표가 정상적으로 전달되었는지 확인
+      //   if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
+      //     // 카메라 초기 위치 설정
+      //     // - X는 그대로 사용
+      //     // - Y(높이)는 고정 (예: 5)
+      //     // - Z는 약간의 오프셋(10)을 주어 배치
+      //     const initialCameraPosition = {
+      //       x: gaussianX,
+      //       y: -30,
+      //       z: gaussianZ,
+      //     };
+
+      //     // viewer 객체가 이미 생성되어 있다고 가정
+      //     viewer.camera.position.set(
+      //       initialCameraPosition.x,
+      //       initialCameraPosition.y,
+      //       initialCameraPosition.z
+      //     );
+      //     // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
+      //     viewer.camera.lookAt(gaussianX, 0, gaussianZ);
+
+      //     // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
+      //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+      //     const sphereMaterial = new THREE.MeshBasicMaterial({
+      //       color: 0x00ff00,
+      //     });
+      //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      //     sphereMesh.position.set(
+      //       gaussianX,
+      //       initialCameraPosition.y,
+      //       gaussianZ
+      //     );
+      //     viewer.splatMesh.add(sphereMesh);
+
+      //     console.log(
+      //       `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+      //     );
+      //   } else {
+      //     console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
+      //   }
+      // });
 
       const viewer = new GaussianSplats3D.Viewer({
         cameraUp: [0, -1, 0],
