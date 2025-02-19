@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>3D Gaussian Splat Demo - Garden</title>
-  <script type="text/javascript" src="js/util.js"></script>
-  <script type="importmap">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>3D Gaussian Splat Demo - Garden</title>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="importmap">
       {
         "imports": {
           "three": "./lib/three.module.js",
@@ -15,464 +14,473 @@
         }
       }
     </script>
-  <style>
-    body {
-      margin: 0px;
-    }
+    <style>
+      body {
+        margin: 0px;
+      }
 
-    .gaussian_container {
-      display: flex;
-      flex-direction: column;
-    }
+      .gaussian_container {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .gaussian_statebar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #fff2c5;
-      padding: 20px;
-    }
+      .gaussian_statebar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff2c5;
+        padding: 20px;
+      }
 
-    .gaussian_complete {
-      position: absolute;
-      right: 0;
-      display: flex;
-    }
+      .gaussian_complete {
+        position: absolute;
+        right: 0;
+        display: flex;
+      }
 
-    .gaussian_complete_btn {
-      padding: 10px 15px;
-      margin: 0 10px;
-      background-color: #c0c0c0;
-      border-radius: 20px;
-      cursor: pointer;
-    }
+      .gaussian_complete_btn {
+        padding: 10px 15px;
+        margin: 0 10px;
+        background-color: #c0c0c0;
+        border-radius: 20px;
+        cursor: pointer;
+      }
 
-    #gaussian_complete_btn_cancel {
-      background-color: #ff9090;
-    }
-  </style>
-</head>
+      #gaussian_complete_btn_cancel {
+        background-color: #ff9090;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="gaussian_container">
-    <div class="gaussian_statebar">
-      <div>드래그하여 정확한 위치를 선택해주세요</div>
-      <div class="gaussian_complete">
-        <div class="gaussian_complete_btn" id="gaussian_complete_btn_cancel" onClick="openDemo('minimap')">
-          취소
-        </div>
-        <div class="gaussian_complete_btn" onClick="openDemo('moving')">
-          선택 완료
+  <body>
+    <div class="gaussian_container">
+      <div class="gaussian_statebar">
+        <div>드래그하여 정확한 위치를 선택해주세요</div>
+        <div class="gaussian_complete">
+          <div
+            class="gaussian_complete_btn"
+            id="gaussian_complete_btn_cancel"
+            onClick="openDemo('minimap')"
+          >
+            취소
+          </div>
+          <div class="gaussian_complete_btn" onClick="openDemo('moving')">
+            선택 완료
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script type="module">
-    import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
-    import * as THREE from "three";
+    <script type="module">
+      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
+      import * as THREE from "three";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = parseInt(urlParams.get("mode")) || 0;
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = parseInt(urlParams.get("mode")) || 0;
 
-    //원위치 좌표
-    let initialCameraPosition = { x: 0, y: -50, z: 0 };
-    const initialCameraRotation = { x: 0, y: -50, z: 0 };
+      //원위치 좌표
+      let initialCameraPosition = { x: 0, y: -50, z: 0 };
+      const initialCameraRotation = { x: 0, y: -50, z: 0 };
 
-    // document.addEventListener("DOMContentLoaded", () => {
-    //   const selectedCoordinates = JSON.parse(
-    //     localStorage.getItem("selectedCoordinates")
-    //   );
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   const selectedCoordinates = JSON.parse(
+      //     localStorage.getItem("selectedCoordinates")
+      //   );
 
-    //   if (selectedCoordinates) {
-    //     const event = new CustomEvent("selectedCoordinatesEvent", {
-    //       detail: selectedCoordinates,
-    //     });
-    //     window.dispatchEvent(event); // 이벤트 디스패치
+      //   if (selectedCoordinates) {
+      //     const event = new CustomEvent("selectedCoordinatesEvent", {
+      //       detail: selectedCoordinates,
+      //     });
+      //     window.dispatchEvent(event); // 이벤트 디스패치
 
-    //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-    //     const sphereMaterial = new THREE.MeshBasicMaterial({
-    //       color: 0x00ff00,
-    //     });
+      //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+      //     const sphereMaterial = new THREE.MeshBasicMaterial({
+      //       color: 0x00ff00,
+      //     });
 
-    //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    //     sphereMesh.position.set(
-    //       initialCameraPosition.x,
-    //       initialCameraPosition.y,
-    //       initialCameraPosition.z
-    //     );
-    //     viewer.splatMesh.add(sphereMesh);
-    //     console.log(
-    //       `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-    //     );
+      //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      //     sphereMesh.position.set(
+      //       initialCameraPosition.x,
+      //       initialCameraPosition.y,
+      //       initialCameraPosition.z
+      //     );
+      //     viewer.splatMesh.add(sphereMesh);
+      //     console.log(
+      //       `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+      //     );
 
-    //   }
-    // });
+      //   }
+      // });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // URL 파라미터에서 좌표 데이터 읽어오기
-      const params = new URLSearchParams(window.location.search);
-      const gaussianX = parseFloat(params.get("left"));   // minimap.html에서 left에 해당하는 값
-      const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
+      document.addEventListener("DOMContentLoaded", () => {
+        // URL 파라미터에서 좌표 데이터 읽어오기
+        const params = new URLSearchParams(window.location.search);
+        const gaussianX = parseFloat(params.get("left")); // minimap.html에서 left에 해당하는 값
+        const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
 
-      // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
-      const destinMode = params.get("destin");
+        // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
+        const destinMode = params.get("destin");
 
-      // 좌표가 정상적으로 전달되었는지 확인
-      if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
-        // 카메라 초기 위치 설정
-        // - X는 그대로 사용
-        // - Y(높이)는 고정 (예: 5)
-        // - Z는 약간의 오프셋(10)을 주어 배치
-        const initialCameraPosition = {
-          x: gaussianX,
-          y: -30,
-          z: gaussianZ,
-        };
+        // 좌표가 정상적으로 전달되었는지 확인
+        if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
+          // 카메라 초기 위치 설정
+          // - X는 그대로 사용
+          // - Y(높이)는 고정 (예: 5)
+          // - Z는 약간의 오프셋(10)을 주어 배치
+          const initialCameraPosition = {
+            x: gaussianX,
+            y: -30,
+            z: gaussianZ,
+          };
 
-        // viewer 객체가 이미 생성되어 있다고 가정
-        viewer.camera.position.set(
+          // viewer 객체가 이미 생성되어 있다고 가정
+          viewer.camera.position.set(
+            initialCameraPosition.x,
+            initialCameraPosition.y,
+            initialCameraPosition.z
+          );
+          // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
+          viewer.camera.lookAt(gaussianX, 0, gaussianZ);
+
+          // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
+          const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+          const sphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+          });
+          const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          sphereMesh.position.set(
+            gaussianX,
+            initialCameraPosition.y,
+            gaussianZ
+          );
+          viewer.splatMesh.add(sphereMesh);
+
+          console.log(
+            `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+          );
+        } else {
+          console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
+        }
+      });
+
+      const viewer = new GaussianSplats3D.Viewer({
+        cameraUp: [0, -1, 0],
+        initialCameraPosition: [
           initialCameraPosition.x,
           initialCameraPosition.y,
-          initialCameraPosition.z
-        );
-        // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
-        viewer.camera.lookAt(gaussianX, 0, gaussianZ);
+          initialCameraPosition.z,
+        ],
+        initialCameraLookAt: [0, 0, 0],
+        sphericalHarmonicsDegree: 0,
+      });
 
-        // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
-        const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sphereMesh.position.set(gaussianX, initialCameraPosition.y, gaussianZ);
-        viewer.splatMesh.add(sphereMesh);
+      viewer
+        .addSplatScenes([
+          {
+            path: "assets/data/test2_Center.splat",
+            //             path: "assets/data/cu_plus_all.splat",
+            rotation: [0, 0, 0, 0],
+            scale: [50, 50, 50],
+            position: [0, 0, 50],
+          },
+        ])
+        .then(async () => {
+          viewer.start();
+          createBoxes();
 
-        console.log(
-          `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-        );
-      } else {
-        console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
-      }
-    });
-
-
-    const viewer = new GaussianSplats3D.Viewer({
-      cameraUp: [0, -1, 0],
-      initialCameraPosition: [
-        initialCameraPosition.x,
-        initialCameraPosition.y,
-        initialCameraPosition.z,
-      ],
-      initialCameraLookAt: [0, 0, 0],
-      sphericalHarmonicsDegree: 0,
-    });
-
-    viewer
-      .addSplatScenes([
-        {
-          path: "assets/data/test2_Center.splat",
-          //             path: "assets/data/cu_plus_all.splat",
-          rotation: [0, 0, 0, 0],
-          scale: [50, 50, 50],
-          position: [0, 0, 50],
-        },
-      ])
-      .then(async () => {
-        viewer.start();
-        createBoxes();
-
-        // 좌표를 읽은 후 박스 생성
-        /* const coordinates = await loadCoordinates();
+          // 좌표를 읽은 후 박스 생성
+          /* const coordinates = await loadCoordinates();
         createTransparentBox(coordinates); */
-        const coordinatesArray = await loadCoordinates();
-        coordinatesArray.forEach((coordinates) => {
-          createTransparentBox(coordinates);
-        });
-
-        // JSON 파일에서 좌표를 읽어오는 함수
-        async function loadCoordinates() {
-          const response = await fetch("./box_coord.json");
-          const data = await response.json();
-          /* console.log("좌표", data); */
-          /* return data; */
-          return Array.isArray(data) ? data : [data];
-        }
-
-        let currentTextMesh = null;
-
-        async function createBoxes() {
           const coordinatesArray = await loadCoordinates();
-
           coordinatesArray.forEach((coordinates) => {
             createTransparentBox(coordinates);
           });
-        }
 
-        // 3d 박스를 생성하는 함수
-        function createTransparentBox(coordinates) {
-          const { leftTop, rightBottom, info } = coordinates;
-          /* console.log("좌표", coordinates);
+          // JSON 파일에서 좌표를 읽어오는 함수
+          async function loadCoordinates() {
+            const response = await fetch("./box_coord.json");
+            const data = await response.json();
+            /* console.log("좌표", data); */
+            /* return data; */
+            return Array.isArray(data) ? data : [data];
+          }
+
+          let currentTextMesh = null;
+
+          async function createBoxes() {
+            const coordinatesArray = await loadCoordinates();
+
+            coordinatesArray.forEach((coordinates) => {
+              createTransparentBox(coordinates);
+            });
+          }
+
+          // 3d 박스를 생성하는 함수
+          function createTransparentBox(coordinates) {
+            const { leftTop, rightBottom, info } = coordinates;
+            /* console.log("좌표", coordinates);
           console.log("leftTop:", coordinates.leftTop);
           console.log("rightBottom:", coordinates.rightBottom); */
 
-          const sizeOffset = 0;
-          const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
-          const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
-          const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
-          /* console.log(
+            const sizeOffset = 0;
+            const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
+            const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
+            const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
+            /* console.log(
             `박스 크기 - width: ${width}, height: ${height}, depth: ${depth}`
           ); */
 
-          const boxGeometry = new THREE.BoxGeometry(width, height, depth);
-          const boxMaterial = new THREE.MeshBasicMaterial({
-            color: 0x0000ff,
-            transparent: true,
-            /* opacity: 1, */
-          });
-          const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+            const boxGeometry = new THREE.BoxGeometry(width, height, depth);
+            const boxMaterial = new THREE.MeshBasicMaterial({
+              color: 0x0000ff,
+              transparent: true,
+              opacity: 0,
+            });
+            const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
 
-          const centerX = (leftTop.x + rightBottom.x) / 2;
-          const centerY = (leftTop.y + rightBottom.y) / 2;
-          const centerZ = (leftTop.z + rightBottom.z) / 2;
-          boxMesh.position.set(centerX, centerY, centerZ);
-          boxMesh.rotation.set(0, 0, 0);
+            const centerX = (leftTop.x + rightBottom.x) / 2;
+            const centerY = (leftTop.y + rightBottom.y) / 2;
+            const centerZ = (leftTop.z + rightBottom.z) / 2;
+            boxMesh.position.set(centerX, centerY, centerZ);
+            boxMesh.rotation.set(0, 0, 0);
 
-          viewer.splatMesh.add(boxMesh);
-          /* viewer.scene.add(boxMesh); */
-          console.log(
-            `박스 추가됨 {x: ${boxMesh.position.x}, y: ${boxMesh.position.y}, z: ${boxMesh.position.z}}`
-          );
-
-          // 박스 클릭
-          boxMesh.userData = { clickable: true, info: info };
-          boxMesh.onClick = (clickPoint) => {
-            if (currentTextMesh) {
-              viewer.splatMesh.remove(currentTextMesh.text);
-              viewer.splatMesh.remove(currentTextMesh.background);
-              currentTextMesh = null;
-            }
-            console.log("박스가 클릭되었습니다!");
-            createRectangleWithText(boxMesh, info, clickPoint);
-          };
-
-          // Raycaster를 사용하여 클릭 이벤트 처리
-          viewer.renderer.domElement.addEventListener("click", (event) => {
-            const mouse = new THREE.Vector2();
-            mouse.x =
-              (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
-              1;
-            mouse.y =
-              -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
-              1;
-
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, viewer.camera);
-
-            const intersects = raycaster.intersectObjects(
-              viewer.splatMesh.children,
-              true
+            viewer.splatMesh.add(boxMesh);
+            /* viewer.scene.add(boxMesh); */
+            console.log(
+              `박스 추가됨 {x: ${boxMesh.position.x}, y: ${boxMesh.position.y}, z: ${boxMesh.position.z}}`
             );
 
-            // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
-            if (
-              intersects.length > 0 &&
-              intersects[0].object.userData.clickable
-            ) {
-              // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
-              intersects[0].object.onClick(intersects[0].point);
-            } else {
-              // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+            // 박스 클릭
+            boxMesh.userData = { clickable: true, info: info };
+            boxMesh.onClick = (clickPoint) => {
               if (currentTextMesh) {
                 viewer.splatMesh.remove(currentTextMesh.text);
                 viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
-            }
-          });
-        }
+              console.log("박스가 클릭되었습니다!");
+              createRectangleWithText(boxMesh, info, clickPoint);
+            };
 
-        function createRectangleWithText(boxMesh, info, clickPoint) {
-          if (currentTextMesh) {
-            viewer.splatMesh.remove(currentTextMesh.text);
-            viewer.splatMesh.remove(currentTextMesh.background);
-            currentTextMesh = null;
+            // Raycaster를 사용하여 클릭 이벤트 처리
+            viewer.renderer.domElement.addEventListener("click", (event) => {
+              const mouse = new THREE.Vector2();
+              mouse.x =
+                (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
+                1;
+              mouse.y =
+                -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
+                1;
+
+              const raycaster = new THREE.Raycaster();
+              raycaster.setFromCamera(mouse, viewer.camera);
+
+              const intersects = raycaster.intersectObjects(
+                viewer.splatMesh.children,
+                true
+              );
+
+              // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
+              if (
+                intersects.length > 0 &&
+                intersects[0].object.userData.clickable
+              ) {
+                // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
+                intersects[0].object.onClick(intersects[0].point);
+              } else {
+                // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+                if (currentTextMesh) {
+                  viewer.splatMesh.remove(currentTextMesh.text);
+                  viewer.splatMesh.remove(currentTextMesh.background);
+                  currentTextMesh = null;
+                }
+              }
+            });
           }
-          /* 사각형 생성 */
-          const rectGeometry = new THREE.PlaneGeometry(
-            boxMesh.geometry.parameters.width * 0.5,
-            20
-          );
-          const rectMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            /* transparent: true, */
-            opacity: 0,
-          });
-          const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
-          const scaleFactor = 3; // 글씨 크기 조절
-          const fontSize = 20 * scaleFactor; // 폰트 크기
-          const padding = 10 * scaleFactor; // 텍스트 주변 패딩
-
-          /* 텍스트 캔버스 생성 */
-          const textCanvas = document.createElement("canvas");
-          const textCtx = textCanvas.getContext("2d");
-
-          /* 폰트 설정 */
-          textCtx.font = `bold ${fontSize}px Arial`;
-          const lines = info.name.split("\n");
-
-          // 각 줄에 대해 텍스트 크기 계산
-          const lineHeight = fontSize; // 줄 간격
-          const textWidth =
-            Math.max(...lines.map((line) => line.length * fontSize * 0.18)) +
-            padding * 2; // 가장 긴 줄의 너비
-          const textHeight = lines.length * (lineHeight - 40); // 모든 줄의 높이
-
-          /* 캔버스 크기 설정 */
-          textCanvas.width = textWidth;
-          textCanvas.height = textHeight;
-
-          /* 텍스트 채우기 */
-          textCtx.fillStyle = "black";
-          textCtx.textAlign = "center";
-          textCtx.textBaseline = "middle";
-          // 각 줄을 캔버스에 그리기
-          lines.forEach((line, index) => {
-            textCtx.fillText(
-              line,
-              textWidth / 2,
-              index * (lineHeight - 40) + padding / 3
+          function createRectangleWithText(boxMesh, info, clickPoint) {
+            if (currentTextMesh) {
+              viewer.splatMesh.remove(currentTextMesh.text);
+              viewer.splatMesh.remove(currentTextMesh.background);
+              currentTextMesh = null;
+            }
+            /* 사각형 생성 */
+            const rectGeometry = new THREE.PlaneGeometry(
+              boxMesh.geometry.parameters.width * 0.5,
+              20
             );
-          });
+            const rectMaterial = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              /* transparent: true, */
+              opacity: 0,
+            });
+            const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
-          /* 텍스처 생성 */
-          const textTexture = new THREE.CanvasTexture(textCanvas);
-          textTexture.anisotropy =
-            viewer.renderer.capabilities.getMaxAnisotropy();
+            const scaleFactor = 3; // 글씨 크기 조절
+            const fontSize = 20 * scaleFactor; // 폰트 크기
+            const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
-          /* 텍스트 메시 생성 */
-          const textMaterial = new THREE.MeshBasicMaterial({
-            map: textTexture,
-            transparent: true,
-            depthTest: false,
-          });
+            /* 텍스트 캔버스 생성 */
+            const textCanvas = document.createElement("canvas");
+            const textCtx = textCanvas.getContext("2d");
 
-          const textGeometry = new THREE.PlaneGeometry(
-            textWidth / scaleFactor,
-            textHeight / scaleFactor
-          );
-          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            /* 폰트 설정 */
+            textCtx.font = `bold ${fontSize}px Arial`;
+            const lines = info.name.split("\n");
 
-          /* 배경 메시(Plane) 생성 */
-          const backgroundGeometry = new THREE.PlaneGeometry(
-            textWidth / scaleFactor,
-            textHeight / scaleFactor
-          );
-          const backgroundMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            /* 이걸 해제해야 글씨가 잘보임 */
-            /* transparent: true, */
-            opacity: 0,
-          });
-          const backgroundMesh = new THREE.Mesh(
-            backgroundGeometry,
-            backgroundMaterial
-          );
+            // 각 줄에 대해 텍스트 크기 계산
+            const lineHeight = fontSize; // 줄 간격
+            const textWidth =
+              Math.max(...lines.map((line) => line.length * fontSize * 0.18)) +
+              padding * 2; // 가장 긴 줄의 너비
+            const textHeight = lines.length * (lineHeight - 40); // 모든 줄의 높이
 
-          /* 위치 설정 */
-          backgroundMesh.position.set(
-            clickPoint.x,
-            /* boxMesh.position.x, */
-            boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
-            /* boxMesh.position.z */
-            clickPoint.z
-          );
+            /* 캔버스 크기 설정 */
+            textCanvas.width = textWidth;
+            textCanvas.height = textHeight;
 
-          textMesh.position.set(
-            clickPoint.x,
-            /* boxMesh.position.x, */
-            boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 20,
-            /* boxMesh.position.z + 0.1 */
-            clickPoint.z + 0.1
-          );
+            /* 텍스트 채우기 */
+            textCtx.fillStyle = "black";
+            textCtx.textAlign = "center";
+            textCtx.textBaseline = "middle";
 
-          /* 카메라를 바라보도록 설정 */
-          textMesh.lookAt(viewer.camera.position);
-          backgroundMesh.lookAt(viewer.camera.position);
-          textMesh.rotation.z += Math.PI;
-          backgroundMesh.rotation.z += Math.PI;
+            // 글씨 쓰기
+            lines.forEach((line, index) => {
+              textCtx.fillText(
+                line,
+                textWidth / 2,
+                index * (lineHeight - 40) + padding / 3
+              );
+            });
 
-          /* 씬에 추가 */
-          viewer.splatMesh.add(backgroundMesh);
-          viewer.splatMesh.add(textMesh);
+            /* 텍스처 생성 */
+            const textTexture = new THREE.CanvasTexture(textCanvas);
+            textTexture.anisotropy =
+              viewer.renderer.capabilities.getMaxAnisotropy();
 
-          currentTextMesh = { text: textMesh, background: backgroundMesh };
-        }
+            /* 텍스트 메시 생성 */
+            const textMaterial = new THREE.MeshBasicMaterial({
+              map: textTexture,
+              transparent: true,
+              depthTest: false,
+            });
+
+            const textGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+            /* 배경 메시(Plane) 생성 */
+            const backgroundGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
+            const backgroundMaterial = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              /* 이걸 해제해야 글씨가 잘보임 */
+              /* transparent: true, */
+              opacity: 0,
+            });
+            const backgroundMesh = new THREE.Mesh(
+              backgroundGeometry,
+              backgroundMaterial
+            );
+
+            /* 위치 설정 */
+            backgroundMesh.position.set(
+              clickPoint.x,
+              /* boxMesh.position.x, */
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 10,
+              /* boxMesh.position.z */
+              clickPoint.z
+            );
+
+            textMesh.position.set(
+              clickPoint.x,
+              /* boxMesh.position.x, */
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 5,
+              /* boxMesh.position.z + 0.1 */
+              clickPoint.z + 0.1
+            );
+
+            /* 카메라를 바라보도록 설정 */
+            textMesh.lookAt(viewer.camera.position);
+            backgroundMesh.lookAt(viewer.camera.position);
+            textMesh.rotation.z += Math.PI;
+            backgroundMesh.rotation.z += Math.PI;
+
+            /* 씬에 추가 */
+            viewer.splatMesh.add(backgroundMesh);
+            viewer.splatMesh.add(textMesh);
+
+            currentTextMesh = { text: textMesh, background: backgroundMesh };
+          }
+        });
+
+      let maxZoom = 50; // 최대 줌 레벨
+      let minZoom = 0.1; // 최소 줌 레벨
+
+      // 화살표 키로 카메라 이동 처리
+      document.addEventListener("keydown", function (event) {
+        const forward = new THREE.Vector3();
+        const right = new THREE.Vector3();
+        const up = new THREE.Vector3(0, 1, 0);
+
+        viewer.camera.getWorldDirection(forward); // 앞쪽 방향 벡터
+        forward.normalize();
+        right.crossVectors(forward, up).normalize(); // 옆쪽 방향 벡터
+
+        const moveDirection = new THREE.Vector3(0, 0, 0);
+
+        // 카메라 이동 처리
+        viewer.camera.position.add(moveDirection);
       });
 
-    let maxZoom = 50; // 최대 줌 레벨
-    let minZoom = 0.1; // 최소 줌 레벨
+      // 휠로 확대/축소 처리
+      document.addEventListener("wheel", function (event) {
+        console.log("wheel event");
+        const zoomSpeed = 0.1;
+        if (event.deltaY < 0) {
+          // 줌 인
+          viewer.camera.zoom = Math.min(
+            viewer.camera.zoom + zoomSpeed,
+            maxZoom
+          );
+        } else {
+          // 줌 아웃
+          viewer.camera.zoom = Math.max(
+            viewer.camera.zoom - zoomSpeed,
+            minZoom
+          );
+        }
 
-    // 화살표 키로 카메라 이동 처리
-    document.addEventListener("keydown", function (event) {
-      const forward = new THREE.Vector3();
-      const right = new THREE.Vector3();
-      const up = new THREE.Vector3(0, 1, 0);
-
-      viewer.camera.getWorldDirection(forward); // 앞쪽 방향 벡터
-      forward.normalize();
-      right.crossVectors(forward, up).normalize(); // 옆쪽 방향 벡터
-
-      const moveDirection = new THREE.Vector3(0, 0, 0);
-
-      // 카메라 이동 처리
-      viewer.camera.position.add(moveDirection);
-    });
-
-    // 휠로 확대/축소 처리
-    document.addEventListener("wheel", function (event) {
-      console.log("wheel event");
-      const zoomSpeed = 0.1;
-      if (event.deltaY < 0) {
-        // 줌 인
-        viewer.camera.zoom = Math.min(
-          viewer.camera.zoom + zoomSpeed,
-          maxZoom
+        // 카메라의 위치가 설정된 범위를 넘지 않도록 제한
+        viewer.camera.position.x = Math.max(
+          -450,
+          Math.min(350, viewer.camera.position.x)
         );
-      } else {
-        // 줌 아웃
-        viewer.camera.zoom = Math.max(
-          viewer.camera.zoom - zoomSpeed,
-          minZoom
+        viewer.camera.position.y = Math.max(
+          -50,
+          Math.min(350, viewer.camera.position.y)
         );
+        viewer.camera.position.z = Math.max(
+          -550,
+          Math.min(350, viewer.camera.position.z)
+        );
+
+        viewer.camera.updateProjectionMatrix();
+      });
+
+      const markerTop = urlParams.get("top");
+      const markerLeft = urlParams.get("left");
+
+      console.log(`top: ${markerTop}, left: ${markerLeft}`);
+
+      function openDemo(page) {
+        let url = page + ".html";
+        window.location = url;
       }
-
-      // 카메라의 위치가 설정된 범위를 넘지 않도록 제한
-      viewer.camera.position.x = Math.max(
-        -450,
-        Math.min(350, viewer.camera.position.x)
-      );
-      viewer.camera.position.y = Math.max(
-        -50,
-        Math.min(350, viewer.camera.position.y)
-      );
-      viewer.camera.position.z = Math.max(
-        -550,
-        Math.min(350, viewer.camera.position.z)
-      );
-
-      viewer.camera.updateProjectionMatrix();
-    });
-
-    const markerTop = urlParams.get("top");
-    const markerLeft = urlParams.get("left");
-
-    console.log(`top: ${markerTop}, left: ${markerLeft}`);
-
-    function openDemo(page) {
-      let url = page + ".html";
-      window.location = url;
-    }
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
