@@ -6545,7 +6545,7 @@ class OrbitControls extends EventDispatcher {
         // 현재 위치 가져오기
         const currentPos = scope.object.position;
         const currentrotate = scope.object.rotation;
-        //console.log(currentrotate);
+        console.log(currentrotate);
 
         // JSON에서 값 가져오기
         const MAX_X = currentWall.MAX_X;
@@ -6555,21 +6555,6 @@ class OrbitControls extends EventDispatcher {
         const MAX_Z = currentWall.MAX_Z;
         const MIN_Z = currentWall.MIN_Z;
         const ANGLE = currentWall.ANGLE;
-
-
-        let isWithinBounds = allWalls.every(wall => {
-          const withinX = currentPos.x >= wall.MIN_X && currentPos.x <= wall.MAX_X;
-          const withinY = currentPos.y >= wall.MIN_Y && currentPos.y <= wall.MAX_Y;
-          const withinZ = currentPos.z >= wall.MIN_Z && currentPos.z <= wall.MAX_Z;
-    
-          return withinX && withinY && withinZ;
-        });
-
-
-        if (!isWithinBounds) {
-          console.log("범위를 벗어났습니다. 통과 불가!");
-          return; // 범위를 벗어났을 때 이동을 막음
-        }
 
 
         if (scope.object.isPerspectiveCamera) {
@@ -6586,43 +6571,43 @@ class OrbitControls extends EventDispatcher {
             ((scope.object.fov / 2) * Math.PI) / 180.0
           );
 
-          //if (scope.object.isPerspectiveCamera) {
-          //   if((currentPos.z > MIN_Z && currentPos.z < MAX_Z)) {//회전 기반으로 작동하게할거라 후에 추가
-          //     if(check_rotation>0.5){
-          //       panForward(
-          //         (2 * deltaZ * targetDistance) / element.clientHeight,
-          //         scope.object.matrix
-          //       );
-          //     }
-          //     console.log("Z 범위 벗어남, 각도 부족");
-          //     // deltaZ = 0;
-          //   } else {
-          //     panForward(
-          //       (2 * deltaZ * targetDistance) / element.clientHeight,
-          //       scope.object.matrix
-          //     );
-          //   }
-          // } else {
-          //   if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
-          //     console.log(
-          //       "Z 범위 벗어남:",
-          //       currentPos.y,
-          //       "MIN_Z:",
-          //       MIN_Z,
-          //       "MAX_Z:",
-          //       MAX_Z
-          //     );
-          //     // deltaZ = 0;
-          //   } else {
-          //     panForward(
-          //       // 추가된 Z축 이동
-          //       (deltaZ * (scope.object.near - scope.object.far)) /
-          //         scope.object.zoom /
-          //         element.clientHeight,
-          //       scope.object.matrix
-          //     );
-          //   }
-          // }
+          if (scope.object.isPerspectiveCamera) {
+            if((currentPos.z > MIN_Z && currentPos.z < MAX_Z)) {//회전 기반으로 작동하게할거라 후에 추가
+              if(check_rotation>0.5){
+                panForward(
+                  (2 * deltaZ * targetDistance) / element.clientHeight,
+                  scope.object.matrix
+                );
+              }
+              console.log("Z 범위 벗어남, 각도 부족");
+              // deltaZ = 0;
+            } else {
+              panForward(
+                (2 * deltaZ * targetDistance) / element.clientHeight,
+                scope.object.matrix
+              );
+            }
+          } else {
+            if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
+              console.log(
+                "Z 범위 벗어남:",
+                currentPos.y,
+                "MIN_Z:",
+                MIN_Z,
+                "MAX_Z:",
+                MAX_Z
+              );
+              // deltaZ = 0;
+            } else {
+              panForward(
+                // 추가된 Z축 이동
+                (deltaZ * (scope.object.near - scope.object.far)) /
+                  scope.object.zoom /
+                  element.clientHeight,
+                scope.object.matrix
+              );
+            }
+          }
 
           // we use only clientHeight here so aspect ratio does not distort speed
           // if (currentPos.x > MIN_X && currentPos.x < MAX_X) {
