@@ -1,5 +1,6 @@
 // 주인님 저 녀석은 가짜예요 (마우스 클릭 이벤트는 여기서 수정해야함)
 
+import { json } from "stream/consumers";
 import * as THREE from "three";
 import {
   Ray as Ray$1,
@@ -6509,16 +6510,24 @@ class OrbitControls extends EventDispatcher {
 
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (function () {
+      const fs = require("fs");
+
+      // JSON 파일 읽기
+      const data = fs.readFileSync("./wall.json", "utf-8");
+      const jsonData = JSON.parse(data);
+
       const offset = new Vector3();
 
-      const MAX_X = 250;
-      const MIN_X = -260;
-      const MAX_Y = 15;
-      const MIN_Y = -15;
-      const MAX_Z = 200;
-      const MIN_Z = -260;
-      const temp_rotation=0;
-
+      const { WALL_ID, MAX_X, MIN_X, MAX_Y, MIN_Y, MAX_Z, MIN_Z, ANGLE } =
+        jsonData;
+      console.log(jsonData);
+      // const MAX_X = 250;
+      // const MIN_X = -260;
+      // const MAX_Y = 15;
+      // const MIN_Y = -15;
+      // const MAX_Z = 200;
+      // const MIN_Z = -260;
+      // const temp_rotation = 0;
 
       return function pan(deltaX, deltaY, deltaZ) {
         const element = scope.domElement;
@@ -6532,10 +6541,10 @@ class OrbitControls extends EventDispatcher {
           // perspective
           const position = scope.object.position;
           offset.copy(position).sub(scope.target);
-          let targetDistance = offset.length(); 
+          let targetDistance = offset.length();
 
           //회전방향 확인
-          let check_rotation = Math.abs(currentrotate.x-temp_rotation);
+          let check_rotation = Math.abs(currentrotate.x - ANGLE);
 
           console.log(check_rotation);
 
@@ -6545,8 +6554,9 @@ class OrbitControls extends EventDispatcher {
           );
 
           if (scope.object.isPerspectiveCamera) {
-            if((currentPos.z < MIN_Z || currentPos.z > MAX_Z)) {//회전 기반으로 작동하게할거라 후에 추가
-              if(check_rotation>0.5){
+            if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
+              //회전 기반으로 작동하게할거라 후에 추가
+              if (check_rotation > 0.5) {
                 panForward(
                   (2 * deltaZ * targetDistance) / element.clientHeight,
                   scope.object.matrix
@@ -6865,10 +6875,18 @@ class OrbitControls extends EventDispatcher {
       button.style.background = "#fff";
 
       // 클릭 시 해당 키 코드로 처리
-      button.addEventListener("mousedown", () => triggerKeyEvent(keyCode, 'keydown'));  // mousedown -> keydown
-      button.addEventListener("mouseup", () => triggerKeyEvent(keyCode, 'keyup'));    // mouseup -> keyup
-      button.addEventListener("touchstart", () => triggerKeyEvent(keyCode, 'keydown'));
-      button.addEventListener("touchend", () => triggerKeyEvent(keyCode, 'keyup'));
+      button.addEventListener("mousedown", () =>
+        triggerKeyEvent(keyCode, "keydown")
+      ); // mousedown -> keydown
+      button.addEventListener("mouseup", () =>
+        triggerKeyEvent(keyCode, "keyup")
+      ); // mouseup -> keyup
+      button.addEventListener("touchstart", () =>
+        triggerKeyEvent(keyCode, "keydown")
+      );
+      button.addEventListener("touchend", () =>
+        triggerKeyEvent(keyCode, "keyup")
+      );
       return button;
     }
 
@@ -6876,7 +6894,7 @@ class OrbitControls extends EventDispatcher {
     function triggerKeyEvent(keyCode, eventType) {
       const event = new KeyboardEvent(eventType, {
         key: keyCode,
-        code: keyCode.toUpperCase(),  // 대소문자 구분을 위해
+        code: keyCode.toUpperCase(), // 대소문자 구분을 위해
         bubbles: true,
         cancelable: true,
       });
@@ -6884,39 +6902,42 @@ class OrbitControls extends EventDispatcher {
     }
 
     // 팬을 위한 함수 (키 코드에 맞춰)
-    let isKeyPressed = {};  // 각 키에 대한 상태를 저장 (누름 상태)
+    let isKeyPressed = {}; // 각 키에 대한 상태를 저장 (누름 상태)
     let panInterval = null;
 
     // 팬을 위한 함수 (키 코드에 맞춰)
     function handlePanEvent(event) {
       let needsUpdate = false;
 
-
       // 키가 눌렸을 때만 처리
-      if (event.type === 'keydown') {
-        isKeyPressed[event.key] = true;  // 키가 눌렸으면 true로 설정
+      if (event.type === "keydown") {
+        isKeyPressed[event.key] = true; // 키가 눌렸으면 true로 설정
 
         // 반복을 시작
         if (!panInterval) {
           panInterval = setInterval(() => {
             // 눌린 키에 따른 팬 처리
-            if (isKeyPressed['r']) {  // forward
-              pan(0, 0, scope.keyPanSpeed);  // forward
+            if (isKeyPressed["r"]) {
+              // forward
+              pan(0, 0, scope.keyPanSpeed); // forward
               needsUpdate = true;
             }
 
-            if (isKeyPressed['f']) {  // back
-              pan(0, 0, -scope.keyPanSpeed);  // back
+            if (isKeyPressed["f"]) {
+              // back
+              pan(0, 0, -scope.keyPanSpeed); // back
               needsUpdate = true;
             }
 
-            if (isKeyPressed['a']) {  // left
-              pan(scope.keyPanSpeed, 0, 0);  // left
+            if (isKeyPressed["a"]) {
+              // left
+              pan(scope.keyPanSpeed, 0, 0); // left
               needsUpdate = true;
             }
 
-            if (isKeyPressed['d']) {  // right
-              pan(-scope.keyPanSpeed, 0, 0);  // right
+            if (isKeyPressed["d"]) {
+              // right
+              pan(-scope.keyPanSpeed, 0, 0); // right
               needsUpdate = true;
             }
 
@@ -6925,13 +6946,13 @@ class OrbitControls extends EventDispatcher {
             }
           }, 100); // 팬 반복 주기 설정 (여기서 100ms마다 반복)
         }
-      } else if (event.type === 'keyup') {
-        isKeyPressed[event.key] = false;  // 키에서 손을 떼면 false로 설정
+      } else if (event.type === "keyup") {
+        isKeyPressed[event.key] = false; // 키에서 손을 떼면 false로 설정
 
         // 키를 떼면 반복 멈추기
-        if (Object.values(isKeyPressed).every(val => !val)) {
+        if (Object.values(isKeyPressed).every((val) => !val)) {
           clearInterval(panInterval);
-          panInterval = null;  // 반복 멈추기
+          panInterval = null; // 반복 멈추기
         }
       }
     }
@@ -6941,10 +6962,10 @@ class OrbitControls extends EventDispatcher {
     window.addEventListener("keyup", handlePanEvent);
 
     // 버튼 클릭 시 트리거할 키 코드 매핑
-    const upButton = createButton("↑", 'r');
-    const downButton = createButton("↓", 'f');
-    const leftButton = createButton("←", 'a');
-    const rightButton = createButton("→", 'd');
+    const upButton = createButton("↑", "r");
+    const downButton = createButton("↓", "f");
+    const leftButton = createButton("←", "a");
+    const rightButton = createButton("→", "d");
 
     // 버튼 레이아웃 정렬
     const row = document.createElement("div");
@@ -6955,7 +6976,6 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(upButton);
     controlsContainer.appendChild(row);
     controlsContainer.appendChild(downButton);
-
 
     //이동기능
     function printSelectedCoordinates(event) {
@@ -6992,10 +7012,8 @@ class OrbitControls extends EventDispatcher {
           //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-      }
-
-      else if(count==1){
-        if(targetY > 0) {
+      } else if (count == 1) {
+        if (targetY > 0) {
           pan(0, 0, -scope.keyPanSpeed);
           calctargetY -= 5;
         } else if (targetY < 0) {
@@ -7015,8 +7033,10 @@ class OrbitControls extends EventDispatcher {
         }
       }
 
-      if(count!=2){
-        requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
+      if (count != 2) {
+        requestAnimationFrame(() =>
+          adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)
+        ); // 다음 프레임에서 다시 실행
       }
     }
     // 커스텀 이벤트 수신
