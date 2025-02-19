@@ -282,9 +282,16 @@
         insertRequest,
         client,
       } from './supaDatabase/connectDatabase.js';
-      // 페이지 이동
-      function openPage(page) {
-        let url = page + '.html';
+      // 페이지 이동 ( minimap 페이지로 이동함 )
+      function openPage(page, robot) {
+        let url;
+        if (page == 'minimap') {
+          // 로봇 선택 페이지로 넘어갈 때
+          // 출발지 선택 페이지 : destin=0, 목적지 선택 페이지 : destin=1
+          url =
+            page +
+            `.html?destin=0&robot=${robot.id}&bottom=${robot.position[1]}&left=${robot.position[0]}`;
+        }
         window.location = url;
       }
 
@@ -341,44 +348,6 @@
       // log를 만들 response, request 데이터
       async function requestData() {
         const requests = await getRequest();
-      }
-
-      // 로봇 경로
-      async function robotPath(robot) {
-        const pathX = robot.position[0];
-        const pathY = robot.position[1];
-        const mapElement = document.querySelector('.managerMap_map');
-
-        for (let i = 0; i < pathX.length - 1; i++) {
-          const x1 = pathX[i];
-          const y1 = pathY[i];
-          const x2 = pathX[i + 1];
-          const y2 = pathY[i + 1];
-
-          // 두 점 사이 거리 계산 (피타고라스 정리)
-          const deltaX = x2 - x1;
-          const deltaY = y2 - y1;
-          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-          // 각도 계산 (atan2 사용)
-          const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-          // 선 요소 생성
-          const line = document.createElement('div');
-          line.className = 'path_line';
-
-          // CSS 적용 (위치, 크기, 회전)
-          line.style.position = 'absolute';
-          line.style.width = `${distance + 1}%`; // 선 길이 설정
-          line.style.height = '2px'; // 선 두께
-          line.style.backgroundColor = 'black';
-          line.style.left = `${x1}%`;
-          line.style.top = `${y1}%`;
-          line.style.transformOrigin = '0 0'; // 시작점을 기준으로 회전
-          line.style.transform = `rotate(${angle}deg)`;
-
-          mapElement.appendChild(line);
-        }
       }
 
       // 로봇 상태에 따른 색상
@@ -504,13 +473,13 @@
         if (robot.status === 1) {
           alert('로봇이 이미 사용중입니다.');
         } else {
-          openPage('minimap');
+          openPage('minimap', robot);
         }
       }
 
       // 로봇 정지 버튼
       function stopRobot(robot) {
-        const currentTime = new Date();
+        // DB에 정지 요청청
         insertRequest(robot.id, false);
         alert(`로봇${robot.id}을 즉시 정지합니다.`);
       }

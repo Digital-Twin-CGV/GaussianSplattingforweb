@@ -201,8 +201,10 @@
         marker.addEventListener('click', () => {
           updateTitle(
             robot.id,
-            ((robot.position[1] + 377 - 15) * 100) / 485,
-            ((robot.position[0] + 1188 - 15) * 100) / 1441,
+            robot.position[1],
+            robot.position[0],
+            // ((robot.position[1] + 377 - 15) * 100) / 485,
+            // ((robot.position[0] + 1188 - 15) * 100) / 1441,
             robot.status
           );
         });
@@ -211,18 +213,26 @@
       }
 
       let selectedRobot = null;
-      let selectedTop = null;
+      let selectedBottom = null;
       let selectedLeft = null;
       let selectedAvailable = null;
 
-      function updateTitle(robotName, top, left, available) {
+      function updateTitle(robotName, bottom, left, available) {
         const title = document.getElementById('title');
         title.textContent = `호출할 로봇을 선택해주세요 (로봇 ${robotName})`;
         selectedRobot = robotName;
         selectedAvailable = available;
 
-        selectedLeft = `${left}%`;
-        selectedTop = `${top}%`;
+        selectedLeft = `${left}`;
+        selectedBottom = `${bottom}`;
+      }
+
+      // URL 파라미터 가져오기
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const destin = params.get('destin');
+
+        return { destin };
       }
 
       function openDemo(page) {
@@ -233,10 +243,12 @@
         ) {
           alert('현재 사용이 불가능한 로봇입니다. 다른 로봇을 선택해주세요.');
         } else {
-          if (selectedRobot && selectedTop && selectedLeft) {
+          if (selectedRobot && selectedBottom && selectedLeft) {
+            // destin = 0. 출발지 선택 모드, destin = 1. 목적지 선택 모드
+            const { destin } = getUrlParams();
             const url =
               page +
-              `.html?robot=${selectedRobot}&top=${selectedTop}&left=${selectedLeft}`;
+              `.html?destin=${destin}&robot=${selectedRobot}&bottom=${selectedBottom}&left=${selectedLeft}`;
             window.location.href = url;
           } else {
             alert('로봇을 선택해주세요');

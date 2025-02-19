@@ -6852,12 +6852,12 @@ class OrbitControls extends EventDispatcher {
     let first_is_minus = true;
     let second_is_minus = true;
 
-    //화살표버튼
+    //화살표이동
     // HTML에 버튼 추가
     const controlsContainer = document.createElement("div");
     controlsContainer.style.position = "absolute";
     controlsContainer.style.bottom = "20px";
-    controlsContainer.style.left = "50%";
+    controlsContainer.style.right = "20px";
     controlsContainer.style.transform = "translateX(-50%)";
     controlsContainer.style.display = "flex";
     controlsContainer.style.flexDirection = "column";
@@ -6865,7 +6865,7 @@ class OrbitControls extends EventDispatcher {
     document.body.appendChild(controlsContainer);
 
     // 버튼 생성 함수
-    function createButton(label, onClick) {
+    function createButton(label, keyCode) {
       const button = document.createElement("button");
       button.textContent = label;
       button.style.margin = "5px";
@@ -6875,62 +6875,92 @@ class OrbitControls extends EventDispatcher {
       button.style.border = "1px solid black";
       button.style.borderRadius = "5px";
       button.style.background = "#fff";
-      button.addEventListener("click", onClick);
+
+      // 클릭 시 해당 키 코드로 처리
+      button.addEventListener("mousedown", () => triggerKeyEvent(keyCode, 'keydown'));  // mousedown -> keydown
+      button.addEventListener("mouseup", () => triggerKeyEvent(keyCode, 'keyup'));    // mouseup -> keyup
+      button.addEventListener("touchstart", () => triggerKeyEvent(keyCode, 'keydown'));
+      button.addEventListener("touchend", () => triggerKeyEvent(keyCode, 'keyup'));
       return button;
     }
 
-    // 버튼 클릭 시 팬 기능 추가
-    const upButton = createButton("↑", () =>
-      handlePanEvent({ code: "FORWARD" })
-    );
-    const downButton = createButton("↓", () =>
-      handlePanEvent({ code: "BACK" })
-    );
-    const leftButton = createButton("←", () =>
-      handlePanEvent({ code: "LEFT" })
-    );
-    const rightButton = createButton("→", () =>
-      handlePanEvent({ code: "RIGHT" })
-    );
+    // 키 이벤트를 수동으로 트리거하는 함수
+    function triggerKeyEvent(keyCode, eventType) {
+      const event = new KeyboardEvent(eventType, {
+        key: keyCode,
+        code: keyCode.toUpperCase(),  // 대소문자 구분을 위해
+        bubbles: true,
+        cancelable: true,
+      });
+      window.dispatchEvent(event);
+    }
 
-    // 팬을 위한 함수 (화살표 방향에 맞춰)
+    // 팬을 위한 함수 (키 코드에 맞춰)
+    let isKeyPressed = {};  // 각 키에 대한 상태를 저장 (누름 상태)
+    let panInterval = null;
+
+    // 팬을 위한 함수 (키 코드에 맞춰)
     function handlePanEvent(event) {
       let needsUpdate = false;
 
-      switch (event.code) {
-        case "FORWARD":
-          console.log("앞");
-          pan(0, 0, scope.keyPanSpeed); // 위쪽 화살표
-          console.log(scope.keyPanSpeed);
-          needsUpdate = true;
-          break;
 
-        case "BACK":
-          console.log("뒤");
-          pan(0, 0, -scope.keyPanSpeed); // 아래쪽 화살표
-          needsUpdate = true;
-          break;
+      // 키가 눌렸을 때만 처리
+      if (event.type === 'keydown') {
+        isKeyPressed[event.key] = true;  // 키가 눌렸으면 true로 설정
 
-        case "LEFT":
-          console.log("왼");
-          pan(scope.keyPanSpeed, 0, 0); // 왼쪽 화살표
-          needsUpdate = true;
-          break;
+        // 반복을 시작
+        if (!panInterval) {
+          panInterval = setInterval(() => {
+            // 눌린 키에 따른 팬 처리
+            if (isKeyPressed['r']) {  // forward
+              console.log("앞");
+              pan(0, 0, scope.keyPanSpeed);  // forward
+              needsUpdate = true;
+            }
 
-        case "RIGHT":
-          console.log("오");
-          pan(-scope.keyPanSpeed, 0, 0); // 오른쪽 화살표
-          needsUpdate = true;
-          break;
+            if (isKeyPressed['f']) {  // back
+              console.log("뒤");
+              pan(0, 0, -scope.keyPanSpeed);  // back
+              needsUpdate = true;
+            }
 
-        default:
-          break;
-      }
+            if (isKeyPressed['a']) {  // left
+              console.log("왼");
+              pan(scope.keyPanSpeed, 0, 0);  // left
+              needsUpdate = true;
+            }
 
-      if (needsUpdate) {
-        scope.update(); // 상태 업데이트
+            if (isKeyPressed['d']) {  // right
+              console.log("오");
+              pan(-scope.keyPanSpeed, 0, 0);  // right
+              needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+              scope.update();
+            }
+          }, 100); // 팬 반복 주기 설정 (여기서 100ms마다 반복)
+        }
+      } else if (event.type === 'keyup') {
+        isKeyPressed[event.key] = false;  // 키에서 손을 떼면 false로 설정
+
+        // 키를 떼면 반복 멈추기
+        if (Object.values(isKeyPressed).every(val => !val)) {
+          clearInterval(panInterval);
+          panInterval = null;  // 반복 멈추기
+        }
       }
     }
+
+    // 키 이벤트 리스너 추가
+    window.addEventListener("keydown", handlePanEvent);
+    window.addEventListener("keyup", handlePanEvent);
+
+    // 버튼 클릭 시 트리거할 키 코드 매핑
+    const upButton = createButton("↑", 'r');
+    const downButton = createButton("↓", 'f');
+    const leftButton = createButton("←", 'a');
+    const rightButton = createButton("→", 'd');
 
     // 버튼 레이아웃 정렬
     const row = document.createElement("div");
@@ -6941,6 +6971,7 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(upButton);
     controlsContainer.appendChild(row);
     controlsContainer.appendChild(downButton);
+
 
     //이동기능
     function printSelectedCoordinates(event) {
@@ -6961,14 +6992,14 @@ class OrbitControls extends EventDispatcher {
       let needsUpdate = true;
       if (count == 0) {
         if (targetX > 0) {
-          pan(0, scope.keyPanSpeed, 0);
+          pan(scope.keyPanSpeed, 0, 0);
           calctargetX -= 5;
         } else if (targetX < 0) {
           if (first_is_minus) {
             calctargetX = -calctargetX;
             first_is_minus = false;
           }
-          pan(0, -scope.keyPanSpeed, 0);
+          pan(-scope.keyPanSpeed, 0, 0);
           calctargetX -= 5;
         } else {
           count++;
@@ -6977,19 +7008,11 @@ class OrbitControls extends EventDispatcher {
           //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-        rotation_count = 45;
-      } else if (count == 1) {
-        if (rotation_count != 0) {
-          //회전
-          rotateLeft(-0.078 * scope.rotateSpeed);
-          //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
-          rotation_count--;
-        } else {
-          count++;
-        }
-      } else if (count == 2) {
-        if (targetY > 0) {
-          pan(0, scope.keyPanSpeed, 0);
+      }
+
+      else if(count==1){
+        if(targetY > 0) {
+          pan(0, 0, -scope.keyPanSpeed);
           calctargetY -= 5;
         } else if (targetY < 0) {
           if (second_is_minus) {
@@ -6997,7 +7020,7 @@ class OrbitControls extends EventDispatcher {
             second_is_minus = false;
           }
 
-          pan(0 - scope.keyPanSpeed, 0);
+          pan(0, 0, scope.keyPanSpeed);
           calctargetY -= 5;
         } else {
           count++;
@@ -7008,10 +7031,8 @@ class OrbitControls extends EventDispatcher {
         }
       }
 
-      if (count != 3) {
-        requestAnimationFrame(() =>
-          adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)
-        ); // 다음 프레임에서 다시 실행
+      if(count!=2){
+        requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
       }
     }
     // 커스텀 이벤트 수신
@@ -7100,7 +7121,7 @@ class OrbitControls extends EventDispatcher {
         panEnd.set(x, y);
       }
 
-      panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
+      panDelta.subVectors(panEnd, panStart, 0).multiplyScalar(scope.panSpeed);
 
       pan(panDelta.x, panDelta.y, 0);
 
