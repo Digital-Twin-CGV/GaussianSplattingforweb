@@ -6089,7 +6089,14 @@ class OrbitControls extends EventDispatcher {
     this.autoRotateSpeed = 10.0; // 30 seconds per orbit when fps is 60
 
     // The four arrow keys
-    this.keys = { LEFT: "KeyA", UP: "KeyW", RIGHT: "KeyD", BOTTOM: "KeyS" , FORWARD: "KeyR", BACK: "KeyF"};
+    this.keys = {
+      LEFT: "KeyA",
+      UP: "KeyW",
+      RIGHT: "KeyD",
+      BOTTOM: "KeyS",
+      FORWARD: "KeyR",
+      BACK: "KeyF",
+    };
 
     // Mouse buttons
     this.mouseButtons = {
@@ -6454,7 +6461,7 @@ class OrbitControls extends EventDispatcher {
     }
 
     function rotateLeft(angle) {
-      sphericalDelta.theta -= angle;     
+      sphericalDelta.theta -= angle;
     }
 
     function rotateUp(angle) {
@@ -6474,11 +6481,11 @@ class OrbitControls extends EventDispatcher {
 
     const panForward = (function () {
       const v = new Vector3();
-    
+
       return function panForward(distance, objectMatrix) {
         v.setFromMatrixColumn(objectMatrix, 2); // get Z column of objectMatrix
         v.multiplyScalar(-distance);
-    
+
         panOffset.add(v);
       };
     })();
@@ -6500,13 +6507,42 @@ class OrbitControls extends EventDispatcher {
       };
     })();
 
-    
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (function () {
       const offset = new Vector3();
 
+      const MAX_X = 250;
+      const MIN_X = -260;
+      const MAX_Y = 15;
+      const MIN_Y = -15;
+      const MAX_Z = 200;
+      const MIN_Z = -260;
+
       return function pan(deltaX, deltaY, deltaZ) {
         const element = scope.domElement;
+
+        // 현재 위치 가져오기
+        const currentPos = scope.object.position;
+
+        // 이동 범위 제한 (범위를 벗어나면 이동을 중지)
+        if (currentPos.x < MIN_X || currentPos.x > MAX_X) {
+          // console.log(
+          //   "X 범위 벗어남:",
+          //   currentPos.x,
+          //   "MIN_X:",
+          //   MIN_X,
+          //   "MAX_X:",
+          //   MAX_X
+          // );
+          // deltaX = 0; // Stop further movement in this direction
+        }
+
+        // 새로운 위치 계산
+        // scope.object.position.set(
+        //   currentPos.x + deltaX,
+        //   currentPos.y + deltaY,
+        //   currentPos.z + deltaZ
+        // );
 
         if (scope.object.isPerspectiveCamera) {
           // perspective
@@ -6519,19 +6555,62 @@ class OrbitControls extends EventDispatcher {
             ((scope.object.fov / 2) * Math.PI) / 180.0
           );
 
+          if (scope.object.isPerspectiveCamera) {
+            if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
+              console.log(
+                "Z 범위 벗어남:",
+                currentPos.y,
+                "MIN_Z:",
+                MIN_Z,
+                "MAX_Z:",
+                MAX_Z
+              );
+              // deltaZ = 0;
+            } else {
+              panForward(
+                (2 * deltaZ * targetDistance) / element.clientHeight,
+                scope.object.matrix
+              );
+            }
+          } else {
+            if (currentPos.z < MIN_Z || currentPos.z > MAX_Z) {
+              console.log(
+                "Z 범위 벗어남:",
+                currentPos.y,
+                "MIN_Z:",
+                MIN_Z,
+                "MAX_Z:",
+                MAX_Z
+              );
+              // deltaZ = 0;
+            } else {
+              panForward(
+                // 추가된 Z축 이동
+                (deltaZ * (scope.object.near - scope.object.far)) /
+                  scope.object.zoom /
+                  element.clientHeight,
+                scope.object.matrix
+              );
+            }
+          }
+
           // we use only clientHeight here so aspect ratio does not distort speed
+          // if (currentPos.x > MIN_X && currentPos.x < MAX_X) {
           panLeft(
             (2 * deltaX * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
+          // }
           panUp(
             (2 * deltaY * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
-          panForward(
-            (2 * deltaZ * targetDistance) / element.clientHeight,
-            scope.object.matrix
-          );
+          // if (currentPos.z > MIN_Z && currentPos.z < MAX_Z) {
+          // panForward(
+          //   (2 * deltaZ * targetDistance) / element.clientHeight,
+          //   scope.object.matrix
+          // );
+          // }
         } else if (scope.object.isOrthographicCamera) {
           // orthographic
           panLeft(
@@ -6546,12 +6625,15 @@ class OrbitControls extends EventDispatcher {
               element.clientHeight,
             scope.object.matrix
           );
-          panForward( // 추가된 Z축 이동
-            (deltaZ * (scope.object.near - scope.object.far)) /
-              scope.object.zoom /
-              element.clientHeight,
-            scope.object.matrix
-          );
+          // console.log("panForward 호출 전 deltaZ:", deltaZ);
+          // panForward(
+          //   // 추가된 Z축 이동
+          //   (deltaZ * (scope.object.near - scope.object.far)) /
+          //     scope.object.zoom /
+          //     element.clientHeight,
+          //   scope.object.matrix
+          // );
+          // console.log("panForward 호출 후 deltaZ:", deltaZ);
         } else {
           // camera neither orthographic nor perspective
           console.warn(
@@ -6561,7 +6643,6 @@ class OrbitControls extends EventDispatcher {
         }
       };
     })();
-
 
     function dollyOut(dollyScale) {
       if (
@@ -6703,7 +6784,7 @@ class OrbitControls extends EventDispatcher {
               (2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight
             );
           } else {
-            pan(0, scope.keyPanSpeed,0);
+            pan(0, scope.keyPanSpeed, 0);
           }
 
           needsUpdate = true;
@@ -6751,10 +6832,10 @@ class OrbitControls extends EventDispatcher {
           break;
 
         case scope.keys.BACK:
-        pan(0, 0, -scope.keyPanSpeed);
+          pan(0, 0, -scope.keyPanSpeed);
 
-        needsUpdate = true;
-        break;
+          needsUpdate = true;
+          break;
       }
 
       if (needsUpdate) {
@@ -6765,13 +6846,11 @@ class OrbitControls extends EventDispatcher {
       }
     }
 
-    let count=0;
-    let rotation_count=0;
-    let ratationfirst=0;
-    let first_is_minus=true;
-    let second_is_minus=true;
-
-
+    let count = 0;
+    let rotation_count = 0;
+    let ratationfirst = 0;
+    let first_is_minus = true;
+    let second_is_minus = true;
 
     //화살표버튼
     // HTML에 버튼 추가
@@ -6801,37 +6880,46 @@ class OrbitControls extends EventDispatcher {
     }
 
     // 버튼 클릭 시 팬 기능 추가
-    const upButton = createButton("↑", () => handlePanEvent({ code: 'FORWARD' }));
-    const downButton = createButton("↓", () => handlePanEvent({ code: 'BACK' }));
-    const leftButton = createButton("←", () => handlePanEvent({ code: 'LEFT' }));
-    const rightButton = createButton("→", () => handlePanEvent({ code: 'RIGHT' }));
+    const upButton = createButton("↑", () =>
+      handlePanEvent({ code: "FORWARD" })
+    );
+    const downButton = createButton("↓", () =>
+      handlePanEvent({ code: "BACK" })
+    );
+    const leftButton = createButton("←", () =>
+      handlePanEvent({ code: "LEFT" })
+    );
+    const rightButton = createButton("→", () =>
+      handlePanEvent({ code: "RIGHT" })
+    );
 
     // 팬을 위한 함수 (화살표 방향에 맞춰)
     function handlePanEvent(event) {
       let needsUpdate = false;
 
       switch (event.code) {
-        case 'FORWARD':
+        case "FORWARD":
           console.log("앞");
-          pan(0, 0, scope.keyPanSpeed);  // 위쪽 화살표
+          pan(0, 0, scope.keyPanSpeed); // 위쪽 화살표
+          console.log(scope.keyPanSpeed);
           needsUpdate = true;
           break;
 
-        case 'BACK':
+        case "BACK":
           console.log("뒤");
-          pan(0, 0, -scope.keyPanSpeed);  // 아래쪽 화살표
+          pan(0, 0, -scope.keyPanSpeed); // 아래쪽 화살표
           needsUpdate = true;
           break;
 
-        case 'LEFT':
+        case "LEFT":
           console.log("왼");
-          pan(scope.keyPanSpeed, 0, 0);  // 왼쪽 화살표
+          pan(scope.keyPanSpeed, 0, 0); // 왼쪽 화살표
           needsUpdate = true;
           break;
 
-        case 'RIGHT':
+        case "RIGHT":
           console.log("오");
-          pan(-scope.keyPanSpeed, 0, 0);  // 오른쪽 화살표
+          pan(-scope.keyPanSpeed, 0, 0); // 오른쪽 화살표
           needsUpdate = true;
           break;
 
@@ -6840,7 +6928,7 @@ class OrbitControls extends EventDispatcher {
       }
 
       if (needsUpdate) {
-        scope.update();  // 상태 업데이트
+        scope.update(); // 상태 업데이트
       }
     }
 
@@ -6854,88 +6942,83 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(row);
     controlsContainer.appendChild(downButton);
 
-
-
-
-
-
-
     //이동기능
     function printSelectedCoordinates(event) {
       const { x: targetX, y: targetY } = event.detail;
-      if(targetY==0){
-        count=2;
+      if (targetY == 0) {
+        count = 2;
       }
       adjustCoordinates(targetX, targetY, targetX, targetY, count);
     }
-    
-    function adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count) {
+
+    function adjustCoordinates(
+      targetX,
+      targetY,
+      calctargetX,
+      calctargetY,
+      count
+    ) {
       let needsUpdate = true;
-      if(count==0){
+      if (count == 0) {
         if (targetX > 0) {
           pan(0, scope.keyPanSpeed, 0);
           calctargetX -= 5;
-        } 
-        else if (targetX < 0) {
-          if(first_is_minus){
-            calctargetX=-calctargetX;
-            first_is_minus=false;
+        } else if (targetX < 0) {
+          if (first_is_minus) {
+            calctargetX = -calctargetX;
+            first_is_minus = false;
           }
           pan(0, -scope.keyPanSpeed, 0);
           calctargetX -= 5;
-        }
-        else{
+        } else {
           count++;
         }
-        if(calctargetX<=1){ //편차를 위해 1로 잡음. 수정가능함
+        if (calctargetX <= 1) {
+          //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-        rotation_count=45;
-      }
-
-      else if(count==1){
-        if (rotation_count!=0) { //회전
-          rotateLeft(
-            (-0.078 * scope.rotateSpeed));
+        rotation_count = 45;
+      } else if (count == 1) {
+        if (rotation_count != 0) {
+          //회전
+          rotateLeft(-0.078 * scope.rotateSpeed);
           //rotateUp((-2 * Math.PI * scope.rotateSpeed) / scope.domElement.clientHeight)
           rotation_count--;
+        } else {
+          count++;
         }
-        else {
-          count++
-        }    
-      }
-
-      else if(count==2){
-        if(targetY > 0) {
+      } else if (count == 2) {
+        if (targetY > 0) {
           pan(0, scope.keyPanSpeed, 0);
           calctargetY -= 5;
-        }
-        else if(targetY < 0) {
-          if(second_is_minus){
-            calctargetY=-calctargetY;
-            second_is_minus=false;
+        } else if (targetY < 0) {
+          if (second_is_minus) {
+            calctargetY = -calctargetY;
+            second_is_minus = false;
           }
 
-          pan(0 -scope.keyPanSpeed, 0);
+          pan(0 - scope.keyPanSpeed, 0);
           calctargetY -= 5;
-        }
-        else{
+        } else {
           count++;
         }
-        if(calctargetY<=1){ //편차를 위해 1로 잡음. 수정가능함
+        if (calctargetY <= 1) {
+          //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
       }
 
-
-    
-      if(count!=3){
-        requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
+      if (count != 3) {
+        requestAnimationFrame(() =>
+          adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)
+        ); // 다음 프레임에서 다시 실행
       }
     }
     // 커스텀 이벤트 수신
-    window.addEventListener("selectedCoordinatesEvent", printSelectedCoordinates);
-
+    window.addEventListener(
+      "selectedCoordinatesEvent",
+      printSelectedCoordinates
+    );
 
     function handleTouchStartRotate() {
       if (pointers.length === 1) {
@@ -17328,4 +17411,3 @@ export {
   Viewer,
   WebXRMode,
 };
-//# sourceMappingURL=gaussian-splats-3d.module.js.map
