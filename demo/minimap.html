@@ -326,15 +326,7 @@
           background.offsetWidth,
           background.offsetHeight
         );
-        const convertedCoordinates = { x: converted.x, y: converted.y };
-
-        localStorage.setItem(
-          'selectedCoordinates',
-          JSON.stringify(convertedCoordinates)
-        );
-        /* } else {
-          console.log('깜장인데요');
-        }*/
+        
       });
 
       function isClickInside(event, element) {
@@ -428,9 +420,22 @@
           // 사람이 선택한 부분
           const markerTop = selectedY;
           const markerLeft = selectedX;
+          const { x: gaussianX, z: gaussianZ } = convertToGaussian(selectedX, selectedY);
+          const convertedCoordinates = { x: gaussianX, y: gaussianZ };
+
+        localStorage.setItem(
+          'selectedCoordinates',
+          JSON.stringify(convertedCoordinates)
+        );
           window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
         }
       }
+
+      function convertToGaussian(xPercent, yPercent) {
+      const gaussianX = -39.63 * xPercent + 2633.22;
+      const gaussianZ = 42.22 * yPercent - 3434.66;
+      return { x: gaussianX, z: gaussianZ };
+    }
 
       window.openHome = openHome;
       window.goBack = goBack;
