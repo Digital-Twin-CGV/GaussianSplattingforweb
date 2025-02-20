@@ -39,7 +39,6 @@
   <script type="module">
     import { client, getRobots } from './supaDatabase/connectDatabase.js';
     // localStorage에서 출발지와 목적지를 불러옴
-    const start = JSON.parse(localStorage.getItem('start'));
     const end = JSON.parse(localStorage.getItem('end'));
     // url에서 가져오기
     const params = new URLSearchParams(window.location.search);
@@ -88,5 +87,21 @@
         }
       )
       .subscribe();
+
+    const start = JSON.parse(localStorage.getItem('start'));
+    console.log(start);
+    document.addEventListener('DOMContentLoaded', () => {
+      // 출발지 마커 표시
+      const startMarker = document.createElement('div');
+      startMarker.style.position = 'relative';
+      startMarker.className = 'moving_start_marker';
+      startMarker.style.bottom = start.bottom;
+      startMarker.style.left = start.left;
+      startMarker.style.backgroundColor = 'blue';
+      startMarker.style.width = '15px';
+      startMarker.style.height = '15px';
+      startMarker.style.borderRadius = '15px';
+      document.querySelector('.moving_map_container').appendChild(startMarker);
+    });
   </script>
 </html>
