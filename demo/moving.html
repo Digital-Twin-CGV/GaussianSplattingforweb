@@ -66,8 +66,8 @@
       // % 로 표현하기 위해 사진의 width, hegith로 나눔
       // 로봇 원점이 이동한 거리만큼 더하기
       // + 15는 마커의 크기를 고려한 것
-      marker.style.bottom = ((robot.position[1] + 642 - 15) * 100) / 3462 + '%';
       marker.style.left = ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
+      marker.style.top = ((-robot.position[1] + 2820 - 15) * 100) / 3462 + '%';
 
       marker.style.backgroundColor = 'green';
 
@@ -88,15 +88,15 @@
       )
       .subscribe();
 
-    const start = JSON.parse(localStorage.getItem('start'));
-    console.log(start);
     document.addEventListener('DOMContentLoaded', () => {
+      const start = JSON.parse(localStorage.getItem('start'));
+      console.log(start);
       // 출발지 마커 표시
       const startMarker = document.createElement('div');
-      startMarker.style.position = 'relative';
+      startMarker.style.position = 'absolute';
       startMarker.className = 'moving_start_marker';
-      startMarker.style.bottom = start.bottom;
-      startMarker.style.left = start.left;
+      startMarker.style.top = start.top + '%';
+      startMarker.style.left = start.left + '%';
       startMarker.style.backgroundColor = 'blue';
       startMarker.style.width = '15px';
       startMarker.style.height = '15px';
