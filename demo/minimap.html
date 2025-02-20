@@ -295,10 +295,9 @@
         console.log(color);
         //if (color !== 'rgb(0, 0, 0)') {
 
-
-      setLandmarkSelected(selectedLandmarkButton !== null); // 선택된 랜드마크가 있으면 true, 없으면 false
-      setMarkerSelected(false); // 마커는 선택되지 않음
-    }
+        if (marker) {
+          minimap.removeChild(marker);
+        }
 
         // 마커 생성
         marker = document.createElement('div');
@@ -323,73 +322,53 @@
         );
         const convertedCoordinates = { x: converted.x, y: converted.y };
 
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const { destin, robot, bottom, left } = getUrlParams();
-
-      const robotElement = document.querySelector(`.minimap_robot`);
-      if (robotElement) {
-        robotElement.style.bottom = `${bottom}%`;
-        robotElement.style.left = `${left}%`;
-      }
-    });
-
-    function openHome(page) {
-      let url = page + '.html';
-      window.location = url;
-    }
-
-    function goBack() {
-      console.log('뒤로가기');
-      history.back();
-    }
-
-    //가우시안 모델로 좌표 전송
-    // function openPage() {
-    //   if (isLandMarkSelected) window.location.href = 'moving.html';
-    //   else if (isMarkerSelected) window.location.href = 'gaussian.html';
-    //   if (isLandMarkSelected) {
-    //     window.location.href = 'moving.html';
-    //   } else if (isMarkerSelected) {
-    //     const markerBottom = selectedX;
-    //     const markerLeft = selectedY;
-    //     window.location.href = `gaussian.html?destin=${destinMode}&bottom=${markerBottom}&left=${markerLeft}`;
-    //     // window.location.href = "gaussian.html";
-    //   }
-    // }
-
-    function openPage() {
-      if (isLandMarkSelected) {
-        window.location.href = 'moving.html';
-        return;
-      }
-
-      if (isMarkerSelected) {
-        // 선택된 미니맵 좌표(비율 기준 %)를 가우시안 스플래팅 좌표로 변환
-        const { x: gaussianX, z: gaussianZ } = convertToGaussian(selectedX, selectedY);
-        
-        
-        const convertedCoordinates = { x: gaussianX, y: gaussianZ };
         localStorage.setItem(
-            "selectedCoordinates",
-            JSON.stringify(convertedCoordinates)
-          );
-        // 변환된 좌표를 URL 파라미터로 전달
-        window.location.href = `gaussian.html?destin=${destinMode}&bottom=${gaussianZ}&left=${gaussianX}`;
-      }
-    }
+          'selectedCoordinates',
+          JSON.stringify(convertedCoordinates)
+        );
+        /* } else {
+          console.log('깜장인데요');
+        }*/
+      });
 
-    /**
-     * 미니맵 좌표(% 단위)를 가우시안 스플래팅 좌표로 변환하는 함수
-     * @param {number} xPercent - 미니맵 x 좌표 (%)
-     * @param {number} yPercent - 미니맵 y 좌표 (%)
-     * @returns {Object} { x: 가우시안 x 좌표, z: 가우시안 z 좌표 }
-     */
-    function convertToGaussian(xPercent, yPercent) {
-      const gaussianX = -39.63 * xPercent + 2633.22;
-      const gaussianZ = 42.22 * yPercent - 3434.66;
-      return { x: gaussianX, z: gaussianZ };
-    }
+      function isClickInside(event, element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom
+        );
+      }
+
+      let selectedLandmarkButton = null;
+      function toggleLandmarkSelection(button) {
+        if (selectedLandmarkButton && selectedLandmarkButton !== button) {
+          selectedLandmarkButton.classList.remove('selected');
+        }
+
+        if (marker) {
+          minimap.removeChild(marker);
+          marker = null;
+        }
+        // 현재 버튼을 선택/해제
+        if (button.classList.contains('selected')) {
+          button.classList.remove('selected');
+          selectedLandmarkButton = null; // 선택 해제
+        } else {
+          button.classList.add('selected');
+          selectedLandmarkButton = button; // 새로 선택한 버튼 저장
+        }
+
+        setLandmarkSelected(selectedLandmarkButton !== null); // 선택된 랜드마크가 있으면 true, 없으면 false
+        setMarkerSelected(false); // 마커는 선택되지 않음
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      });
 
       // 로봇 데이터
       robotData();
@@ -429,6 +408,11 @@
         }
       }
 
+      function openHome(page) {
+        let url = page + '.html';
+        window.location = url;
+      }
+
       function goBack() {
         history.back();
       }
@@ -461,4 +445,3 @@
     </script>
   </body>
 </html>
-
