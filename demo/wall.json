@@ -1,0 +1,22 @@
+[
+  {
+    "WALL_ID": 1,
+    "MAX_X": 240,
+    "MIN_X": -260,
+    "MAX_Y": 20,
+    "MIN_Y": 20,
+    "MAX_Z": -240,
+    "MIN_Z": -260,
+    "ANGLE": 0
+  },
+  {
+    "WALL_ID": 2,
+    "MAX_X": 240,
+    "MIN_X": -260,
+    "MAX_Y": 20,
+    "MIN_Y": 20,
+    "MAX_Z": -240,
+    "MIN_Z": -260,
+    "ANGLE": 0
+  }
+]
