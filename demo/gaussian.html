@@ -63,7 +63,6 @@
       import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
       import * as THREE from 'three';
 
-
       const urlParams = new URLSearchParams(window.location.search);
 
       //원위치 좌표
@@ -74,8 +73,6 @@
         const selectedCoordinates = JSON.parse(
           localStorage.getItem('selectedCoordinates')
         );
-        
-        
 
         if (selectedCoordinates) {
           const event = new CustomEvent('selectedCoordinatesEvent', {
@@ -98,7 +95,6 @@
           console.log(
             `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
           );
-
         }
       });
 
@@ -167,7 +163,7 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/test3.splat",
+            path: 'assets/data/test3.splat',
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
@@ -317,7 +313,7 @@
             /* 폰트 설정 */
             textCtx.font = `bold ${fontSize}px Arial`;
 
-            const lines = info.name.split("\n");
+            const lines = info.name.split('\n');
 
             // 각 줄에 대해 텍스트 크기 계산
             const lineHeight = fontSize; // 줄 간격
@@ -331,9 +327,9 @@
             textCanvas.height = textHeight;
 
             /* 텍스트 채우기 */
-            textCtx.fillStyle = "black";
-            textCtx.textAlign = "center";
-            textCtx.textBaseline = "middle";
+            textCtx.fillStyle = 'black';
+            textCtx.textAlign = 'center';
+            textCtx.textBaseline = 'middle';
 
             // 글씨 쓰기
             lines.forEach((line, index) => {
@@ -468,17 +464,17 @@
         const params = new URLSearchParams(window.location.search);
         const destin = params.get('destin');
         const robot = params.get('robot');
-        const bottom = params.get('bottom');
+        const top = params.get('top');
         const left = params.get('left');
 
-        return { destin, robot, bottom, left };
+        return { destin, robot, top, left };
       }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 이동 시작
       function openDemo() {
-        const { destin, robot, bottom, left } = getUrlParams();
+        const { destin, robot, top, left } = getUrlParams();
         let url;
         if (destin === '0') {
           // 목적지 페이지로
@@ -490,7 +486,7 @@
         //찍은 위치 로컬 스토리지에 저장
         localStorage.setItem(
           destin === '0' ? 'start' : 'end',
-          JSON.stringify({ bottom, left })
+          JSON.stringify({ top, left })
         );
 
         // 페이지 이동

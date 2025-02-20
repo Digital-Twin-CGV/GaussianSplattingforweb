@@ -33,6 +33,7 @@
 
       .minimap_robot_name {
         padding-left: 10px;
+        color: #1dd200;
       }
 
       .minimap_title {
@@ -110,7 +111,7 @@
       }
 
       /* 시작 마커 */
-      .start_marker {
+      .minimap_start_marker {
         position: absolute;
         width: 30px;
         height: 30px;
@@ -179,13 +180,14 @@
 
       // 출발지 보이게
       document.addEventListener('DOMContentLoaded', () => {
-        const start = document.createElement('div');
-        const startCoordin = JSON.parse(localStorage.getItem('start'));
-        start.className = 'start_marker';
-        start.style.bottom =
-          ((startCoordin.bottom + 377 - 15) * 100) / 485 + '%';
-        start.style.left = ((startCoordin.left + 1188 - 15) * 100) / 1441 + '%';
-        document.querySelector('.minimap_map').appendChild(start);
+        if (destin == 1) {
+          const start = document.createElement('div');
+          const startCoordin = JSON.parse(localStorage.getItem('start'));
+          start.className = 'minimap_start_marker';
+          start.style.top = startCoordin.top + '%';
+          start.style.left = startCoordin.left + '%';
+          document.querySelector('.minimap_map').appendChild(start);
+        }
       });
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -254,13 +256,14 @@
         const minimapRect = minimap.getBoundingClientRect();
 
         // 이미지에서 %로 좌표 표현
+        // 왼쪽 위를 원점
         const x = (100 * (event.clientX - 15)) / minimapRect.width;
         const y =
           (100 * (event.clientY - minimapRect.top - 15)) / minimapRect.height;
 
         // 원점 : (1188, -108)
         // 테스트를 위한 좌표 계산
-        // test
+        // a, b는 클릭한 부분을 로봇 좌표로 변경한 것 (지도의 빨간 1px짜리가 원점)
         const a =
           (((100 * event.clientX) / minimapRect.width - (2238 * 100) / 3118) *
             3118) /
@@ -277,8 +280,11 @@
         console.log('a', a, 'b', b);
         // 여기까지 test
 
-        selectedX = a;
-        selectedY = b;
+        // 사람이 선택한 부분
+        selectedX = x;
+        selectedY = y;
+        console.log('x', x, 'x', y);
+        console.log('a', a, 'b', b);
 
         const landmarkButton = document.querySelectorAll(
           '.minimap_landmark_btn'
@@ -396,10 +402,10 @@
 
         robots.forEach((robot) => {
           if (robot.id === parseInt(robotId)) {
-            robotElement.style.bottom =
-              ((robot.position[1] + 624 - 15) * 100) / 3462 + '%';
             robotElement.style.left =
               ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
+            robotElement.style.top =
+              ((-robot.position[1] + 2820 - 15) * 100) / 3462 + '%';
           }
         });
 
@@ -420,9 +426,9 @@
       function openPage() {
         if (isMarkerSelected) {
           // 사람이 선택한 부분
-          const markerBottom = selectedX;
-          const markerLeft = selectedY;
-          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&bottom=${markerBottom}&left=${markerLeft}`;
+          const markerTop = selectedY;
+          const markerLeft = selectedX;
+          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
         }
       }
 
