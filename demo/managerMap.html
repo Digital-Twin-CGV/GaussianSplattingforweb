@@ -9,13 +9,12 @@
       body {
         margin: 0;
         /* overflow: hidden; */
-        background-color: white;
+        background-color: black;
       }
       .managerMap_container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: black;
       }
 
       .managerMap_battery {
@@ -26,16 +25,6 @@
 
       .managerMap_map {
         position: relative;
-      }
-
-      /* 마커 */
-      .robot_marker {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        border-radius: 20px;
-
-        cursor: pointer;
       }
 
       .managerMap_circle {
@@ -351,14 +340,16 @@
         const robots = await getRobots();
 
         // 기존 마커 제거
-        const markers = document.querySelectorAll(".robot_marker");
+        const markers = document.querySelectorAll(
+          ".managerMap_robot_marker_container"
+        );
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
-          const marker = createRobotMarker(robot);
+          const marker_container = createRobotMarker(robot);
           document
             .querySelector(".managerMap_map_container")
-            .appendChild(marker);
+            .appendChild(marker_container);
         });
       }
 
@@ -385,34 +376,42 @@
 
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
-        const marker = document.createElement("div");
-        marker.className = "robot_marker";
-        // %로 표현하기 위해 사진의 width, hegith로 나눔
-        // 로봇 원점이 이동한 거리만큼 더하기
-        // + 15는 마커의 크기를 고려한 것
-        marker.style.bottom =
-          ((robot.position[1] + 642 - 15) * 100) / 3462 + "%";
-        marker.style.left =
-          ((robot.position[0] + 2238 - 15) * 100) / 3118 + "%";
+        // marker와 label을 담을 container
+        const container = document.createElement("div");
+        container.className = "managerMap_robot_marker_container";
+        container.style.position = "absolute";
+        // marker 위치
+        container.style.bottom =
+          ((robot.position[1] + 642 - 20) * 100) / 3462 + "%";
+        container.style.left =
+          ((robot.position[0] + 2238 - 20) * 100) / 3118 + "%";
+        container.style.display = "flex";
+        container.style.alignItems = "center";
+        container.style.cursor = "pointer";
 
+        // marker
+        const marker = document.createElement("div");
+        marker.className = "managerMap_robot_marker";
+        // marker 크기
+        marker.style.width = "15px";
+        marker.style.height = "15px";
+        marker.style.borderRadius = "50%";
         marker.style.backgroundColor = applyColor(robot);
 
-        // 로봇 ID 표시
+        // 로봇 ID 표시. label
         const label = document.createElement("span");
-        label.innerHTML = `로봇 ${robot.id}<br>${robot.battery}%`;
-        label.style.position = "relative";
-        label.style.left = "35px"; // 마커 오른쪽
+        label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
         label.style.color = applyColor(robot);
-        label.style.fontSize = "15px";
-        label.style.width = "50px";
+        label.style.fontSize = "14px";
+        label.style.marginLeft = "5px";
 
-        // 마커에 레이블을 추가
-        marker.appendChild(label);
+        container.appendChild(marker);
+        container.appendChild(label);
 
         // 모달 띄우기
-        marker.addEventListener("click", () => showRobotDetails(robot));
+        container.addEventListener("click", () => showRobotDetails(robot));
 
-        return marker;
+        return container;
       }
 
       let controlRobotHandler; // 로봇 제어 이벤트 핸들러
