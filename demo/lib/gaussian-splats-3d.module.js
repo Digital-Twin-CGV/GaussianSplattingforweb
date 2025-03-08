@@ -6879,23 +6879,50 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.style.alignItems = "center";
     document.body.appendChild(controlsContainer);
 
-    // 버튼 생성 함수
-    function createButton(label, keyCode) {
+    // 버튼 생성 함수 (이미지를 사용)
+    function createButton(imageSrc, keyCode) {
       const button = document.createElement("button");
-      button.textContent = label;
       button.style.margin = "5px";
-      button.style.padding = "10px 15px";
-      button.style.fontSize = "16px";
+      button.style.padding = "10px";
       button.style.cursor = "pointer";
       button.style.border = "1px solid black";
       button.style.borderRadius = "5px";
       button.style.background = "#fff";
 
+      const img = document.createElement("img");
+      img.src = imageSrc;
+      img.style.width = "30px"; // 이미지 크기 조절
+      img.style.height = "30px";
+      button.appendChild(img);
+
       // 클릭 시 해당 키 코드로 처리
-      button.addEventListener("mousedown", () => triggerKeyEvent(keyCode, 'keydown'));  // mousedown -> keydown
-      button.addEventListener("mouseup", () => triggerKeyEvent(keyCode, 'keyup'));    // mouseup -> keyup
-      button.addEventListener("touchstart", () => triggerKeyEvent(keyCode, 'keydown'));
-      button.addEventListener("touchend", () => triggerKeyEvent(keyCode, 'keyup'));
+      // 터치 & 마우스 이벤트 추가
+      button.addEventListener("mousedown", (e) => {
+        e.preventDefault(); // 기본 동작 방지
+        triggerKeyEvent(keyCode, 'keydown');
+      });
+
+      button.addEventListener("mouseup", (e) => {
+        e.preventDefault();
+        triggerKeyEvent(keyCode, 'keyup');
+      });
+
+      button.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        triggerKeyEvent(keyCode, 'keydown');
+      });
+
+      button.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        triggerKeyEvent(keyCode, 'keyup');
+      });
+
+      // 모바일에서 길게 누르면 나오는 메뉴 방지
+      button.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+      });
+
+
       return button;
     }
 
@@ -6903,62 +6930,53 @@ class OrbitControls extends EventDispatcher {
     function triggerKeyEvent(keyCode, eventType) {
       const event = new KeyboardEvent(eventType, {
         key: keyCode,
-        code: keyCode.toUpperCase(),  // 대소문자 구분을 위해
+        code: keyCode.toUpperCase(),
         bubbles: true,
         cancelable: true,
       });
       window.dispatchEvent(event);
     }
 
-    // 팬을 위한 함수 (키 코드에 맞춰)
-    let isKeyPressed = {};  // 각 키에 대한 상태를 저장 (누름 상태)
+    // 팬을 위한 변수 및 함수
+    let isKeyPressed = {}; 
     let panInterval = null;
 
-    // 팬을 위한 함수 (키 코드에 맞춰)
     function handlePanEvent(event) {
       let needsUpdate = false;
 
-
-      // 키가 눌렸을 때만 처리
       if (event.type === 'keydown') {
-        isKeyPressed[event.key] = true;  // 키가 눌렸으면 true로 설정
+        isKeyPressed[event.key] = true;
 
-        // 반복을 시작
         if (!panInterval) {
           panInterval = setInterval(() => {
-            // 눌린 키에 따른 팬 처리
-            if (isKeyPressed['r']) {  // forward
-              pan(0, 0, scope.keyPanSpeed);  // forward
+            if (isKeyPressed['r']) {
+              pan(0, 0, scope.keyPanSpeed); // forward
               needsUpdate = true;
             }
-
-            if (isKeyPressed['f']) {  // back
-              pan(0, 0, -scope.keyPanSpeed);  // back
+            if (isKeyPressed['f']) {
+              pan(0, 0, -scope.keyPanSpeed); // back
               needsUpdate = true;
             }
-
-            if (isKeyPressed['a']) {  // left
-              pan(scope.keyPanSpeed, 0, 0);  // left
+            if (isKeyPressed['a']) {
+              pan(scope.keyPanSpeed, 0, 0); // left
               needsUpdate = true;
             }
-
-            if (isKeyPressed['d']) {  // right
-              pan(-scope.keyPanSpeed, 0, 0);  // right
+            if (isKeyPressed['d']) {
+              pan(-scope.keyPanSpeed, 0, 0); // right
               needsUpdate = true;
             }
 
             if (needsUpdate) {
               scope.update();
             }
-          }, 100); // 팬 반복 주기 설정 (여기서 100ms마다 반복)
+          }, 100);
         }
       } else if (event.type === 'keyup') {
-        isKeyPressed[event.key] = false;  // 키에서 손을 떼면 false로 설정
+        isKeyPressed[event.key] = false;
 
-        // 키를 떼면 반복 멈추기
         if (Object.values(isKeyPressed).every(val => !val)) {
           clearInterval(panInterval);
-          panInterval = null;  // 반복 멈추기
+          panInterval = null;
         }
       }
     }
@@ -6967,13 +6985,13 @@ class OrbitControls extends EventDispatcher {
     window.addEventListener("keydown", handlePanEvent);
     window.addEventListener("keyup", handlePanEvent);
 
-    // 버튼 클릭 시 트리거할 키 코드 매핑
-    const upButton = createButton("↑", 'r');
-    const downButton = createButton("↓", 'f');
-    const leftButton = createButton("←", 'a');
-    const rightButton = createButton("→", 'd');
+    // 버튼 클릭 시 트리거할 키 코드 매핑 (이미지 사용)
+    const upButton = createButton("../../assets/images/up_arrow.jpg", 'r');
+    const downButton = createButton("../../assets/images/down_arrow.jpg", 'f');
+    const leftButton = createButton("../../assets/images/left_arrow.jpg", 'a');
+    const rightButton = createButton("../../assets/images/right_arrow.jpg", 'd');
 
-    // 버튼 레이아웃 정렬
+    // 버튼 배치
     const row = document.createElement("div");
     row.style.display = "flex";
     row.appendChild(leftButton);
@@ -6984,9 +7002,10 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(downButton);
 
 
+
     //이동기능
     function printSelectedCoordinates(event) {
-      const { x: targetX, y: targetY } = event.detail;
+      const { x: targetX, y: targetY , index: index} = event.detail;
       if (targetY == 0) {
         count = 2;
       }

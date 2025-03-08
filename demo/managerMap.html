@@ -8,12 +8,13 @@
     <style>
       body {
         margin: 0;
-        overflow-x: hidden;
-        background-color: white;
+        /* overflow: hidden; */
+        background-color: black;
       }
       .managerMap_container {
-        width: 100vw;
-        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .managerMap_battery {
@@ -24,16 +25,6 @@
 
       .managerMap_map {
         position: relative;
-      }
-
-      /* 마커 */
-      .robot_marker {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        border-radius: 20px;
-
-        cursor: pointer;
       }
 
       .managerMap_circle {
@@ -56,6 +47,25 @@
       .robot_info,
       .robot_battery {
         margin-bottom: 10px;
+      }
+
+      /* 미니맵 컨테이너 */
+      .managerMap_map_container {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* 미니맵 */
+      .managerMap_map_img {
+        height: 95vh;
+      }
+
+      /* 모바일 화면 크기 기준 */
+      @media screen and (max-width: 1000px) {
+        .managerMap_map_img {
+          height: 100%;
+          width: 100%;
+        }
       }
 
       /* 모달의 위치 */
@@ -206,7 +216,9 @@
             <div style="color: #1dd200">사용 가능</div>
           </div>
         </div>
-        <img style="width: 100%; height: 100%" src="assets/images/2dmap.png" />
+        <div class="managerMap_map_container">
+          <img class="managerMap_map_img" src="assets/images/2dmap.png" />
+        </div>
       </div>
     </div>
 
@@ -257,17 +269,17 @@
     </div>
     <script>
       // 헤더에 필요한 script
-      document.addEventListener('DOMContentLoaded', () => {
-        fetch('header.html')
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("header.html")
           .then((response) => response.text())
           .then((data) => {
-            document.getElementById('header').innerHTML = data;
+            document.getElementById("header").innerHTML = data;
           })
-          .catch((error) => console.error('Error loading header:', error));
+          .catch((error) => console.error("Error loading header:", error));
       });
 
       function openHome(page) {
-        let url = page + '.html';
+        let url = page + ".html";
         window.location = url;
       }
 
@@ -281,11 +293,11 @@
         getRequest,
         insertRequest,
         client,
-      } from './supaDatabase/connectDatabase.js';
+      } from "./supaDatabase/connectDatabase.js";
       // 페이지 이동 ( minimap 페이지로 이동함 )
       function openPage(page, robot) {
         let url;
-        if (page == 'minimap') {
+        if (page == "minimap") {
           // 로봇 선택 페이지로 넘어갈 때
           // 출발지 선택 페이지 : destin=0, 목적지 선택 페이지 : destin=1
           url =
@@ -302,10 +314,10 @@
       // 실시간으로 DB 지켜보기
       // robots
       client
-        .channel('robots')
+        .channel("robots")
         .on(
-          'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'robots' },
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "robots" },
           (payload) => {
             robotData();
           }
@@ -313,10 +325,10 @@
         .subscribe();
       // requests
       client
-        .channel('request')
+        .channel("request")
         .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'request' },
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "request" },
           (payload) => {
             requestData();
           }
@@ -328,12 +340,16 @@
         const robots = await getRobots();
 
         // 기존 마커 제거
-        const markers = document.querySelectorAll('.robot_marker');
+        const markers = document.querySelectorAll(
+          ".managerMap_robot_marker_container"
+        );
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
-          const marker = createRobotMarker(robot);
-          document.querySelector('.managerMap_map').appendChild(marker);
+          const marker_container = createRobotMarker(robot);
+          document
+            .querySelector(".managerMap_map_container")
+            .appendChild(marker_container);
         });
       }
 
@@ -348,46 +364,54 @@
       function applyColor(robot) {
         if (robot.status === 1) {
           // 사용중이라면?
-          return '#ff0000';
+          return "#ff0000";
         } else if (robot.battery < 30) {
           // 배터리가 30 이하라면?
-          return '#f2d406';
+          return "#f2d406";
         } else {
           // 나머지
-          return '#1dd200';
+          return "#1dd200";
         }
       }
 
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
-        const marker = document.createElement('div');
-        marker.className = 'robot_marker';
-        // %로 표현하기 위해 사진의 width, hegith로 나눔
-        // 로봇 원점이 이동한 거리만큼 더하기
-        // + 15는 마커의 크기를 고려한 것
-        marker.style.bottom =
-          ((robot.position[1] + 642 - 15) * 100) / 3462 + '%';
-        marker.style.left =
-          ((robot.position[0] + 2238 - 15) * 100) / 3118 + '%';
+        // marker와 label을 담을 container
+        const container = document.createElement("div");
+        container.className = "managerMap_robot_marker_container";
+        container.style.position = "absolute";
+        // marker 위치
+        container.style.bottom =
+          ((robot.position[1] + 642 - 20) * 100) / 3462 + "%";
+        container.style.left =
+          ((robot.position[0] + 2238 - 20) * 100) / 3118 + "%";
+        container.style.display = "flex";
+        container.style.alignItems = "center";
+        container.style.cursor = "pointer";
 
+        // marker
+        const marker = document.createElement("div");
+        marker.className = "managerMap_robot_marker";
+        // marker 크기
+        marker.style.width = "15px";
+        marker.style.height = "15px";
+        marker.style.borderRadius = "50%";
         marker.style.backgroundColor = applyColor(robot);
 
-        // 로봇 ID 표시
-        const label = document.createElement('span');
-        label.innerHTML = `로봇 ${robot.id}<br>${robot.battery}%`;
-        label.style.position = 'absolute';
-        label.style.left = '35px'; // 마커 오른쪽
+        // 로봇 ID 표시. label
+        const label = document.createElement("span");
+        label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
         label.style.color = applyColor(robot);
-        label.style.fontSize = '15px';
-        label.style.width = '50px';
+        label.style.fontSize = "14px";
+        label.style.marginLeft = "5px";
 
-        // 마커에 레이블을 추가
-        marker.appendChild(label);
+        container.appendChild(marker);
+        container.appendChild(label);
 
         // 모달 띄우기
-        marker.addEventListener('click', () => showRobotDetails(robot));
+        container.addEventListener("click", () => showRobotDetails(robot));
 
-        return marker;
+        return container;
       }
 
       let controlRobotHandler; // 로봇 제어 이벤트 핸들러
@@ -395,79 +419,79 @@
 
       // 모달 안
       function showRobotDetails(robot) {
-        const modal = document.querySelector('.managerMap_modal');
-        const overlay = document.querySelector('.managerMap_modal_overlay');
-        const useRobot = modal.querySelector('.managerMap_modal_use');
-        const robotId = modal.querySelector('.managerMap_modal_title');
-        const robotCamera = modal.querySelector('.managerMap_modal_camera');
-        const robotLogs = modal.querySelector('.managerMap_modal_logs');
+        const modal = document.querySelector(".managerMap_modal");
+        const overlay = document.querySelector(".managerMap_modal_overlay");
+        const useRobot = modal.querySelector(".managerMap_modal_use");
+        const robotId = modal.querySelector(".managerMap_modal_title");
+        const robotCamera = modal.querySelector(".managerMap_modal_camera");
+        const robotLogs = modal.querySelector(".managerMap_modal_logs");
         const robotControlBtn = document.querySelector(
-          '#managerMap_modal_robot_btn'
+          "#managerMap_modal_robot_btn"
         );
         const robotStopBtn = document.querySelector(
-          '#managerMap_modal_stop_btn'
+          "#managerMap_modal_stop_btn"
         );
 
         // 로봇 제어 이벤트 리스너
         controlRobotHandler = () => controlRobot(robot);
-        robotControlBtn.addEventListener('click', controlRobotHandler);
+        robotControlBtn.addEventListener("click", controlRobotHandler);
 
         // 로봇 정지 이벤트 리스너
         stopRobotHandler = () => stopRobot(robot);
-        robotStopBtn.addEventListener('click', stopRobotHandler);
+        robotStopBtn.addEventListener("click", stopRobotHandler);
 
         robotId.innerHTML = `로봇${robot.id}`;
 
-        useRobot.innerHTML = robot.status === 0 ? '사용 가능' : '사용 불가';
+        useRobot.innerHTML = robot.status === 0 ? "사용 가능" : "사용 불가";
 
         useRobot.style.color = applyColor(robot);
 
         robotCamera.innerHTML = `<img src="./assets/images/robot1_camera.JPG" style = "width: 100%; border-radius: 10px;"/>`;
 
         // 로봇 로그
-        robotLogs.innerHTML = logs.map((log) => `<div>${log}</div>`).join('');
+        robotLogs.innerHTML = logs.map((log) => `<div>${log}</div>`).join("");
 
         // 모달을 열 때 스크롤을 맨 아래로 설정
         setTimeout(() => {
           robotLogs.scrollTop = robotLogs.scrollHeight;
         }, 0);
 
-        modal.style.display = 'block';
-        overlay.style.display = 'block';
+        modal.style.display = "block";
+        overlay.style.display = "block";
       }
 
       // 모달 닫기
       function closeModal() {
-        const modal = document.querySelector('.managerMap_modal');
-        const overlay = document.querySelector('.managerMap_modal_overlay');
+        const modal = document.querySelector(".managerMap_modal");
+        const overlay = document.querySelector(".managerMap_modal_overlay");
         const robotControlBtn = document.querySelector(
-          '#managerMap_modal_robot_btn'
+          "#managerMap_modal_robot_btn"
         );
         const robotStopBtn = document.querySelector(
-          '#managerMap_modal_stop_btn'
+          "#managerMap_modal_stop_btn"
         );
 
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
+        modal.style.display = "none";
+        overlay.style.display = "none";
         // 이벤트 리스너 제거
-        robotControlBtn.removeEventListener('click', controlRobotHandler);
-        robotStopBtn.removeEventListener('click', stopRobotHandler);
+        robotControlBtn.removeEventListener("click", controlRobotHandler);
+        robotStopBtn.removeEventListener("click", stopRobotHandler);
       }
 
       // 모달 닫기 이벤트
       document
-        .querySelector('.managerMap_modal_close')
-        .addEventListener('click', closeModal);
+        .querySelector(".managerMap_modal_close")
+        .addEventListener("click", closeModal);
       document
-        .querySelector('.managerMap_modal_overlay')
-        .addEventListener('click', closeModal);
+        .querySelector(".managerMap_modal_overlay")
+        .addEventListener("click", closeModal);
 
       // 로봇 제어 버튼
       function controlRobot(robot) {
         if (robot.status === 1) {
-          alert('로봇이 이미 사용중입니다.');
+          alert("로봇이 이미 사용중입니다.");
         } else {
-          openPage('minimap', robot);
+          openPage("minimap", robot);
         }
       }
 
