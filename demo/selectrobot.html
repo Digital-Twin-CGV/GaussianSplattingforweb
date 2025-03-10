@@ -28,6 +28,18 @@
         align-items: center;
       }
 
+      .selectrobot_zoom_btns {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .selectrobot_zoom {
+        color: #c0c0c0;
+        border: 1px solid #c0c0c0;
+        padding: 5px;
+      }
+
       .selectrobot_check_btn {
         width: 300px;
         height: 80px;
@@ -65,6 +77,10 @@
         <h3>빨간색으로 표시된 것은 사용 중인 로봇이니, 사용할 수 없습니다.</h3>
       </div>
       <div class="selectrobot_map" id="selectrobot_map">
+        <div class="selectrobot_zoom_btns">
+          <div class="selectrobot_zoom" id="selectrobot_zoom_in">+</div>
+          <div class="selectrobot_zoom" id="selectrobot_zoom_out">-</div>
+        </div>
         <img
           id="selectrobot_gaussian"
           alt="gaussian_img"
