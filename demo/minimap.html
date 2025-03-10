@@ -23,19 +23,6 @@
         display: flex;
       }
 
-      .minimap_robot_btn {
-        z-index: 10;
-        border-radius: 20px;
-        width: 30px;
-        height: 30px;
-        background-color: #1dd200;
-      }
-
-      .minimap_robot_name {
-        padding-left: 10px;
-        color: #1dd200;
-      }
-
       .minimap_title {
         text-align: center;
         width: 100%;
@@ -86,6 +73,9 @@
       }
 
       .minimap_map {
+        display: flex;
+        justify-content: center;
+
         position: relative;
         cursor: pointer;
       }
@@ -162,8 +152,8 @@
 
         <!-- 선택된 로봇 위치 -->
         <div class="minimap_robot">
-          <div class="minimap_robot_btn"></div>
-          <div class="minimap_robot_name">로봇 위치</div>
+          <div class="minimap_robot_marker"></div>
+          <div class="minimap_robot_label"></div>
         </div>
       </div>
 
@@ -189,7 +179,7 @@
       } from "./supaDatabase/connectDatabase.js";
 
       const params = new URLSearchParams(window.location.search);
-      const destin = params.get("destin"); // 출발지인지 목적지인지
+      const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
       const robotId = params.get("robot"); // 선택된 로봇 번호
 
       // 제목 설정
@@ -200,17 +190,50 @@
         titleElement.textContent = "목적지 를 선택해주세요";
       }
 
-      // 출발지 보이게
-      document.addEventListener("DOMContentLoaded", () => {
-        if (destin == 1) {
+      // 출발지 마커
+      /*
+      .minimap_start_marker {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+
+        background-color: rgb(0, 217, 255);
+
+        cursor: pointer;
+      }
+      */
+      if (destin == 1) {
+        // 목적지를 찍는 페이지라면 ...
+        document.addEventListener("DOMContentLoaded", () => {
+          // marker와 label을 넣는 container
           const start = document.createElement("div");
           const startCoordin = JSON.parse(localStorage.getItem("start"));
-          start.className = "minimap_start_marker";
+          start.className = "minimap_start";
+          start.style.position = "absolute";
           start.style.top = startCoordin.top + "%";
           start.style.left = startCoordin.left + "%";
+          start.style.display = "flex";
+          start.style.alignItems = "center";
+
+          // marker
+          const startMarker = document.createElement("div");
+          startMarker.style.width = "20px";
+          startMarker.style.height = "20px";
+          startMarker.style.borderRadius = "50%";
+          startMarker.style.backgroundColor = "rgb(0, 217, 255)";
+
+          // label
+          const startLabel = document.createElement("span");
+          startLabel.innerHTML = `출발지`;
+          startLabel.style.fontSize = "14px";
+          startLabel.style.color = "rgb(0, 217, 255)";
+
+          start.appendChild(startMarker);
+          start.appendChild(startLabel);
           document.querySelector(".minimap_map").appendChild(start);
-        }
-      });
+        });
+      }
 
       document.addEventListener("DOMContentLoaded", () => {
         fetch("header.html")
@@ -276,9 +299,8 @@
       minimap.addEventListener("click", (event) => {
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
-        console.log(minimapRect);
 
-        // 이미지에서 클릭한 부분을 %로 좌표 표현
+        // 이미지에서 클릭한 부분을 %로 좌표 표현 (marker)
         // 왼쪽 위를 원점
         const x =
           (100 * (event.clientX - minimapRect.left - 10)) / minimapRect.width;
@@ -412,17 +434,41 @@
         )
         .subscribe();
 
-      // 로봇 위치
       async function robotData() {
         const robots = await getRobots();
-        const robotElement = document.querySelector(`.minimap_robot`);
+        const robotContainer = document.querySelector(`.minimap_robot`);
+        const robotMarker = document.querySelector(`.minimap_robot_marker`);
+        const robotLabel = document.querySelector(`.minimap_robot_label`);
 
         robots.forEach((robot) => {
           if (robot.id === parseInt(robotId)) {
-            robotElement.style.left =
-              ((robot.position[0] + 2238 - 15) * 100) / 3118 + "%";
-            robotElement.style.top =
-              ((-robot.position[1] + 2820 - 15) * 100) / 3462 + "%";
+            // 미니맵의 정보
+            const minimapRect = document
+              .getElementById("minimap_gaussian")
+              .getBoundingClientRect();
+            // robot marker와 label을 담을 container
+            robotContainer.style.left =
+              ((robot.position[0] + 2238) * 100) / 3118 -
+              (7.5 * 100) / minimapRect.width +
+              "%";
+            robotContainer.style.top =
+              ((robot.position[1] + 2820) * 100) / 3462 -
+              (7.5 * 100) / minimapRect.height +
+              "%";
+            robotContainer.style.display = "flex";
+            robotContainer.style.alignItems = "center";
+
+            // robot marker
+            robotMarker.style.width = "15px";
+            robotMarker.style.height = "15px";
+            robotMarker.style.borderRadius = "50%";
+            robotMarker.style.backgroundColor = "#1dd200";
+
+            // robot label
+            robotLabel.innerHTML = `로봇${robot.id}`;
+            robotLabel.style.color = "#1dd200";
+            robotLabel.style.fontSize = "10px";
+            robotLabel.style.marginLeft = "5px";
           }
         });
 
