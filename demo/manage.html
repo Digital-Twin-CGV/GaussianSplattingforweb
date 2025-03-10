@@ -84,6 +84,39 @@
         height: 21px;
         color: red;
       }
+
+       /* 반응형 */
+       @media screen and (max-width: 1000px) {
+        .manage_code_title {
+          font-size: 30px;
+          margin-bottom: 20px;
+        }
+
+        #manage_code {
+          width: 400px;
+          height: 50px;
+
+          font-size: 30px;
+          border-radius: 12px;
+          border: 3px solid #638c6d;
+
+          text-align: center;
+        }
+
+        #manage_check_btn {
+          border: none;
+          border-radius: 10px;
+          background-color: #638c6d;
+
+          font-size: 25px;
+          font-weight: bold;
+          color: white;
+
+          padding: 10px 120px;
+
+          cursor: pointer;
+        }
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
