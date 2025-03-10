@@ -53,6 +53,22 @@
         font-size: 30px;
         text-align: center;
       }
+
+      /* 반응형 */
+      @media screen and (max-width: 1000px) {
+        .main_large-button {
+          padding: 30px 60px; 
+          /* padding-left: 40px;
+          padding-right: 40px; */
+          font-size: 30px; /* 작은 화면에서 글씨 크기 줄이기 */
+        }
+
+        .main_manager {
+          font-size: 20px; /* 작은 화면에서 글씨 크기 줄이기 */
+          padding: 20px 30px;
+        }
+      }
+
     </style>
   </head>
 
@@ -86,27 +102,37 @@
         window.location = url;
       }
 
-      function checkMobile() {
-        // 모바일인지
-        var mobileMessage = document.getElementById('mobileMessage');
-        var buttons = document.getElementById('buttons');
+      // function checkMobile() {
+      //   // 모바일인지
+      //   var mobileMessage = document.getElementById('mobileMessage');
+      //   var buttons = document.getElementById('buttons');
+      //   var textElement = document.getElementById('textElement');
 
-        if (window.innerWidth < window.innerHeight) {
-          // 세로 모드일 때는 "화면을 가로로 돌려주세요" 메시지만 보이게
-          mobileMessage.style.display = 'flex';
-          buttons.style.display = 'none'; // 버튼 숨기기
-        } else {
-          // 가로 모드일 때는 버튼만 보이게
-          mobileMessage.style.display = 'none';
-          buttons.style.display = 'block'; // 버튼 보이기
-        }
-      }
+      //   if (window.innerWidth < window.innerHeight) {
+      //     // 세로 모드일 때는 "화면을 가로로 돌려주세요" 메시지만 보이게
+      //     // mobileMessage.style.display = 'flex';
+      //     // buttons.style.display = 'none'; // 버튼 숨기기
+
+      //     if (textElement) {
+      //       textElement.style.fontSize = '12px'; // 모바일 화면에서 글씨 크기 더 작게
+      //     }
+      //   } else {
+      //     // 가로 모드일 때는 버튼만 보이게
+      //     // mobileMessage.style.display = 'none';
+      //     // buttons.style.display = 'block'; // 버튼 보이기
+          
+      //      // 글씨 크기 원래 크기로 복구
+      //     if (textElement) {
+      //       textElement.style.fontSize = ''; // 기본 글씨 크기로 복구
+      //     }
+      //   }
+      // }
 
       // 화면 크기 변경 시마다 실행
-      window.addEventListener('resize', checkMobile);
+      // window.addEventListener('resize', checkMobile);
 
       // 페이지 로드 시에도 실행
-      checkMobile();
+      // checkMobile();
     </script>
   </body>
 </html>
