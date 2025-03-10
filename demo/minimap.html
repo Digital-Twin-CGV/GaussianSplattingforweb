@@ -91,48 +91,6 @@
           width: 100%;
         }
       }
-
-      /* 시작 마커 */
-      .minimap_start_marker {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
-
-        background-color: aqua;
-
-        cursor: pointer;
-      }
-
-       /* 반응형 */
-       @media screen and (max-width: 1000px) {
-        .minimap_title h1 {
-          font-size: 25px;
-        }
-
-        .minimap_check_btn {
-          width: 200px;
-          height: 60px;
-          border-radius: 10px;
-          font-size: large;
-
-          /* 버튼 맨 아래에 고정 */
-          position: fixed; 
-          bottom: 20px;
-          /* left: 50%; */
-          transform: translateX(-50%);
-        }
-
-        .test_btn {
-          /* 버튼 맨 아래에 고정 */
-          position: fixed; 
-          bottom: 20px;
-          left: 80%;
-          transform: translateX(-80%);
-        }
-
-      }
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
@@ -185,9 +143,9 @@
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
       if (destin === "0") {
-        titleElement.textContent = "출발지 를 선택해주세요";
+        titleElement.textContent = "출발지 선택를 선택해주세요";
       } else if (destin === "1") {
-        titleElement.textContent = "목적지 를 선택해주세요";
+        titleElement.textContent = "목적지 선택를 선택해주세요";
       }
 
       // 출발지 마커
@@ -452,7 +410,7 @@
               (7.5 * 100) / minimapRect.width +
               "%";
             robotContainer.style.top =
-              ((robot.position[1] + 2820) * 100) / 3462 -
+              ((-robot.position[1] + 2820) * 100) / 3462 -
               (7.5 * 100) / minimapRect.height +
               "%";
             robotContainer.style.display = "flex";
