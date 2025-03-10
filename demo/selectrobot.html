@@ -46,40 +46,13 @@
         height: 75vh;
       }
 
-      /* 반응형 */
+      /* 모바일 화면 크기 기준 */
       @media screen and (max-width: 1000px) {
         #selectrobot_gaussian {
           height: 100%;
           width: 100%;
         }
-
-        .selectrobot_title h1 {
-          font-size: 25px;
-        }
-
-        .selectrobot_title h3 {
-          font-size: 15px;
-        }
-
-        .selectrobot_robot_marker {
-          width: 5px;
-          height: 5px;
-        }
-
-        .selectrobot_check_btn {
-          width: 200px;
-          height: 60px;
-          border-radius: 10px;
-          font-size: large;
-
-          /* 버튼 맨 아래에 고정 */
-          position: fixed; 
-          bottom: 20px;
-          /* left: 50%; */
-          transform: translateX(-50%);
-        }
       }
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
@@ -198,7 +171,7 @@
           (7.5 * 100) / minimapRect.width +
           "%";
         container.style.top =
-          ((robot.position[1] + 2820) * 100) / 3462 -
+          ((-robot.position[1] + 2820) * 100) / 3462 -
           (7.5 * 100) / minimapRect.height +
           "%";
         container.style.display = "flex";
@@ -209,8 +182,8 @@
         const marker = document.createElement("div");
         marker.className = "selectrobot_robot_marker";
         // marker 크기
-        marker.style.width = "20px";
-        marker.style.height = "20px";
+        marker.style.width = "15px";
+        marker.style.height = "15px";
         marker.style.borderRadius = "50%";
         marker.style.backgroundColor = applyColor(robot);
 
