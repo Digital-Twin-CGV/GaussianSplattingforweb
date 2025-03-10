@@ -17,7 +17,6 @@
         align-items: center;
 
         width: 100%;
-        height: 100vh;
       }
 
       .selectrobot_title {
@@ -37,6 +36,9 @@
       }
 
       .selectrobot_map {
+        display: flex;
+        justify-content: center;
+
         position: relative;
       }
 
@@ -156,14 +158,22 @@
 
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
+        // 미니맵의 정보
+        const minimapRect = document
+          .getElementById("selectrobot_gaussian")
+          .getBoundingClientRect();
+        // marker와 label을 넣을 container
         const container = document.createElement("div");
         container.className = "selectrobot_robot_marker_container";
         container.style.position = "absolute";
-        // marker 위치
-        container.style.bottom =
-          ((robot.position[1] + 642 - 20) * 100) / 3462 + "%";
         container.style.left =
-          ((robot.position[0] + 2238 - 20) * 100) / 3118 + "%";
+          ((robot.position[0] + 2238) * 100) / 3118 -
+          (7.5 * 100) / minimapRect.width +
+          "%";
+        container.style.top =
+          ((robot.position[1] + 2820) * 100) / 3462 -
+          (7.5 * 100) / minimapRect.height +
+          "%";
         container.style.display = "flex";
         container.style.alignItems = "center";
         container.style.cursor = "pointer";
@@ -181,7 +191,7 @@
         const label = document.createElement("span");
         label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
         label.style.color = applyColor(robot);
-        label.style.fontSize = "14px";
+        label.style.fontSize = "10px";
         label.style.marginLeft = "5px";
 
         container.appendChild(marker);
@@ -203,7 +213,8 @@
         title.textContent = `호출할 로봇을 선택해주세요 (로봇 ${robotName})`;
         selectedRobot = robotName;
         selectedAvailable = available;
-        console.log(selectedRobot);
+
+        // 색상 변경한 것 적용
         robotData();
       }
 

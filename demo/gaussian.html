@@ -40,28 +40,28 @@
     </div>
     <script>
       // 헤더
-      document.addEventListener('DOMContentLoaded', () => {
-        fetch('header.html')
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("header.html")
           .then((response) => response.text())
           .then((data) => {
-            document.getElementById('header').innerHTML = data;
+            document.getElementById("header").innerHTML = data;
           })
-          .catch((error) => console.error('Error loading header:', error));
+          .catch((error) => console.error("Error loading header:", error));
       });
 
       function openHome(page) {
-        let url = page + '.html';
+        let url = page + ".html";
         window.location = url;
       }
 
       function goBack() {
-        console.log('뒤로가기');
+        console.log("뒤로가기");
         history.back();
       }
     </script>
     <script type="module">
-      import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
-      import * as THREE from 'three';
+      import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
+      import * as THREE from "three";
 
       const urlParams = new URLSearchParams(window.location.search);
 
@@ -69,13 +69,13 @@
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
       const initialCameraRotation = { x: 0, y: -50, z: 0 };
 
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         const selectedCoordinates = JSON.parse(
-          localStorage.getItem('selectedCoordinates')
+          localStorage.getItem("selectedCoordinates")
         );
 
         if (selectedCoordinates) {
-          const event = new CustomEvent('selectedCoordinatesEvent', {
+          const event = new CustomEvent("selectedCoordinatesEvent", {
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
@@ -163,7 +163,7 @@
       viewer
         .addSplatScenes([
           {
-            path: 'assets/data/test3.splat',
+            path: "assets/data/test3.splat",
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
@@ -184,7 +184,7 @@
 
           // JSON 파일에서 좌표를 읽어오는 함수
           async function loadCoordinates() {
-            const response = await fetch('./box_coord.json');
+            const response = await fetch("./box_coord.json");
             const data = await response.json();
             /* console.log("좌표", data); */
             /* return data; */
@@ -244,12 +244,12 @@
                 viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
-              console.log('박스가 클릭되었습니다!');
+              console.log("박스가 클릭되었습니다!");
               createRectangleWithText(boxMesh, info, clickPoint);
             };
 
             // Raycaster를 사용하여 클릭 이벤트 처리
-            viewer.renderer.domElement.addEventListener('click', (event) => {
+            viewer.renderer.domElement.addEventListener("click", (event) => {
               const mouse = new THREE.Vector2();
               mouse.x =
                 (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
@@ -307,13 +307,13 @@
             const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
             /* 텍스트 캔버스 생성 */
-            const textCanvas = document.createElement('canvas');
-            const textCtx = textCanvas.getContext('2d');
+            const textCanvas = document.createElement("canvas");
+            const textCtx = textCanvas.getContext("2d");
 
             /* 폰트 설정 */
             textCtx.font = `bold ${fontSize}px Arial`;
 
-            const lines = info.name.split('\n');
+            const lines = info.name.split("\n");
 
             // 각 줄에 대해 텍스트 크기 계산
             const lineHeight = fontSize; // 줄 간격
@@ -327,9 +327,9 @@
             textCanvas.height = textHeight;
 
             /* 텍스트 채우기 */
-            textCtx.fillStyle = 'black';
-            textCtx.textAlign = 'center';
-            textCtx.textBaseline = 'middle';
+            textCtx.fillStyle = "black";
+            textCtx.textAlign = "center";
+            textCtx.textBaseline = "middle";
 
             // 글씨 쓰기
             lines.forEach((line, index) => {
@@ -409,7 +409,7 @@
       let minZoom = 0.1; // 최소 줌 레벨
 
       // 화살표 키로 카메라 이동 처리
-      document.addEventListener('keydown', function (event) {
+      document.addEventListener("keydown", function (event) {
         const forward = new THREE.Vector3();
         const right = new THREE.Vector3();
         const up = new THREE.Vector3(0, 1, 0);
@@ -425,8 +425,8 @@
       });
 
       // 휠로 확대/축소 처리
-      document.addEventListener('wheel', function (event) {
-        console.log('wheel event');
+      document.addEventListener("wheel", function (event) {
+        console.log("wheel event");
         const zoomSpeed = 0.1;
         if (event.deltaY < 0) {
           // 줌 인
@@ -462,30 +462,30 @@
       // url 파라미터 가져오기
       function getUrlParams() {
         const params = new URLSearchParams(window.location.search);
-        const destin = params.get('destin');
-        const robot = params.get('robot');
-        const top = params.get('top');
-        const left = params.get('left');
+        const destin = params.get("destin");
+        const robot = params.get("robot");
+        const top = params.get("top");
+        const left = params.get("left");
 
         return { destin, robot, top, left };
       }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
-      // 만약 destin이 1이면 이동 시작
+      // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
         const { destin, robot, top, left } = getUrlParams();
         let url;
-        if (destin === '0') {
+        if (destin === "0") {
           // 목적지 페이지로
           url = `minimap.html?destin=1&robot=${robot}`;
-        } else if (destin === '1') {
+        } else if (destin === "1") {
           // moving 페이지로
           url = `moving.html?robot=${robot}`;
         }
-        //찍은 위치 로컬 스토리지에 저장
+        //미니맵에서 찍은 위치 로컬 스토리지에 저장
         localStorage.setItem(
-          destin === '0' ? 'start' : 'end',
+          destin === "0" ? "start" : "end",
           JSON.stringify({ top, left })
         );
 
