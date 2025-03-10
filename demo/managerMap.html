@@ -15,16 +15,14 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        position: relative;
       }
 
       .managerMap_battery {
         position: absolute;
         right: 10px;
         top: 10px;
-      }
-
-      .managerMap_map {
-        position: relative;
       }
 
       .managerMap_circle {
@@ -53,6 +51,8 @@
       .managerMap_map_container {
         display: flex;
         justify-content: center;
+
+        position: relative;
       }
 
       /* 미니맵 */
@@ -376,15 +376,23 @@
 
       // 로봇 마커 생성 함수
       function createRobotMarker(robot) {
+        // 미니맵의 정보
+        const minimapRect = document
+          .getElementsByClassName("managerMap_map_img")[0]
+          .getBoundingClientRect();
+        console.log(minimapRect);
         // marker와 label을 담을 container
         const container = document.createElement("div");
         container.className = "managerMap_robot_marker_container";
         container.style.position = "absolute";
-        // marker 위치
-        container.style.bottom =
-          ((robot.position[1] + 642 - 20) * 100) / 3462 + "%";
         container.style.left =
-          ((robot.position[0] + 2238 - 20) * 100) / 3118 + "%";
+          ((robot.position[0] + 2238) * 100) / 3118 -
+          (7.5 * 100) / minimapRect.width +
+          "%";
+        container.style.top =
+          ((robot.position[1] + 2820) * 100) / 3462 -
+          (7.5 * 100) / minimapRect.height +
+          "%";
         container.style.display = "flex";
         container.style.alignItems = "center";
         container.style.cursor = "pointer";
@@ -402,7 +410,7 @@
         const label = document.createElement("span");
         label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
         label.style.color = applyColor(robot);
-        label.style.fontSize = "14px";
+        label.style.fontSize = "10px";
         label.style.marginLeft = "5px";
 
         container.appendChild(marker);
