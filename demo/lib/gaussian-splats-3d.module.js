@@ -6545,7 +6545,7 @@ class OrbitControls extends EventDispatcher {
         // 현재 위치 가져오기
         const currentPos = scope.object.position;
         const currentrotate = scope.object.rotation;
-        console.log(currentrotate);
+        //console.log(currentrotate); --> 회전각도보려면 키기
 
         // JSON에서 값 가져오기
         const MAX_X = currentWall.MAX_X;
