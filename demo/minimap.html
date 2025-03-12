@@ -143,9 +143,9 @@
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
       if (destin === "0") {
-        titleElement.textContent = "출발지 선택를 선택해주세요";
+        titleElement.textContent = "출발지 를 선택해주세요";
       } else if (destin === "1") {
-        titleElement.textContent = "목적지 선택를 선택해주세요";
+        titleElement.textContent = "목적지 를 선택해주세요";
       }
 
       // 출발지 마커
@@ -237,7 +237,10 @@
       const background = document.getElementById("minimap_gaussian");
       const canvas = document.getElementById("colorCanvas");
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      let marker = null;
+      // let marker = null;
+
+      // 마커, 라벨 저장할 변수
+      let markerContainer = null;
 
       background.addEventListener("load", () => {
         canvas.width = background.width;
@@ -307,22 +310,43 @@
         console.log(color);
         //if (color !== 'rgb(0, 0, 0)') {
 
-        if (marker) {
-          minimap.removeChild(marker);
+        // if (marker) {
+        //   minimap.removeChild(marker);
+        // }
+
+        if (markerContainer) {
+          minimap.removeChild(markerContainer);
         }
 
+         // 마커와 라벨을 감싸는 컨테이너 생성
+        markerContainer = document.createElement("div");
+        markerContainer.style.position = "absolute";
+        markerContainer.style.top = `${y}%`;
+        markerContainer.style.left = `${x}%`;
+        markerContainer.style.display = "flex";
+        markerContainer.style.alignItems = "center";
+
         // 마커 생성
-        marker = document.createElement("div");
-        marker.style.position = "absolute";
-        marker.style.top = `${y}%`;
-        marker.style.left = `${x}%`;
+        const marker = document.createElement("div");
         marker.style.width = "20px";
         marker.style.height = "20px";
         marker.style.backgroundColor = "red";
-        marker.style.borderRadius = "10px";
-        marker.style.zIndex = "10";
+        marker.style.borderRadius = "50%";
 
-        minimap.appendChild(marker);
+        // 라벨 생성
+        const markerLabel = document.createElement("span");
+        markerLabel.textContent = destin === "0" ? "출발지" : "목적지";
+        markerLabel.style.marginLeft = "10px"; // 마커 오른쪽에
+        markerLabel.style.color = "red";
+        markerLabel.style.fontSize = "14px";
+        markerLabel.style.fontWeight = "bold";
+
+        // 컨테이너에 마커와 라벨 추가
+        markerContainer.appendChild(marker);
+        markerContainer.appendChild(markerLabel);
+
+        // minimap에 컨테이너 추가
+        minimap.appendChild(markerContainer);
 
         setMarkerSelected(true);
 
