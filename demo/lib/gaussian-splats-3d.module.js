@@ -6507,8 +6507,6 @@ class OrbitControls extends EventDispatcher {
       };
     })();
 
-
-
     let modelData = []; // JSON 원본 데이터
     let allWalls = []; // 모든 벽 데이터를 저장할 배열
     let currentWall = {}; // 현재 선택된 벽 (기본적으로 첫 번째 벽)
@@ -6516,13 +6514,12 @@ class OrbitControls extends EventDispatcher {
     async function loadWallData() {
       try {
         const response = await fetch("../wall.json"); // JSON 파일 경로
-        modelData = await response.json().then(data => data.models);
-        allWalls = modelData.flatMap(model => model.walls);
+        modelData = await response.json().then((data) => data.models);
+        allWalls = modelData.flatMap((model) => model.walls);
 
         if (allWalls.length > 0) {
           currentWall = allWalls[0]; // 기본 벽 설정
         }
-    
 
         console.log("로드된 벽 데이터:", currentWall);
       } catch (error) {
@@ -6556,15 +6553,14 @@ class OrbitControls extends EventDispatcher {
         const MIN_Z = currentWall.MIN_Z;
         const ANGLE = currentWall.ANGLE;
 
-
         if (scope.object.isPerspectiveCamera) {
           // perspective
           const position = scope.object.position;
           offset.copy(position).sub(scope.target);
-          let targetDistance = offset.length(); 
+          let targetDistance = offset.length();
 
           //회전방향 확인
-          let check_rotation = Math.abs(currentrotate.x-ANGLE);
+          let check_rotation = Math.abs(currentrotate.x - ANGLE);
 
           //console.log(check_rotation);
           targetDistance *= Math.tan(
@@ -6572,8 +6568,9 @@ class OrbitControls extends EventDispatcher {
           );
 
           if (scope.object.isPerspectiveCamera) {
-            if((currentPos.z > MIN_Z && currentPos.z < MAX_Z)) {//회전 기반으로 작동하게할거라 후에 추가
-              if(check_rotation>0.5){
+            if (currentPos.z > MIN_Z && currentPos.z < MAX_Z) {
+              //회전 기반으로 작동하게할거라 후에 추가
+              if (check_rotation > 0.5) {
                 panForward(
                   (2 * deltaZ * targetDistance) / element.clientHeight,
                   scope.object.matrix
@@ -6893,35 +6890,36 @@ class OrbitControls extends EventDispatcher {
       img.src = imageSrc;
       img.style.width = "30px"; // 이미지 크기 조절
       img.style.height = "30px";
+      img.setAttribute("oncontextmenu", "return false"); // 우클릭 방지
+      img.style.webkitTouchCallout = "none"; // iOS에서 길게 누를 때 메뉴 방지
       button.appendChild(img);
 
       // 클릭 시 해당 키 코드로 처리
       // 터치 & 마우스 이벤트 추가
       button.addEventListener("mousedown", (e) => {
         e.preventDefault(); // 기본 동작 방지
-        triggerKeyEvent(keyCode, 'keydown');
+        triggerKeyEvent(keyCode, "keydown");
       });
 
       button.addEventListener("mouseup", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keyup');
+        triggerKeyEvent(keyCode, "keyup");
       });
 
       button.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keydown');
+        triggerKeyEvent(keyCode, "keydown");
       });
 
       button.addEventListener("touchend", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keyup');
+        triggerKeyEvent(keyCode, "keyup");
       });
 
       // 모바일에서 길게 누르면 나오는 메뉴 방지
       button.addEventListener("contextmenu", (e) => {
         e.preventDefault();
       });
-
 
       return button;
     }
@@ -6938,30 +6936,30 @@ class OrbitControls extends EventDispatcher {
     }
 
     // 팬을 위한 변수 및 함수
-    let isKeyPressed = {}; 
+    let isKeyPressed = {};
     let panInterval = null;
 
     function handlePanEvent(event) {
       let needsUpdate = false;
 
-      if (event.type === 'keydown') {
+      if (event.type === "keydown") {
         isKeyPressed[event.key] = true;
 
         if (!panInterval) {
           panInterval = setInterval(() => {
-            if (isKeyPressed['r']) {
+            if (isKeyPressed["r"]) {
               pan(0, 0, scope.keyPanSpeed); // forward
               needsUpdate = true;
             }
-            if (isKeyPressed['f']) {
+            if (isKeyPressed["f"]) {
               pan(0, 0, -scope.keyPanSpeed); // back
               needsUpdate = true;
             }
-            if (isKeyPressed['a']) {
+            if (isKeyPressed["a"]) {
               pan(scope.keyPanSpeed, 0, 0); // left
               needsUpdate = true;
             }
-            if (isKeyPressed['d']) {
+            if (isKeyPressed["d"]) {
               pan(-scope.keyPanSpeed, 0, 0); // right
               needsUpdate = true;
             }
@@ -6971,10 +6969,10 @@ class OrbitControls extends EventDispatcher {
             }
           }, 100);
         }
-      } else if (event.type === 'keyup') {
+      } else if (event.type === "keyup") {
         isKeyPressed[event.key] = false;
 
-        if (Object.values(isKeyPressed).every(val => !val)) {
+        if (Object.values(isKeyPressed).every((val) => !val)) {
           clearInterval(panInterval);
           panInterval = null;
         }
@@ -6986,10 +6984,13 @@ class OrbitControls extends EventDispatcher {
     window.addEventListener("keyup", handlePanEvent);
 
     // 버튼 클릭 시 트리거할 키 코드 매핑 (이미지 사용)
-    const upButton = createButton("../../assets/images/up_arrow.jpg", 'r');
-    const downButton = createButton("../../assets/images/down_arrow.jpg", 'f');
-    const leftButton = createButton("../../assets/images/left_arrow.jpg", 'a');
-    const rightButton = createButton("../../assets/images/right_arrow.jpg", 'd');
+    const upButton = createButton("../../assets/images/up_arrow.jpg", "r");
+    const downButton = createButton("../../assets/images/down_arrow.jpg", "f");
+    const leftButton = createButton("../../assets/images/left_arrow.jpg", "a");
+    const rightButton = createButton(
+      "../../assets/images/right_arrow.jpg",
+      "d"
+    );
 
     // 버튼 배치
     const row = document.createElement("div");
@@ -7001,11 +7002,9 @@ class OrbitControls extends EventDispatcher {
     controlsContainer.appendChild(row);
     controlsContainer.appendChild(downButton);
 
-
-
     //이동기능
     function printSelectedCoordinates(event) {
-      const { x: targetX, y: targetY , index: index} = event.detail;
+      const { x: targetX, y: targetY, index: index } = event.detail;
       if (targetY == 0) {
         count = 2;
       }
@@ -7038,10 +7037,8 @@ class OrbitControls extends EventDispatcher {
           //편차를 위해 1로 잡음. 수정가능함
           count++;
         }
-      }
-
-      else if(count==1){
-        if(targetY > 0) {
+      } else if (count == 1) {
+        if (targetY > 0) {
           pan(0, 0, -scope.keyPanSpeed);
           calctargetY -= 5;
         } else if (targetY < 0) {
@@ -7061,8 +7058,10 @@ class OrbitControls extends EventDispatcher {
         }
       }
 
-      if(count!=2){
-        requestAnimationFrame(() => adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)); // 다음 프레임에서 다시 실행
+      if (count != 2) {
+        requestAnimationFrame(() =>
+          adjustCoordinates(targetX, targetY, calctargetX, calctargetY, count)
+        ); // 다음 프레임에서 다시 실행
       }
     }
     // 커스텀 이벤트 수신
