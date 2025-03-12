@@ -9,11 +9,14 @@
       body {
         margin: 0;
         overflow-x: hidden;
+        background-color: black;
       }
 
       /*헤더부분*/
       .moving_header {
         width: 100%;
+        background-color: white;
+
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -21,11 +24,18 @@
 
       .moving_title {
         padding-top: 10px;
-        font-size: 20px;
+        font-size: 30px;
+        font-weight: bold;
       }
 
       .moving_stop {
         margin: 10px;
+        padding: 2% 10%;
+        border-radius: 10px;
+
+        color: white;
+        background-color: red;
+        border: none;
       }
 
       /*미니맵 부분*/
@@ -33,6 +43,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+
         width: 100%;
       }
 
@@ -41,11 +52,10 @@
         justify-content: center;
 
         position: relative;
-        cursor: pointer;
       }
 
       #moving_map {
-        height: 90vh;
+        height: 80vh;
       }
 
       .moving_robot_marker {
@@ -53,6 +63,14 @@
         width: 15px;
         height: 15px;
         border-radius: 10px;
+      }
+
+      /* 모바일 화면 크기 기준 */
+      @media screen and (max-width: 600px) {
+        #moving_map {
+          height: 100%;
+          width: 100%;
+        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -92,17 +110,50 @@
 
     // 로봇 마커 생성 함수
     function createRobotMarker(robot) {
+      // 미니맵의 정보
+      const minimapRect = document
+        .getElementById("moving_map")
+        .getBoundingClientRect();
+      // marker와 label을 넣을 container
+      const container = document.createElement("div");
+      container.className = "moving_robot_marker_container";
+      container.style.position = "absolute";
+      container.style.left =
+        ((robot.position[0] + 2238) * 100) / 3118 -
+        (7.5 * 100) / minimapRect.width +
+        "%";
+      container.style.top =
+        ((-robot.position[1] + 2820) * 100) / 3462 -
+        (7.5 * 100) / minimapRect.height +
+        "%";
+      container.style.display = "flex";
+      container.style.alignItems = "center";
+      container.style.cursor = "pointer";
+
+      // marker
       const marker = document.createElement("div");
       marker.className = "moving_robot_marker";
-      // % 로 표현하기 위해 사진의 width, hegith로 나눔
-      // 로봇 원점이 이동한 거리만큼 더하기
-      // + 15는 마커의 크기를 고려한 것
-      marker.style.left = ((robot.position[0] + 2238 - 15) * 100) / 3118 + "%";
-      marker.style.top = ((-robot.position[1] + 2820 - 15) * 100) / 3462 + "%";
+      // marker 크기
+      marker.style.width = "15px";
+      marker.style.height = "15px";
+      marker.style.borderRadius = "50%";
+      marker.style.backgroundColor = "#1dd200";
 
-      marker.style.backgroundColor = "green";
+      // 로봇 ID 표시. label
+      const label = document.createElement("span");
+      label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
+      label.style.color = "#1dd200";
+      label.style.fontSize = "10px";
+      label.style.marginLeft = "5px";
 
-      return marker;
+      container.appendChild(marker);
+      container.appendChild(label);
+
+      container.addEventListener("click", () => {
+        updateTitle(robot.id, robot.status);
+      });
+
+      return container;
     }
 
     // 데이터 불러오기
