@@ -488,11 +488,11 @@
         }
       }
 
-      // newton1.splat scaling
+      // newton1.splat scaling, index(모델 인덱스)
       function convertToGaussian(xPixel, yPixel) {
         const gaussianX = -31.727 * xPixel + 1014.437;
         const gaussianZ = -6.481 * yPixel + 602.260;
-        const index=0;
+        const index = 0;
         return { x: gaussianX, z: gaussianZ ,model_num: index};
       }
 
