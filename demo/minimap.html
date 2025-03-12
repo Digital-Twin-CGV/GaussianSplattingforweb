@@ -250,13 +250,14 @@
 
       let selectedX = null;
       let selectedY = null;
+      let model_num=null;
 
       // test 테스트 좌표
       let test_a = null;
       let test_b = null;
       //
 
-      // 클릭한 부분
+      // 클릭한 부분 ----> 여기에 인덱스 넣으면됨
       minimap.addEventListener("click", (event) => {
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
@@ -473,11 +474,11 @@
           // 사람이 선택한 부분
           const markerTop = selectedY;
           const markerLeft = selectedX;
-          const { x: gaussianX, z: gaussianZ } = convertToGaussian(
+          const { x: gaussianX, z: gaussianZ, model_num: model_num} = convertToGaussian(
             selectedX,
-            selectedY
+            selectedY,
           );
-          const convertedCoordinates = { x: gaussianX, y: gaussianZ };
+          const convertedCoordinates = { x: gaussianX, y: gaussianZ , model_num: model_num};
 
           localStorage.setItem(
             "selectedCoordinates",
@@ -489,10 +490,11 @@
 
       // newton1.splat scaling
       function convertToGaussian(xPixel, yPixel) {
-    const gaussianX = -31.727 * xPixel + 1014.437;
-    const gaussianZ = -6.481 * yPixel + 602.260;
-    return { x: gaussianX, z: gaussianZ };
-}
+        const gaussianX = -31.727 * xPixel + 1014.437;
+        const gaussianZ = -6.481 * yPixel + 602.260;
+        const index=0;
+        return { x: gaussianX, z: gaussianZ ,model_num: index};
+      }
 
       window.openHome = openHome;
       window.goBack = goBack;
