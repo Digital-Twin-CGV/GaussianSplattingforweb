@@ -36,27 +36,6 @@
         height: 30px;
       }
 
-      .minimap_landmark_btn1 {
-        position: absolute;
-        top: 35%;
-        left: 35%;
-      }
-      .minimap_landmark_btn2 {
-        position: absolute;
-        top: 65%;
-        left: 30%;
-      }
-      .minimap_landmark_btn3 {
-        position: absolute;
-        top: 28%;
-        left: 75%;
-      }
-      .minimap_landmark_btn4 {
-        position: absolute;
-        top: 45%;
-        left: 97%;
-      }
-
       .minimap_landmark_btn.selected {
         background-color: yellow;
       }
@@ -85,7 +64,7 @@
       }
 
       /* 모바일 화면 크기 기준 */
-      @media screen and (max-width: 1000px) {
+      @media screen and (max-width: 600px) {
         #minimap_gaussian {
           height: 100%;
           width: 100%;
@@ -143,24 +122,12 @@
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
       if (destin === "0") {
-        titleElement.textContent = "출발지 를 선택해주세요";
+        titleElement.textContent = "출발지를 선택해주세요";
       } else if (destin === "1") {
-        titleElement.textContent = "목적지 를 선택해주세요";
+        titleElement.textContent = "목적지를 선택해주세요";
       }
 
       // 출발지 마커
-      /*
-      .minimap_start_marker {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-
-        background-color: rgb(0, 217, 255);
-
-        cursor: pointer;
-      }
-      */
       if (destin == 1) {
         // 목적지를 찍는 페이지라면 ...
         document.addEventListener("DOMContentLoaded", () => {
@@ -250,14 +217,13 @@
 
       let selectedX = null;
       let selectedY = null;
-      let model_num=null;
 
       // test 테스트 좌표
       let test_a = null;
       let test_b = null;
       //
 
-      // 클릭한 부분 ----> 여기에 인덱스 넣으면됨
+      // 클릭한 부분
       minimap.addEventListener("click", (event) => {
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
@@ -293,7 +259,7 @@
         test_b = b;
         // 여기까지 test
 
-        console.log("x", x, "y", y);
+        // console.log("x", x, "y", y);
         console.log("a", a, "b", b);
 
         const landmarkButton = document.querySelectorAll(
@@ -308,7 +274,7 @@
           1
         ).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
-        console.log(color);
+        // console.log(color);
         //if (color !== 'rgb(0, 0, 0)') {
 
         // if (marker) {
@@ -319,7 +285,7 @@
           minimap.removeChild(markerContainer);
         }
 
-         // 마커와 라벨을 감싸는 컨테이너 생성
+        // 마커와 라벨을 감싸는 컨테이너 생성
         markerContainer = document.createElement("div");
         markerContainer.style.position = "absolute";
         markerContainer.style.top = `${y}%`;
@@ -417,6 +383,7 @@
         )
         .subscribe();
 
+      // 로봇 마커 찍기
       async function robotData() {
         const robots = await getRobots();
         const robotContainer = document.querySelector(`.minimap_robot`);
@@ -474,11 +441,11 @@
           // 사람이 선택한 부분
           const markerTop = selectedY;
           const markerLeft = selectedX;
-          const { x: gaussianX, z: gaussianZ, model_num: model_num} = convertToGaussian(
+          const { x: gaussianX, z: gaussianZ } = convertToGaussian(
             selectedX,
-            selectedY,
+            selectedY
           );
-          const convertedCoordinates = { x: gaussianX, y: gaussianZ , model_num: model_num};
+          const convertedCoordinates = { x: gaussianX, y: gaussianZ };
 
           localStorage.setItem(
             "selectedCoordinates",
@@ -488,12 +455,11 @@
         }
       }
 
-      // newton1.splat scaling, index(모델 인덱스)
+      // newton1.splat scaling
       function convertToGaussian(xPixel, yPixel) {
         const gaussianX = -31.727 * xPixel + 1014.437;
-        const gaussianZ = -6.481 * yPixel + 602.260;
-        const index = 0;
-        return { x: gaussianX, z: gaussianZ ,model_num: index};
+        const gaussianZ = -6.481 * yPixel + 602.26;
+        return { x: gaussianX, z: gaussianZ };
       }
 
       window.openHome = openHome;
