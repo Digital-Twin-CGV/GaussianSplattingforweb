@@ -463,11 +463,12 @@
         }
       }
 
-      function convertToGaussian(xPercent, yPercent) {
-        const gaussianX = -39.63 * xPercent + 2633.22;
-        const gaussianZ = 42.22 * yPercent - 3434.66;
-        return { x: gaussianX, z: gaussianZ };
-      }
+      // newton1.splat scaling
+      function convertToGaussian(xPixel, yPixel) {
+    const gaussianX = -31.727 * xPixel + 1014.437;
+    const gaussianZ = -6.481 * yPixel + 602.260;
+    return { x: gaussianX, z: gaussianZ };
+}
 
       window.openHome = openHome;
       window.goBack = goBack;
