@@ -143,8 +143,8 @@
 
           // marker
           const startMarker = document.createElement("div");
-          startMarker.style.width = "20px";
-          startMarker.style.height = "20px";
+          startMarker.style.width = "15px";
+          startMarker.style.height = "15px";
           startMarker.style.borderRadius = "50%";
           startMarker.style.backgroundColor = "rgb(0, 217, 255)";
 
@@ -231,9 +231,9 @@
         // 이미지에서 클릭한 부분을 %로 좌표 표현 (marker)
         // 왼쪽 위를 원점
         const x =
-          (100 * (event.clientX - minimapRect.left - 10)) / minimapRect.width;
+          (100 * (event.clientX - minimapRect.left - 7.5)) / minimapRect.width;
         const y =
-          (100 * (event.clientY - minimapRect.top - 10)) / minimapRect.height;
+          (100 * (event.clientY - minimapRect.top - 7.5)) / minimapRect.height;
 
         // 사람이 선택한 부분
         selectedX = x;
@@ -288,61 +288,61 @@
 
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
-          (x * minimapRect.width) / 100 + 15,
-          (y * minimapRect.height) / 100 + 15,
+          (x * minimapRect.width) / 100 + 10,
+          (y * minimapRect.height) / 100 + 10,
           1,
           1
         ).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
-        // console.log(color);
-        //if (color !== 'rgb(0, 0, 0)') {
+        console.log(color);
+        if (color !== "rgb(0, 0, 0)") {
+          // if (marker) {
+          //   minimap.removeChild(marker);
+          // }
 
-        // if (marker) {
-        //   minimap.removeChild(marker);
-        // }
+          if (markerContainer) {
+            minimap.removeChild(markerContainer);
+          }
 
-        if (markerContainer) {
-          minimap.removeChild(markerContainer);
+          // 마커와 라벨을 감싸는 컨테이너 생성
+          markerContainer = document.createElement("div");
+          markerContainer.style.position = "absolute";
+          markerContainer.style.top = `${y}%`;
+          markerContainer.style.left = `${x}%`;
+          markerContainer.style.display = "flex";
+          markerContainer.style.alignItems = "center";
+
+          // 마커 생성
+          const marker = document.createElement("div");
+          marker.style.width = "15px";
+          marker.style.height = "15px";
+          marker.style.backgroundColor = "red";
+          marker.style.borderRadius = "50%";
+
+          // 라벨 생성
+          const markerLabel = document.createElement("span");
+          markerLabel.textContent = destin === "0" ? "출발지" : "목적지";
+          markerLabel.style.marginLeft = "10px"; // 마커 오른쪽에
+          markerLabel.style.color = "red";
+          markerLabel.style.fontSize = "14px";
+          markerLabel.style.fontWeight = "bold";
+
+          // 컨테이너에 마커와 라벨 추가
+          markerContainer.appendChild(marker);
+          markerContainer.appendChild(markerLabel);
+
+          // minimap에 컨테이너 추가
+          minimap.appendChild(markerContainer);
+
+          setMarkerSelected(true);
+
+          const converted = convertCoordinates(
+            x,
+            y,
+            background.offsetWidth,
+            background.offsetHeight
+          );
         }
-
-        // 마커와 라벨을 감싸는 컨테이너 생성
-        markerContainer = document.createElement("div");
-        markerContainer.style.position = "absolute";
-        markerContainer.style.top = `${y}%`;
-        markerContainer.style.left = `${x}%`;
-        markerContainer.style.display = "flex";
-        markerContainer.style.alignItems = "center";
-
-        // 마커 생성
-        const marker = document.createElement("div");
-        marker.style.width = "20px";
-        marker.style.height = "20px";
-        marker.style.backgroundColor = "red";
-        marker.style.borderRadius = "50%";
-
-        // 라벨 생성
-        const markerLabel = document.createElement("span");
-        markerLabel.textContent = destin === "0" ? "출발지" : "목적지";
-        markerLabel.style.marginLeft = "10px"; // 마커 오른쪽에
-        markerLabel.style.color = "red";
-        markerLabel.style.fontSize = "14px";
-        markerLabel.style.fontWeight = "bold";
-
-        // 컨테이너에 마커와 라벨 추가
-        markerContainer.appendChild(marker);
-        markerContainer.appendChild(markerLabel);
-
-        // minimap에 컨테이너 추가
-        minimap.appendChild(markerContainer);
-
-        setMarkerSelected(true);
-
-        const converted = convertCoordinates(
-          x,
-          y,
-          background.offsetWidth,
-          background.offsetHeight
-        );
       });
 
       function isClickInside(event, element) {
@@ -461,11 +461,16 @@
           // 사람이 선택한 부분
           const markerTop = selectedY;
           const markerLeft = selectedX;
-          const { x: gaussianX, z: gaussianZ, model_num : model_num } = convertToGaussian(
-            selectedX,
-            selectedY
-          );
-          const convertedCoordinates = { x: gaussianX, y: gaussianZ, model_num : model_num };
+          const {
+            x: gaussianX,
+            z: gaussianZ,
+            model_num: model_num,
+          } = convertToGaussian(selectedX, selectedY);
+          const convertedCoordinates = {
+            x: gaussianX,
+            y: gaussianZ,
+            model_num: model_num,
+          };
 
           localStorage.setItem(
             "selectedCoordinates",
@@ -481,7 +486,7 @@
         let gaussianX = 0;
         let gaussianZ = 0;
         let model_index = 0;
-        
+
         if (x >= 68.3 && x <= 80.8 && y >= 77.1 && y <= 89.9) {
           // allnations 스케일링 변환식
           gaussianX = -1.1607 * x + 170.3134;
@@ -495,7 +500,7 @@
         } else if (x >= 21.7 && x < 42.6 && y > 92.7 && y <= 94.9) {
           // newton1 스케일링 변환식
           gaussianX = -31.727 * x + 1014.437;
-          gaussianZ = -6.481 * y + 602.260;
+          gaussianZ = -6.481 * y + 602.26;
           model_index = 3;
         } else if (x >= 17.3 && x < 21.7 && y >= 80.2 && y < 94) {
           // cloudbridge 구름다리 스케일링 변환식
@@ -515,11 +520,11 @@
         } else if (x >= 2.6 && x < 9.8 && y >= 23.1 && y < 47.9) {
           // fivestone3 오석 스케일링 변환식
           gaussianX = 23.577 * x - 263.441;
-          gaussianZ = 37.310 * y - 2809.003;
+          gaussianZ = 37.31 * y - 2809.003;
           model_index = 7;
         }
         return { x: gaussianX, z: gaussianZ, model_index: model_index };
-      }   
+      }
 
       window.openHome = openHome;
       window.goBack = goBack;
