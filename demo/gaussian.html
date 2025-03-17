@@ -139,7 +139,7 @@
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/cut_model/allnations.splat",
+            path: "assets/data/cut_model/newton1_(3).splat",
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
@@ -457,7 +457,8 @@
           url = `minimap.html?destin=1&robot=${robot}`;
         } else if (destin === "1") {
           // moving 페이지로
-          url = `moving.html?robot=${robot}`;
+          // mode 0은 출발지 이동, mode 1은 목적지 이동
+          url = `moving.html?mode=0&robot=${robot}`;
         }
         //미니맵에서 찍은 위치 로컬 스토리지에 저장
         localStorage.setItem(

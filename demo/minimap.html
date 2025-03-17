@@ -36,27 +36,6 @@
         height: 30px;
       }
 
-      .minimap_landmark_btn1 {
-        position: absolute;
-        top: 35%;
-        left: 35%;
-      }
-      .minimap_landmark_btn2 {
-        position: absolute;
-        top: 65%;
-        left: 30%;
-      }
-      .minimap_landmark_btn3 {
-        position: absolute;
-        top: 28%;
-        left: 75%;
-      }
-      .minimap_landmark_btn4 {
-        position: absolute;
-        top: 45%;
-        left: 97%;
-      }
-
       .minimap_landmark_btn.selected {
         background-color: yellow;
       }
@@ -85,7 +64,7 @@
       }
 
       /* 모바일 화면 크기 기준 */
-      @media screen and (max-width: 1000px) {
+      @media screen and (max-width: 600px) {
         #minimap_gaussian {
           height: 100%;
           width: 100%;
@@ -143,24 +122,12 @@
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
       if (destin === "0") {
-        titleElement.textContent = "출발지 를 선택해주세요";
+        titleElement.textContent = "출발지를 선택해주세요";
       } else if (destin === "1") {
-        titleElement.textContent = "목적지 를 선택해주세요";
+        titleElement.textContent = "목적지를 선택해주세요";
       }
 
       // 출발지 마커
-      /*
-      .minimap_start_marker {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-
-        background-color: rgb(0, 217, 255);
-
-        cursor: pointer;
-      }
-      */
       if (destin == 1) {
         // 목적지를 찍는 페이지라면 ...
         document.addEventListener("DOMContentLoaded", () => {
@@ -176,8 +143,8 @@
 
           // marker
           const startMarker = document.createElement("div");
-          startMarker.style.width = "20px";
-          startMarker.style.height = "20px";
+          startMarker.style.width = "15px";
+          startMarker.style.height = "15px";
           startMarker.style.borderRadius = "50%";
           startMarker.style.backgroundColor = "rgb(0, 217, 255)";
 
@@ -250,14 +217,13 @@
 
       let selectedX = null;
       let selectedY = null;
-      let model_num=null;
 
       // test 테스트 좌표
       let test_a = null;
       let test_b = null;
       //
 
-      // 클릭한 부분 ----> 여기에 인덱스 넣으면됨
+      // 클릭한 부분
       minimap.addEventListener("click", (event) => {
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
@@ -265,9 +231,9 @@
         // 이미지에서 클릭한 부분을 %로 좌표 표현 (marker)
         // 왼쪽 위를 원점
         const x =
-          (100 * (event.clientX - minimapRect.left - 10)) / minimapRect.width;
+          (100 * (event.clientX - minimapRect.left - 7.5)) / minimapRect.width;
         const y =
-          (100 * (event.clientY - minimapRect.top - 10)) / minimapRect.height;
+          (100 * (event.clientY - minimapRect.top - 7.5)) / minimapRect.height;
 
         // 사람이 선택한 부분
         selectedX = x;
@@ -293,8 +259,28 @@
         test_b = b;
         // 여기까지 test
 
-        console.log("x", x, "y", y);
+        // console.log("x", x, "y", y);
         console.log("a", a, "b", b);
+
+        let model_index = 0; // 기본값 (해당 없음)
+
+        if (x >= 68.3 && x <= 80.8 && y >= 77.1 && y <= 89.9) {
+          model_index = 1; // 위치 1
+        } else if (x >= 42.6 && x < 68.3 && y > 87.5 && y <= 92.7) {
+          model_index = 2; // 위치 2
+        } else if (x >= 21.7 && x < 42.6 && y > 92.7 && y <= 94.9) {
+          model_index = 3; // 위치 3
+        } else if (x >= 17.3 && x < 21.7 && y >= 80.2 && y < 92.7) {
+          model_index = 4; // 위치 4
+        } else if (x >= 8.7 && x < 12.8 && y >= 70.6 && y < 80.0) {
+          model_index = 5; // 위치 5
+        } else if (x >= 6.0 && x < 12.0 && y >= 48.6 && y < 69.9) {
+          model_index = 6; // 위치 6
+        } else if (x >= 2.6 && x < 9.8 && y >= 23.1 && y < 47.9) {
+          model_index = 7; // 위치 7
+        }
+
+        console.log("x", x, "y", y, "모델 인덱스 : ", model_index);
 
         const landmarkButton = document.querySelectorAll(
           ".minimap_landmark_btn"
@@ -302,61 +288,61 @@
 
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
-          (x * minimapRect.width) / 100 + 15,
-          (y * minimapRect.height) / 100 + 15,
+          (x * minimapRect.width) / 100 + 10,
+          (y * minimapRect.height) / 100 + 10,
           1,
           1
         ).data;
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
         console.log(color);
-        //if (color !== 'rgb(0, 0, 0)') {
+        if (color !== "rgb(0, 0, 0)") {
+          // if (marker) {
+          //   minimap.removeChild(marker);
+          // }
 
-        // if (marker) {
-        //   minimap.removeChild(marker);
-        // }
+          if (markerContainer) {
+            minimap.removeChild(markerContainer);
+          }
 
-        if (markerContainer) {
-          minimap.removeChild(markerContainer);
+          // 마커와 라벨을 감싸는 컨테이너 생성
+          markerContainer = document.createElement("div");
+          markerContainer.style.position = "absolute";
+          markerContainer.style.top = `${y}%`;
+          markerContainer.style.left = `${x}%`;
+          markerContainer.style.display = "flex";
+          markerContainer.style.alignItems = "center";
+
+          // 마커 생성
+          const marker = document.createElement("div");
+          marker.style.width = "15px";
+          marker.style.height = "15px";
+          marker.style.backgroundColor = "red";
+          marker.style.borderRadius = "50%";
+
+          // 라벨 생성
+          const markerLabel = document.createElement("span");
+          markerLabel.textContent = destin === "0" ? "출발지" : "목적지";
+          markerLabel.style.marginLeft = "10px"; // 마커 오른쪽에
+          markerLabel.style.color = "red";
+          markerLabel.style.fontSize = "14px";
+          markerLabel.style.fontWeight = "bold";
+
+          // 컨테이너에 마커와 라벨 추가
+          markerContainer.appendChild(marker);
+          markerContainer.appendChild(markerLabel);
+
+          // minimap에 컨테이너 추가
+          minimap.appendChild(markerContainer);
+
+          setMarkerSelected(true);
+
+          const converted = convertCoordinates(
+            x,
+            y,
+            background.offsetWidth,
+            background.offsetHeight
+          );
         }
-
-         // 마커와 라벨을 감싸는 컨테이너 생성
-        markerContainer = document.createElement("div");
-        markerContainer.style.position = "absolute";
-        markerContainer.style.top = `${y}%`;
-        markerContainer.style.left = `${x}%`;
-        markerContainer.style.display = "flex";
-        markerContainer.style.alignItems = "center";
-
-        // 마커 생성
-        const marker = document.createElement("div");
-        marker.style.width = "20px";
-        marker.style.height = "20px";
-        marker.style.backgroundColor = "red";
-        marker.style.borderRadius = "50%";
-
-        // 라벨 생성
-        const markerLabel = document.createElement("span");
-        markerLabel.textContent = destin === "0" ? "출발지" : "목적지";
-        markerLabel.style.marginLeft = "10px"; // 마커 오른쪽에
-        markerLabel.style.color = "red";
-        markerLabel.style.fontSize = "14px";
-        markerLabel.style.fontWeight = "bold";
-
-        // 컨테이너에 마커와 라벨 추가
-        markerContainer.appendChild(marker);
-        markerContainer.appendChild(markerLabel);
-
-        // minimap에 컨테이너 추가
-        minimap.appendChild(markerContainer);
-
-        setMarkerSelected(true);
-
-        const converted = convertCoordinates(
-          x,
-          y,
-          background.offsetWidth,
-          background.offsetHeight
-        );
       });
 
       function isClickInside(event, element) {
@@ -417,6 +403,7 @@
         )
         .subscribe();
 
+      // 로봇 마커 찍기
       async function robotData() {
         const robots = await getRobots();
         const robotContainer = document.querySelector(`.minimap_robot`);
@@ -474,11 +461,16 @@
           // 사람이 선택한 부분
           const markerTop = selectedY;
           const markerLeft = selectedX;
-          const { x: gaussianX, z: gaussianZ, model_num: model_num} = convertToGaussian(
-            selectedX,
-            selectedY,
-          );
-          const convertedCoordinates = { x: gaussianX, y: gaussianZ , model_num: model_num};
+          const {
+            x: gaussianX,
+            z: gaussianZ,
+            model_num: model_num,
+          } = convertToGaussian(selectedX, selectedY);
+          const convertedCoordinates = {
+            x: gaussianX,
+            y: gaussianZ,
+            model_num: model_num,
+          };
 
           localStorage.setItem(
             "selectedCoordinates",
@@ -489,11 +481,49 @@
       }
 
       // newton1.splat scaling
-      function convertToGaussian(xPixel, yPixel) {
-        const gaussianX = -31.727 * xPixel + 1014.437;
-        const gaussianZ = -6.481 * yPixel + 602.260;
-        const index=0;
-        return { x: gaussianX, z: gaussianZ ,model_num: index};
+      // scaling, index(모델 인덱스)
+      function convertToGaussian(x, y) {
+        let gaussianX = 0;
+        let gaussianZ = 0;
+        let model_index = 0;
+
+        if (x >= 68.3 && x <= 80.8 && y >= 77.1 && y <= 89.9) {
+          // allnations 스케일링 변환식
+          gaussianX = -1.1607 * x + 170.3134;
+          gaussianZ = 0.9418 * y + 61.3053;
+          model_index = 1;
+        } else if (x >= 42.6 && x < 68.3 && y > 87.5 && y <= 94) {
+          // newton2 스케일링 변환식
+          gaussianX = -32.157 * x + 1821.6969;
+          gaussianZ = 31.3895 * y - 2851.4259;
+          model_index = 2;
+        } else if (x >= 21.7 && x < 42.6 && y > 92.7 && y <= 94.9) {
+          // newton1 스케일링 변환식
+          gaussianX = -31.727 * x + 1014.437;
+          gaussianZ = -6.481 * y + 602.26;
+          model_index = 3;
+        } else if (x >= 17.3 && x < 21.7 && y >= 80.2 && y < 94) {
+          // cloudbridge 구름다리 스케일링 변환식
+          gaussianX = -17.702 * x + 212.335;
+          gaussianZ = 41.662 * y - 3665.471;
+          model_index = 4;
+        } else if (x >= 8.7 && x < 12.8 && y >= 70.6 && y < 80.0) {
+          // fivestone1 오석 스케일링 변환식
+          gaussianX = 291.964 * x - 1802.488;
+          gaussianZ = -0.229 * y + 11.934;
+          model_index = 5;
+        } else if (x >= 6.0 && x < 12.0 && y >= 48.6 && y < 69.9) {
+          // fivestone2 오석 스케일링 변환식
+          gaussianX = 40.403 * x - 380.133;
+          gaussianZ = 47.049 * y - 2641.971;
+          model_index = 6;
+        } else if (x >= 2.6 && x < 9.8 && y >= 23.1 && y < 47.9) {
+          // fivestone3 오석 스케일링 변환식
+          gaussianX = 23.577 * x - 263.441;
+          gaussianZ = 37.31 * y - 2809.003;
+          model_index = 7;
+        }
+        return { x: gaussianX, z: gaussianZ, model_index: model_index };
       }
 
       window.openHome = openHome;
