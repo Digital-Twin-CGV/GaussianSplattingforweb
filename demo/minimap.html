@@ -441,43 +441,6 @@
             robotLabel.style.marginLeft = "5px";
           }
         });
-
-        // 목적지를 선택하는 페이지일 때, 출발지를 보여줌
-        if (destin === "1") {
-        }
-      }
-
-      function openHome(page) {
-        let url = page + ".html";
-        window.location = url;
-      }
-
-      function goBack() {
-        history.back();
-      }
-
-      function openPage() {
-        if (isMarkerSelected) {
-          // 사람이 선택한 부분
-          const markerTop = selectedY;
-          const markerLeft = selectedX;
-          const {
-            x: gaussianX,
-            z: gaussianZ,
-            model_num: model_num,
-          } = convertToGaussian(selectedX, selectedY);
-          const convertedCoordinates = {
-            x: gaussianX,
-            y: gaussianZ,
-            model_num: model_num,
-          };
-
-          localStorage.setItem(
-            "selectedCoordinates",
-            JSON.stringify(convertedCoordinates)
-          );
-          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
-        }
       }
 
       // newton1.splat scaling
@@ -524,6 +487,38 @@
           model_index = 7;
         }
         return { x: gaussianX, z: gaussianZ, model_index: model_index };
+      }
+      function openHome(page) {
+        let url = page + ".html";
+        window.location = url;
+      }
+
+      function goBack() {
+        history.back();
+      }
+
+      function openPage() {
+        if (isMarkerSelected) {
+          // 사람이 선택한 부분
+          const markerTop = selectedY;
+          const markerLeft = selectedX;
+          const {
+            x: gaussianX,
+            z: gaussianZ,
+            model_num: model_num,
+          } = convertToGaussian(selectedX, selectedY);
+          const convertedCoordinates = {
+            x: gaussianX,
+            y: gaussianZ,
+            model_num: model_num,
+          };
+
+          localStorage.setItem(
+            "selectedCoordinates",
+            JSON.stringify(convertedCoordinates)
+          );
+          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
+        }
       }
 
       window.openHome = openHome;
