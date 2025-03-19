@@ -188,11 +188,7 @@
         .then(async () => {
           viewer.start();
           createBoxes();
-        });
-      
-
-
-      // 좌표를 읽은 후 박스 생성
+          // 좌표를 읽은 후 박스 생성
       /* const coordinates = await loadCoordinates();
       createTransparentBox(coordinates); */
       const coordinatesArray = await loadCoordinates();
@@ -236,8 +232,8 @@
 
           const boxGeometry = new THREE.BoxGeometry(width, height, depth);
           const boxMaterial = new THREE.MeshBasicMaterial({
-            color: 0x0000ff,
-            transparent: true,
+            color: 0x12592f,
+            transparent: false,
             opacity: 0,
           });
           const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -314,7 +310,8 @@
             20
           );
           const rectMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: 0x12592f,
+            transparent : false,
             /* transparent: true, */
             opacity: 0,
           });
@@ -421,7 +418,7 @@
 
           currentTextMesh = { text: textMesh, background: backgroundMesh };
         }
-
+        });
 
 
       let maxZoom = 50; // 최대 줌 레벨
