@@ -244,76 +244,76 @@
         return container;
       }
 
-      // 초기 확대 배율
-      let nowZoom = 1.0;
-      let startX = 0,
-        startY = 0;
-      let offsetX = 0,
-        offsetY = 0;
-      let isDragging = false;
-      const map = document.querySelector("#selectrobot_gaussian");
+      // // 초기 확대 배율
+      // let nowZoom = 1.0;
+      // let startX = 0,
+      //   startY = 0;
+      // let offsetX = 0,
+      //   offsetY = 0;
+      // let isDragging = false;
+      // const map = document.querySelector("#selectrobot_gaussian");
 
-      // 확대 기능
-      function zoomIn() {
-        if (nowZoom < 3.0) {
-          nowZoom += 0.1;
-          updateZoom();
-        }
-      }
+      // // 확대 기능
+      // function zoomIn() {
+      //   if (nowZoom < 3.0) {
+      //     nowZoom += 0.1;
+      //     updateZoom();
+      //   }
+      // }
 
-      // 축소 기능
-      function zoomOut() {
-        if (nowZoom > 0.7) {
-          nowZoom -= 0.1;
-          updateZoom();
-        }
-      }
+      // // 축소 기능
+      // function zoomOut() {
+      //   if (nowZoom > 0.7) {
+      //     nowZoom -= 0.1;
+      //     updateZoom();
+      //   }
+      // }
 
-      // 확대/축소 적용
-      function updateZoom() {
-        map.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
-        updateMarkers();
-        console.log(`현재 배율: ${nowZoom}`);
-      }
+      // // 확대/축소 적용
+      // function updateZoom() {
+      //   map.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
+      //   updateMarkers();
+      //   console.log(`현재 배율: ${nowZoom}`);
+      // }
 
-      // 드래그 기능
-      map.addEventListener("touchstart", (event) => {
-        isDragging = true;
-        startX = event.clientX - offsetX;
-        startY = event.clientY - offsetY;
-        map.style.cursor = "grabbing";
-      });
+      // // 드래그 기능
+      // map.addEventListener("touchstart", (event) => {
+      //   isDragging = true;
+      //   startX = event.clientX - offsetX;
+      //   startY = event.clientY - offsetY;
+      //   map.style.cursor = "grabbing";
+      // });
 
-      map.addEventListener("touchend", (event) => {
-        isDragging = false;
-        map.style.cursor = "grab";
-      });
+      // map.addEventListener("touchend", (event) => {
+      //   isDragging = false;
+      //   map.style.cursor = "grab";
+      // });
 
-      document.addEventListener("touchmove", (event) => {
-        if (!isDragging) return;
-        offsetX = event.clientX - startX;
-        offsetY = event.clientY - startY;
-        updateZoom();
-      });
+      // document.addEventListener("touchmove", (event) => {
+      //   if (!isDragging) return;
+      //   offsetX = event.clientX - startX;
+      //   offsetY = event.clientY - startY;
+      //   updateZoom();
+      // });
 
-      // 마커 위치 업데이트
-      function updateMarkers() {
-        const minimapRect = map.getBoundingClientRect();
-        const markers = document.querySelectorAll(
-          ".selectrobot_robot_marker_container"
-        );
+      // // 마커 위치 업데이트
+      // function updateMarkers() {
+      //   const minimapRect = map.getBoundingClientRect();
+      //   const markers = document.querySelectorAll(
+      //     ".selectrobot_robot_marker_container"
+      //   );
 
-        markers.forEach((container) => {
-          const robotId = parseInt(container.dataset.robotId, 10); // 마커에 저장된 로봇 ID 가져오기
-          const robot = robots.find((r) => r.id === robotId); // 해당 로봇 정보 찾기
+      //   markers.forEach((container) => {
+      //     const robotId = parseInt(container.dataset.robotId, 10); // 마커에 저장된 로봇 ID 가져오기
+      //     const robot = robots.find((r) => r.id === robotId); // 해당 로봇 정보 찾기
 
-          // 원래의 위치 계산
-          createRobotMarker(robot);
+      //     // 원래의 위치 계산
+      //     createRobotMarker(robot);
 
-          // 확대/축소 및 이동 적용
-          container.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
-        });
-      }
+      //     // 확대/축소 및 이동 적용
+      //     container.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
+      //   });
+      // }
 
       // 선택된 로봇 번호, 선택된 로봇의 상태
       let selectedRobot = null;
