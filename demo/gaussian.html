@@ -31,6 +31,7 @@
         justify-content: space-between;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
@@ -63,49 +64,28 @@
       import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
       import * as THREE from "three";
 
+      import {
+        insertRequest,
+        getRobots,
+        client,
+      } from "./supaDatabase/connectDatabase.js";
+
       const urlParams = new URLSearchParams(window.location.search);
 
       //원위치 좌표
-      
-
-
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
       const initialCameraRotation = { x: 0, y: -50, z: 0 };
-
-      //const camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 5000);
-      //const controls=new OrbitControls(camera, renderer.domElement);
-      function animateCameraTo(targetPosition, robotGroup, controls, camera){
-        camera.position.set(10,-50,67);
-        gsao,to(canera.position,{
-          duration: 0.5,
-          ease: "none",
-          x: targetPosition.x,
-          y: targetPosition.y,
-          z: targetPosition.z,
-          onUpdate: () => {
-            controls.target.copy(camera.position).add(direction);
-            controls.update();
-          }
-        });
-      }
-
-
 
       document.addEventListener("DOMContentLoaded", () => {
         const selectedCoordinates = JSON.parse(
           localStorage.getItem("selectedCoordinates")
         );
-        const direction = new THREE.Vector3(0, 0, -1);
-        direction.applyQuaternion(viewer.camera.quaternion);
-        viewer.camera.position.set(selectedCoordinates.x, -50, selectedCoordinates.y);
-        viewer.controls.target.copy(viewer.camera.position).add(direction);
-        viewer.controls.update(); 
+
         if (selectedCoordinates) {
-          const direction = new THREE.Vector3(0, 0, -1);
-          direction.applyQuaternion(viewer.camera.quaternion);
-          viewer.camera.position.set(selectedCoordinates.x, -50, selectedCoordinates.y);
-          viewer.controls.target.copy(viewer.camera.position).add(direction);
-          viewer.controls.update(); 
+          const event = new CustomEvent("selectedCoordinatesEvent", {
+            detail: selectedCoordinates,
+          });
+          window.dispatchEvent(event); // 이벤트 디스패치
 
           const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
           const sphereMaterial = new THREE.MeshBasicMaterial({
@@ -125,6 +105,57 @@
         }
       });
 
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   // URL 파라미터에서 좌표 데이터 읽어오기
+      //   const params = new URLSearchParams(window.location.search);
+      //   const gaussianX = parseFloat(params.get("left")); // minimap.html에서 left에 해당하는 값
+      //   const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
+
+      //   // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
+      //   const destinMode = params.get("destin");
+
+      //   // 좌표가 정상적으로 전달되었는지 확인
+      //   if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
+      //     // 카메라 초기 위치 설정
+      //     // - X는 그대로 사용
+      //     // - Y(높이)는 고정 (예: 5)
+      //     // - Z는 약간의 오프셋(10)을 주어 배치
+      //     const initialCameraPosition = {
+      //       x: gaussianX,
+      //       y: -30,
+      //       z: gaussianZ,
+      //     };
+
+      //     // viewer 객체가 이미 생성되어 있다고 가정
+      //     viewer.camera.position.set(
+      //       initialCameraPosition.x,
+      //       initialCameraPosition.y,
+      //       initialCameraPosition.z
+      //     );
+      //     // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
+      //     viewer.camera.lookAt(gaussianX, 0, gaussianZ);
+
+      //     // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
+      //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+      //     const sphereMaterial = new THREE.MeshBasicMaterial({
+      //       color: 0x00ff00,
+      //     });
+      //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      //     sphereMesh.position.set(
+      //       gaussianX,
+      //       initialCameraPosition.y,
+      //       gaussianZ
+      //     );
+      //     viewer.splatMesh.add(sphereMesh);
+
+      //     console.log(
+      //       `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+      //     );
+      //   } else {
+      //     console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
+      //   }
+      // });
+
       const viewer = new GaussianSplats3D.Viewer({
         cameraUp: [0, -1, 0],
         initialCameraPosition: [
@@ -132,18 +163,18 @@
           initialCameraPosition.y,
           initialCameraPosition.z,
         ],
-        
+        initialCameraLookAt: [0, 0, 0],
         sphericalHarmonicsDegree: 0,
       });
 
       viewer
         .addSplatScenes([
           {
-            path: "assets/data/cut_model/(3)newton1.splat",
+            path: "assets/data/cut_model/newton1_(3).splat",
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
-            position: [0, 10, 0],
+            position: [0, 50, 0],
           },
         ])
         .then(async () => {
@@ -442,34 +473,60 @@
         const robot = params.get("robot");
         const top = params.get("top");
         const left = params.get("left");
+        const a = params.get("a");
+        const b = params.get("b");
 
-        return { destin, robot, top, left };
+        return { destin, robot, top, left, a, b };
       }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
-        const { destin, robot, top, left } = getUrlParams();
+        const { destin, robot, top, left, a, b } = getUrlParams();
         let url;
-        if (destin === "0") {
-          // 목적지 페이지로
-          url = `minimap.html?destin=1&robot=${robot}`;
-        } else if (destin === "1") {
-          // moving 페이지로
-          // mode 0은 출발지 이동, mode 1은 목적지 이동
-          url = `moving.html?mode=0&robot=${robot}`;
-        }
-        //미니맵에서 찍은 위치 로컬 스토리지에 저장
-        localStorage.setItem(
-          destin === "0" ? "start" : "end",
-          JSON.stringify({ top, left })
-        );
 
-        // 페이지 이동
-        window.location = url;
+        const userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
+
+        if (userConfirmed) {
+          // Supabase에 로봇 데이터 전송
+          insertRequest(robot, true, [a, b]).then(() => {
+
+          if (destin === "0") {
+            // 목적지 페이지로
+            url = `minimap.html?destin=1&robot=${robot}`;
+          } else if (destin === "1") {
+            // moving 페이지로
+            // mode 0은 출발지 이동, mode 1은 목적지 이동
+            url = `moving.html?mode=0&robot=${robot}`;
+          }
+
+          //미니맵에서 찍은 위치 로컬 스토리지에 저장
+          localStorage.setItem(
+            destin === "0" ? "start" : "end",
+            JSON.stringify({ top, left })
+          );
+
+           // 페이지 이동
+         window.location = url;
+        });
+
+         
+        } else {
+          alert("로봇 이동이 취소되었습니다.");
+        }
+        
       }
       window.openDemo = openDemo;
+
+      function goRobot(a, b) {
+        insertRequest(robot, true, [a, b]);
+      }
+
+      document
+        .querySelector(".gaussian_complete_btn")
+        .addEventListener("click", () => goRobot(a, b));
+
     </script>
   </body>
 </html>
