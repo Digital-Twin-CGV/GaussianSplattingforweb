@@ -61,7 +61,7 @@
 
       #selectrobot_gaussian {
         width: auto;
-        height: 75vh;
+        height: 70vh;
         width: 100%;
         cursor: grab;
       }
@@ -258,7 +258,6 @@
         if (nowZoom < 3.0) {
           nowZoom += 0.1;
           updateZoom();
-        } else {
         }
       }
 
@@ -267,7 +266,6 @@
         if (nowZoom > 0.7) {
           nowZoom -= 0.1;
           updateZoom();
-        } else {
         }
       }
 
@@ -279,19 +277,19 @@
       }
 
       // 드래그 기능
-      map.addEventListener("mousedown", (event) => {
+      map.addEventListener("touchstart", (event) => {
         isDragging = true;
         startX = event.clientX - offsetX;
         startY = event.clientY - offsetY;
         map.style.cursor = "grabbing";
       });
 
-      map.addEventListener("mouseup", (event) => {
+      map.addEventListener("touchend", (event) => {
         isDragging = false;
         map.style.cursor = "grab";
       });
 
-      document.addEventListener("mousemove", (event) => {
+      document.addEventListener("touchmove", (event) => {
         if (!isDragging) return;
         offsetX = event.clientX - startX;
         offsetY = event.clientY - startY;
