@@ -37,7 +37,7 @@
   <body>
     <div class="gaussian_header">
       <div id="header"></div>
-      <div id="gaussian_complete_btn" onclick="openDemo()">선택 완료</div>
+      <button id="gaussian_complete_btn" onclick="openDemo()">선택 완료</button>
     </div>
     <script>
       // 헤더
@@ -70,23 +70,25 @@
         client,
       } from "./supaDatabase/connectDatabase.js";
 
+      window.openDemo = openDemo;
+
       const urlParams = new URLSearchParams(window.location.search);
-      let selectedCoordinates = JSON.parse(localStorage.getItem("selectedCoordinates"));
+      let selectedCoordinates = JSON.parse(
+        localStorage.getItem("selectedCoordinates")
+      );
       let model_index;
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
 
       let path_name;
       const model_names = [
-          "assets/data/cut_model/(1)allnations.splat",
-          "assets/data/cut_model/(2)newton2.splat",
-          "assets/data/cut_model/(3)newton1.splat",
-          "assets/data/cut_model/(4)cloudbridge.splat",
-          "assets/data/cut_model/(5)fivestone2.splat",
-          "assets/data/cut_model/(6)fivestone1.splat"
+        "assets/data/cut_model/(1)allnations.splat",
+        "assets/data/cut_model/(2)newton2.splat",
+        "assets/data/cut_model/(3)newton1.splat",
+        "assets/data/cut_model/(4)cloudbridge.splat",
+        "assets/data/cut_model/(5)fivestone2.splat",
+        "assets/data/cut_model/(6)fivestone1.splat",
       ];
-      path_name=model_names[selectedCoordinates.model_num - 1];
-
-
+      path_name = model_names[selectedCoordinates.model_num - 1];
 
       document.addEventListener("DOMContentLoaded", () => {
         selectedCoordinates = JSON.parse(
@@ -178,7 +180,6 @@
         sphericalHarmonicsDegree: 0,
       });
 
-
       //임시. n을 누르면 특정 모델로 바뀜 나중에 할것
       // let isLoadingScene = false; // 씬 변경 중인지 체크하는 플래그
       // let addedSceneIndexes = [];  // 현재 로드된 씬의 인덱스를 저장
@@ -208,7 +209,7 @@
       //                 console.log("새 모델 로드 완료!");
 
       //                 // **추가된 씬의 인덱스를 업데이트**
-      //                 addedSceneIndexes = newSceneIndexes; 
+      //                 addedSceneIndexes = newSceneIndexes;
 
       //                 // **viewer.start() 중복 실행 방지**
       //                 if (!viewer.isRunning) {
@@ -224,10 +225,6 @@
       //     }
       // });
 
-      
-      
-
-      
       viewer
         .addSplatScenes([
           {
@@ -243,237 +240,236 @@
           viewer.start();
           createBoxes();
           // 좌표를 읽은 후 박스 생성
-      /* const coordinates = await loadCoordinates();
+          /* const coordinates = await loadCoordinates();
       createTransparentBox(coordinates); */
-      const coordinatesArray = await loadCoordinates();
-        coordinatesArray.forEach((coordinates) => {
-          createTransparentBox(coordinates);
-        });
-
-        // JSON 파일에서 좌표를 읽어오는 함수
-        async function loadCoordinates() {
-          const response = await fetch("./box_coord.json");
-          const data = await response.json();
-          /* console.log("좌표", data); */
-          /* return data; */
-          return Array.isArray(data) ? data : [data];
-        }
-
-        let currentTextMesh = null;
-
-        async function createBoxes() {
           const coordinatesArray = await loadCoordinates();
-
           coordinatesArray.forEach((coordinates) => {
             createTransparentBox(coordinates);
           });
-        }
 
-        // 3d 박스를 생성하는 함수
-        function createTransparentBox(coordinates) {
-          const { leftTop, rightBottom, info } = coordinates;
-          /* console.log("좌표", coordinates);
+          // JSON 파일에서 좌표를 읽어오는 함수
+          async function loadCoordinates() {
+            const response = await fetch("./box_coord.json");
+            const data = await response.json();
+            /* console.log("좌표", data); */
+            /* return data; */
+            return Array.isArray(data) ? data : [data];
+          }
+
+          let currentTextMesh = null;
+
+          async function createBoxes() {
+            const coordinatesArray = await loadCoordinates();
+
+            coordinatesArray.forEach((coordinates) => {
+              createTransparentBox(coordinates);
+            });
+          }
+
+          // 3d 박스를 생성하는 함수
+          function createTransparentBox(coordinates) {
+            const { leftTop, rightBottom, info } = coordinates;
+            /* console.log("좌표", coordinates);
         console.log("leftTop:", coordinates.leftTop);
         console.log("rightBottom:", coordinates.rightBottom); */
 
-          const sizeOffset = 0;
-          const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
-          const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
-          const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
-          /* console.log(
+            const sizeOffset = 0;
+            const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
+            const height = leftTop.y - rightBottom.y * (1 + sizeOffset);
+            const depth = leftTop.z - rightBottom.z * (1 + sizeOffset);
+            /* console.log(
           `박스 크기 - width: ${width}, height: ${height}, depth: ${depth}`
         ); */
 
-          const boxGeometry = new THREE.BoxGeometry(width, height, depth);
-          const boxMaterial = new THREE.MeshBasicMaterial({
-            color: 0x12592f,
-            transparent: false,
-            opacity: 0,
-          });
-          const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+            const boxGeometry = new THREE.BoxGeometry(width, height, depth);
+            const boxMaterial = new THREE.MeshBasicMaterial({
+              color: 0x12592f,
+              transparent: false,
+              opacity: 0,
+            });
+            const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
 
-          const centerX = (leftTop.x + rightBottom.x) / 2;
-          const centerY = (leftTop.y + rightBottom.y) / 2;
-          const centerZ = (leftTop.z + rightBottom.z) / 2;
-          boxMesh.position.set(centerX, centerY, centerZ);
-          boxMesh.rotation.set(0, 0, 0);
+            const centerX = (leftTop.x + rightBottom.x) / 2;
+            const centerY = (leftTop.y + rightBottom.y) / 2;
+            const centerZ = (leftTop.z + rightBottom.z) / 2;
+            boxMesh.position.set(centerX, centerY, centerZ);
+            boxMesh.rotation.set(0, 0, 0);
 
-          viewer.splatMesh.add(boxMesh);
-          /* viewer.scene.add(boxMesh); */
-          console.log(
-            `박스 추가됨 {x: ${boxMesh.position.x}, y: ${boxMesh.position.y}, z: ${boxMesh.position.z}}`
-          );
-
-          // 박스 클릭
-          boxMesh.userData = { clickable: true, info: info };
-          boxMesh.onClick = (clickPoint) => {
-            if (currentTextMesh) {
-              viewer.splatMesh.remove(currentTextMesh.text);
-              viewer.splatMesh.remove(currentTextMesh.background);
-              currentTextMesh = null;
-            }
-            console.log("박스가 클릭되었습니다!");
-            createRectangleWithText(boxMesh, info, clickPoint);
-          };
-
-          // Raycaster를 사용하여 클릭 이벤트 처리
-          viewer.renderer.domElement.addEventListener("click", (event) => {
-            const mouse = new THREE.Vector2();
-            mouse.x =
-              (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
-              1;
-            mouse.y =
-              -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
-              1;
-
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, viewer.camera);
-
-            const intersects = raycaster.intersectObjects(
-              viewer.splatMesh.children,
-              true
+            viewer.splatMesh.add(boxMesh);
+            /* viewer.scene.add(boxMesh); */
+            console.log(
+              `박스 추가됨 {x: ${boxMesh.position.x}, y: ${boxMesh.position.y}, z: ${boxMesh.position.z}}`
             );
 
-            // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
-            if (
-              intersects.length > 0 &&
-              intersects[0].object.userData.clickable
-            ) {
-              // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
-              intersects[0].object.onClick(intersects[0].point);
-            } else {
-              // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+            // 박스 클릭
+            boxMesh.userData = { clickable: true, info: info };
+            boxMesh.onClick = (clickPoint) => {
               if (currentTextMesh) {
                 viewer.splatMesh.remove(currentTextMesh.text);
                 viewer.splatMesh.remove(currentTextMesh.background);
                 currentTextMesh = null;
               }
-            }
-          });
-        }
+              console.log("박스가 클릭되었습니다!");
+              createRectangleWithText(boxMesh, info, clickPoint);
+            };
 
-        function createRectangleWithText(boxMesh, info, clickPoint) {
-          if (currentTextMesh) {
-            viewer.splatMesh.remove(currentTextMesh.text);
-            viewer.splatMesh.remove(currentTextMesh.background);
-            currentTextMesh = null;
+            // Raycaster를 사용하여 클릭 이벤트 처리
+            viewer.renderer.domElement.addEventListener("click", (event) => {
+              const mouse = new THREE.Vector2();
+              mouse.x =
+                (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
+                1;
+              mouse.y =
+                -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
+                1;
+
+              const raycaster = new THREE.Raycaster();
+              raycaster.setFromCamera(mouse, viewer.camera);
+
+              const intersects = raycaster.intersectObjects(
+                viewer.splatMesh.children,
+                true
+              );
+
+              // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
+              if (
+                intersects.length > 0 &&
+                intersects[0].object.userData.clickable
+              ) {
+                // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
+                intersects[0].object.onClick(intersects[0].point);
+              } else {
+                // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+                if (currentTextMesh) {
+                  viewer.splatMesh.remove(currentTextMesh.text);
+                  viewer.splatMesh.remove(currentTextMesh.background);
+                  currentTextMesh = null;
+                }
+              }
+            });
           }
-          /* 사각형 생성 */
-          const rectGeometry = new THREE.PlaneGeometry(
-            boxMesh.geometry.parameters.width * 0.5,
-            20
-          );
-          const rectMaterial = new THREE.MeshBasicMaterial({
-            color: 0x12592f,
-            transparent : false,
-            /* transparent: true, */
-            opacity: 0,
-          });
-          const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
-          const scaleFactor = 3; // 글씨 크기 조절
-          const fontSize = 20 * scaleFactor; // 폰트 크기
-          const padding = 10 * scaleFactor; // 텍스트 주변 패딩
-
-          /* 텍스트 캔버스 생성 */
-          const textCanvas = document.createElement("canvas");
-          const textCtx = textCanvas.getContext("2d");
-
-          /* 폰트 설정 */
-          textCtx.font = `bold ${fontSize}px Arial`;
-
-          const lines = info.name.split("\n");
-
-          // 각 줄에 대해 텍스트 크기 계산
-          const lineHeight = fontSize; // 줄 간격
-          const textWidth =
-            Math.max(...lines.map((line) => line.length * fontSize * 0.18)) +
-            padding * 2; // 가장 긴 줄의 너비
-          const textHeight = lines.length * (lineHeight - 40); // 모든 줄의 높이
-
-          /* 캔버스 크기 설정 */
-          textCanvas.width = textWidth;
-          textCanvas.height = textHeight;
-
-          /* 텍스트 채우기 */
-          textCtx.fillStyle = "black";
-          textCtx.textAlign = "center";
-          textCtx.textBaseline = "middle";
-
-          // 글씨 쓰기
-          lines.forEach((line, index) => {
-            textCtx.fillText(
-              line,
-              textWidth / 2,
-              index * (lineHeight - 40) + padding / 3
+          function createRectangleWithText(boxMesh, info, clickPoint) {
+            if (currentTextMesh) {
+              viewer.splatMesh.remove(currentTextMesh.text);
+              viewer.splatMesh.remove(currentTextMesh.background);
+              currentTextMesh = null;
+            }
+            /* 사각형 생성 */
+            const rectGeometry = new THREE.PlaneGeometry(
+              boxMesh.geometry.parameters.width * 0.5,
+              20
             );
-          });
+            const rectMaterial = new THREE.MeshBasicMaterial({
+              color: 0x12592f,
+              transparent: false,
+              /* transparent: true, */
+              opacity: 0,
+            });
+            const rectMesh = new THREE.Mesh(rectGeometry, rectMaterial);
 
-          /* 텍스처 생성 */
-          const textTexture = new THREE.CanvasTexture(textCanvas);
-          textTexture.anisotropy =
-            viewer.renderer.capabilities.getMaxAnisotropy();
+            const scaleFactor = 3; // 글씨 크기 조절
+            const fontSize = 20 * scaleFactor; // 폰트 크기
+            const padding = 10 * scaleFactor; // 텍스트 주변 패딩
 
-          /* 텍스트 메시 생성 */
-          const textMaterial = new THREE.MeshBasicMaterial({
-            map: textTexture,
-            transparent: true,
-            depthTest: false,
-          });
+            /* 텍스트 캔버스 생성 */
+            const textCanvas = document.createElement("canvas");
+            const textCtx = textCanvas.getContext("2d");
 
-          const textGeometry = new THREE.PlaneGeometry(
-            textWidth / scaleFactor,
-            textHeight / scaleFactor
-          );
-          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            /* 폰트 설정 */
+            textCtx.font = `bold ${fontSize}px Arial`;
 
-          /* 배경 메시(Plane) 생성 */
-          const backgroundGeometry = new THREE.PlaneGeometry(
-            textWidth / scaleFactor,
-            textHeight / scaleFactor
-          );
-          const backgroundMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            /* 이걸 해제해야 글씨가 잘보임 */
-            /* transparent: true, */
-            opacity: 0,
-          });
-          const backgroundMesh = new THREE.Mesh(
-            backgroundGeometry,
-            backgroundMaterial
-          );
+            const lines = info.name.split("\n");
 
-          /* 위치 설정 */
-          backgroundMesh.position.set(
-            clickPoint.x,
-            /* boxMesh.position.x, */
-            boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 10,
-            /* boxMesh.position.z */
-            clickPoint.z
-          );
+            // 각 줄에 대해 텍스트 크기 계산
+            const lineHeight = fontSize; // 줄 간격
+            const textWidth =
+              Math.max(...lines.map((line) => line.length * fontSize * 0.18)) +
+              padding * 2; // 가장 긴 줄의 너비
+            const textHeight = lines.length * (lineHeight - 40); // 모든 줄의 높이
 
-          textMesh.position.set(
-            clickPoint.x,
-            /* boxMesh.position.x, */
-            boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 5,
-            /* boxMesh.position.z + 0.1 */
-            clickPoint.z + 0.1
-          );
+            /* 캔버스 크기 설정 */
+            textCanvas.width = textWidth;
+            textCanvas.height = textHeight;
 
-          /* 카메라를 바라보도록 설정 */
-          textMesh.lookAt(viewer.camera.position);
-          backgroundMesh.lookAt(viewer.camera.position);
-          textMesh.rotation.z += Math.PI;
-          backgroundMesh.rotation.z += Math.PI;
+            /* 텍스트 채우기 */
+            textCtx.fillStyle = "black";
+            textCtx.textAlign = "center";
+            textCtx.textBaseline = "middle";
 
-          /* 씬에 추가 */
-          viewer.splatMesh.add(backgroundMesh);
-          viewer.splatMesh.add(textMesh);
+            // 글씨 쓰기
+            lines.forEach((line, index) => {
+              textCtx.fillText(
+                line,
+                textWidth / 2,
+                index * (lineHeight - 40) + padding / 3
+              );
+            });
 
-          currentTextMesh = { text: textMesh, background: backgroundMesh };
-        }
+            /* 텍스처 생성 */
+            const textTexture = new THREE.CanvasTexture(textCanvas);
+            textTexture.anisotropy =
+              viewer.renderer.capabilities.getMaxAnisotropy();
+
+            /* 텍스트 메시 생성 */
+            const textMaterial = new THREE.MeshBasicMaterial({
+              map: textTexture,
+              transparent: true,
+              depthTest: false,
+            });
+
+            const textGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+            /* 배경 메시(Plane) 생성 */
+            const backgroundGeometry = new THREE.PlaneGeometry(
+              textWidth / scaleFactor,
+              textHeight / scaleFactor
+            );
+            const backgroundMaterial = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              /* 이걸 해제해야 글씨가 잘보임 */
+              /* transparent: true, */
+              opacity: 0,
+            });
+            const backgroundMesh = new THREE.Mesh(
+              backgroundGeometry,
+              backgroundMaterial
+            );
+
+            /* 위치 설정 */
+            backgroundMesh.position.set(
+              clickPoint.x,
+              /* boxMesh.position.x, */
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 10,
+              /* boxMesh.position.z */
+              clickPoint.z
+            );
+
+            textMesh.position.set(
+              clickPoint.x,
+              /* boxMesh.position.x, */
+              boxMesh.position.y + boxMesh.geometry.parameters.height / 2 - 5,
+              /* boxMesh.position.z + 0.1 */
+              clickPoint.z + 0.1
+            );
+
+            /* 카메라를 바라보도록 설정 */
+            textMesh.lookAt(viewer.camera.position);
+            backgroundMesh.lookAt(viewer.camera.position);
+            textMesh.rotation.z += Math.PI;
+            backgroundMesh.rotation.z += Math.PI;
+
+            /* 씬에 추가 */
+            viewer.splatMesh.add(backgroundMesh);
+            viewer.splatMesh.add(textMesh);
+
+            currentTextMesh = { text: textMesh, background: backgroundMesh };
+          }
         });
-
 
       let maxZoom = 50; // 최대 줌 레벨
       let minZoom = 0.1; // 최소 줌 레벨
@@ -536,72 +532,46 @@
         const robot = params.get("robot");
         const top = params.get("top");
         const left = params.get("left");
-        const a = params.get("a");
-        const b = params.get("b");
 
-        return { destin, robot, top, left, a, b };
+        return { destin, robot, top, left };
       }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
-        const { destin, robot, top, left, a, b } = getUrlParams();
+        const { destin, robot, top, left } = getUrlParams();
+        let userConfirmed = false;
         let url;
-        if (destin === "0") {
-          // 목적지 페이지로
-          url = `minimap.html?destin=1&robot=${robot}`;
-        } else if (destin === "1") {
-          // moving 페이지로
-          url = `moving.html?robot=${robot}`;
-        }
+
         //미니맵에서 찍은 위치 로컬 스토리지에 저장
         localStorage.setItem(
           destin === "0" ? "start" : "end",
           JSON.stringify({ top, left })
         );
 
-        const userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
-
-        if (userConfirmed) {
-          // Supabase에 로봇 데이터 전송
-          insertRequest(robot, true, [a, b]).then(() => {
-
-          if (destin === "0") {
-            // 목적지 페이지로
-            url = `minimap.html?destin=1&robot=${robot}`;
-          } else if (destin === "1") {
-            // moving 페이지로
-            // mode 0은 출발지 이동, mode 1은 목적지 이동
-            url = `moving.html?mode=0&robot=${robot}`;
+        if (destin === "0") {
+          // 목적지 페이지로
+          url = `minimap.html?destin=1&robot=${robot}`;
+        } else if (destin === "1") {
+          const startCoord = JSON.parse(localStorage.getItem("robotStart"));
+          userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
+          if (userConfirmed) {
+            insertRequest(robot, true, [
+              startCoord.robotX,
+              startCoord.robotY,
+            ]).then(() => {
+              // moving 페이지로
+              if (userConfirmed) {
+                window.location = `moving.html?robot=${robot}&destin=${0}`;
+              }
+            });
           }
-
-          //미니맵에서 찍은 위치 로컬 스토리지에 저장
-          localStorage.setItem(
-            destin === "0" ? "start" : "end",
-            JSON.stringify({ top, left })
-          );
-
-           // 페이지 이동
-         window.location = url;
-        });
-
-         
-        } else {
-          alert("로봇 이동이 취소되었습니다.");
         }
-        
+
+        // 페이지 이동
+        window.location = url;
       }
-      window.openDemo = openDemo;
-
-      // function goRobot(a, b) {
-      //   insertRequest(robot, true, [a, b]);
-      // }
-
-      // document
-      //   .querySelector(".gaussian_complete_btn")
-      //   .addEventListener("click", () => goRobot(a, b));
-
     </script>
   </body>
 </html>
