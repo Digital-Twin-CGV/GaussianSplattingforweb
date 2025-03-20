@@ -22,7 +22,7 @@
         align-items: center;
       }
 
-      .moving_title {
+      #moving_title {
         padding-top: 10px;
         font-size: 30px;
         font-weight: bold;
@@ -76,8 +76,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
+    <div id="header"></div>
     <div class="moving_header">
-      <div class="moving_title">로봇이 이동 중입니다</div>
+      <div id="moving_title"></div>
       <button class="moving_stop">이동 중지</button>
     </div>
     <div class="moving_container">
@@ -86,12 +87,42 @@
       </div>
     </div>
   </body>
+  <script>
+    // 헤더
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header").innerHTML = data;
+        })
+        .catch((error) => console.error("Error loading header:", error));
+    });
+
+    function openHome(page) {
+      let url = page + ".html";
+      window.location = url;
+    }
+
+    function goBack() {
+      console.log("뒤로가기");
+      history.back();
+    }
+  </script>
   <script type="module">
     import { client, getRobots } from "./supaDatabase/connectDatabase.js";
 
     const end = JSON.parse(localStorage.getItem("end")); // localStorage에서 출발지와 목적지를 불러옴
     const params = new URLSearchParams(window.location.search); // url에서 가져오기
     const robotId = params.get("robot"); // 선택된 로봇 번호
+    const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+
+    // 제목 설정
+    const titleElement = document.getElementById("moving_title");
+    if (destin === "0") {
+      titleElement.textContent = "출발지로 이동중입니다";
+    } else if (destin === "1") {
+      titleElement.textContent = "목적지로 이동중입니다";
+    }
 
     // 로봇 데이터
     async function robotData() {
