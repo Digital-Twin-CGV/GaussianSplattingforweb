@@ -97,23 +97,24 @@
 
         if (selectedCoordinates) {
           const direction = new THREE.Vector3(0, 0, -1);
-           direction.applyQuaternion(viewer.camera.quaternion);
-           viewer.camera.position.set(selectedCoordinates.x, -50, selectedCoordinates.y);
-           viewer.controls.target.copy(viewer.camera.position).add(direction);
-           viewer.controls.update(); 
+          direction.applyQuaternion(viewer.camera.quaternion);
+          viewer.camera.position.set(
+            selectedCoordinates.x,
+            -50,
+            selectedCoordinates.y
+          );
+          viewer.controls.target.copy(viewer.camera.position).add(direction);
+          viewer.controls.update();
 
           const event = new CustomEvent("selectedCoordinatesEvent", {
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
 
-          
-
-           const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+          const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
           const sphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
           });
-
 
           const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
           sphereMesh.position.set(
@@ -562,7 +563,7 @@
 
         if (destin === "0") {
           // 목적지 페이지로
-          url = `minimap.html?destin=1&robot=${robot}`;
+          window.location = `minimap.html?destin=1&robot=${robot}`;
         } else if (destin === "1") {
           const startCoord = JSON.parse(localStorage.getItem("robotStart"));
           userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
@@ -580,7 +581,7 @@
         }
 
         // 페이지 이동
-        window.location = url;
+        // window.location = url;
       }
     </script>
   </body>
