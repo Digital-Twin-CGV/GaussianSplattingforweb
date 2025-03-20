@@ -92,16 +92,26 @@
         selectedCoordinates = JSON.parse(
           localStorage.getItem("selectedCoordinates")
         );
+
         if (selectedCoordinates) {
+          const direction = new THREE.Vector3(0, 0, -1);
+           direction.applyQuaternion(viewer.camera.quaternion);
+           viewer.camera.position.set(selectedCoordinates.x, -50, selectedCoordinates.y);
+           viewer.controls.target.copy(viewer.camera.position).add(direction);
+           viewer.controls.update(); 
+
           const event = new CustomEvent("selectedCoordinatesEvent", {
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
 
-          const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+          
+
+           const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
           const sphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
           });
+
 
           const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
           sphereMesh.position.set(
@@ -236,7 +246,7 @@
             //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
-            position: [0, 50, 0],
+            position: [0, 10, 0],
           },
         ])
         .then(async () => {
