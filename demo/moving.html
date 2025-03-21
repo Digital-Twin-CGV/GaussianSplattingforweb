@@ -58,13 +58,6 @@
         height: 80vh;
       }
 
-      .moving_robot_marker {
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        border-radius: 10px;
-      }
-
       /* 모바일 화면 크기 기준 */
       @media screen and (max-width: 600px) {
         #moving_map {
@@ -80,6 +73,7 @@
     <div class="moving_header">
       <div id="moving_title"></div>
       <button class="moving_stop">이동 중지</button>
+      <button onclick="openPage()">임시 버튼</button>
     </div>
     <div class="moving_container">
       <div class="moving_map_container">
@@ -116,6 +110,7 @@
     const robotId = params.get("robot"); // 선택된 로봇 번호
     const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
 
+    window.openPage = openPage;
     // 제목 설정
     const titleElement = document.getElementById("moving_title");
     if (destin === "0") {
@@ -123,6 +118,20 @@
     } else if (destin === "1") {
       titleElement.textContent = "목적지로 이동중입니다";
     }
+
+    // 데이터 불러오기
+    robotData();
+    // 실시간으로 로봇 정보 가져오기
+    client
+      .channel("robots")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "robots" },
+        (payload) => {
+          robotData();
+        }
+      )
+      .subscribe();
 
     // 로봇 데이터
     async function robotData() {
@@ -187,34 +196,48 @@
       return container;
     }
 
-    // 데이터 불러오기
-    robotData();
-    // 실시간으로 로봇 정보 가져오기
-    client
-      .channel("robots")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "robots" },
-        (payload) => {
-          robotData();
-        }
-      )
-      .subscribe();
-
     document.addEventListener("DOMContentLoaded", () => {
-      const start = JSON.parse(localStorage.getItem("start"));
-      console.log(start);
-      // 출발지 마커 표시
-      const startMarker = document.createElement("div");
-      startMarker.style.position = "absolute";
-      startMarker.className = "moving_start_marker";
-      startMarker.style.top = start.top + "%";
-      startMarker.style.left = start.left + "%";
-      startMarker.style.backgroundColor = "blue";
-      startMarker.style.width = "15px";
-      startMarker.style.height = "15px";
-      startMarker.style.borderRadius = "15px";
-      document.querySelector(".moving_map_container").appendChild(startMarker);
+      let markerLocation;
+      if (destin == 0) {
+        markerLocation = JSON.parse(localStorage.getItem("start"));
+      } else if (destin == 1) {
+        markerLocation = JSON.parse(localStorage.getItem("end"));
+      }
+      // 출발지, 목적지 마커 표시
+      const destinMarkerContainer = document.createElement("div");
+      destinMarkerContainer.style.position = "absolute";
+      destinMarkerContainer.className = "moving_start_marker";
+      destinMarkerContainer.style.top = markerLocation.top + "%";
+      destinMarkerContainer.style.left = markerLocation.left + "%";
+      destinMarkerContainer.style.display = "flex";
+      destinMarkerContainer.style.alignItems = "center";
+
+      const destinMarker = document.createElement("div");
+      destinMarker.style.backgroundColor = "blue";
+      destinMarker.style.width = "15px";
+      destinMarker.style.height = "15px";
+      destinMarker.style.borderRadius = "15px";
+
+      const destinLabel = document.createElement("span");
+      destinLabel.innerHTML = `로봇 ${robotId}`;
+      destinLabel.style.color = "blue";
+      destinLabel.style.fontSize = "10px";
+      destinLabel.style.marginLeft = "5px";
+
+      destinMarkerContainer.appendChild(destinMarker);
+      destinMarkerContainer.appendChild(destinLabel);
+
+      document
+        .querySelector(".moving_map_container")
+        .appendChild(destinMarkerContainer);
     });
+
+    function openPage() {
+      if (destin == 0) {
+        window.location = `checkpoint.html?robot=${robotId}`;
+      } else if (destin == 1) {
+        window.location = `report.html?robot=${robotId}`;
+      }
+    }
   </script>
 </html>
