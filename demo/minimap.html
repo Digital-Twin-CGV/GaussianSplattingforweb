@@ -240,14 +240,14 @@
         // 사용자는 왼쪽 위가 원점
         robotX =
           (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
-            (2238 * 100) / 3118) *
-            3118) /
+            (2750 * 100) / 3299) *
+            3299) /
           100;
 
         robotY =
-          (((2820 * 100) / 3462 -
+          (((2457 * 100) / 3133 -
             (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
-            3462) /
+            3133) /
           100;
 
         // console.log("x", x, "y", y);
@@ -418,11 +418,11 @@
               .getBoundingClientRect();
             // robot marker와 label을 담을 container
             robotContainer.style.left =
-              ((robot.position[0] + 2238) * 100) / 3118 -
+              ((robot.position[0] + 2750) * 100) / 3299 -
               (7.5 * 100) / minimapRect.width +
               "%";
             robotContainer.style.top =
-              ((-robot.position[1] + 2820) * 100) / 3462 -
+              ((-robot.position[1] + 2457) * 100) / 3133 -
               (7.5 * 100) / minimapRect.height +
               "%";
             robotContainer.style.display = "flex";
