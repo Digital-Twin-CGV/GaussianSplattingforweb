@@ -133,6 +133,21 @@
       )
       .subscribe();
 
+    // 실시간으로 response 가져오기
+    client
+      .channel("response")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "response" },
+        (payload) => {
+          if (payload.new.robot_id == robotId) {
+            // 로봇 id에 맞는 정보 가져오기
+            destinComplete(payload.new.complete);
+          }
+        }
+      )
+      .subscribe();
+
     // 로봇 데이터
     async function robotData() {
       const robots = await getRobots();
@@ -196,6 +211,7 @@
       return container;
     }
 
+    // 출발지, 목적지 마커 표시
     document.addEventListener("DOMContentLoaded", () => {
       let markerLocation;
       if (destin == 0) {
@@ -203,7 +219,6 @@
       } else if (destin == 1) {
         markerLocation = JSON.parse(localStorage.getItem("end"));
       }
-      // 출발지, 목적지 마커 표시
       const destinMarkerContainer = document.createElement("div");
       destinMarkerContainer.style.position = "absolute";
       destinMarkerContainer.className = "moving_start_marker";
@@ -232,6 +247,14 @@
         .appendChild(destinMarkerContainer);
     });
 
+    // 도착시 페이지 이동
+    function destinComplete(complete) {
+      if (complete) {
+        openPage();
+      }
+    }
+
+    // 페이지 이동
     function openPage() {
       if (destin == 0) {
         window.location = `checkpoint.html?robot=${robotId}`;
