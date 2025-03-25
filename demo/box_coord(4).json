@@ -5,7 +5,8 @@
     "info": {
       "name": "312호 강의실\n",
       "type": "box"
-    }
+    },
+    "nextIndex": {"index": -1}
   },
   {
     "leftTop": { "x": -255.3, "y": -27.5, "z": 444.6 },
@@ -13,6 +14,17 @@
     "info": {
       "name": "313호 강의실\n",
       "type": "box"
-    }
+    },
+    "nextIndex": {"index": -1}
+  }
+  ,
+  {
+    "leftTop": { "x": 1683, "y": -66, "z": 478 },
+    "rightBottom": { "x":1688, "y":5, "z":544 },
+    "info": {
+      "name": "뉴턴복도2로\n이동하시겠습니까?\n",
+      "type": "box"
+    },
+    "nextIndex": {"index": 2 ,"startX": 1679, "startZ": 506}
   }
 ]

@@ -70,13 +70,16 @@
 
 
       let path_name;
+      model_index=selectedCoordinates.model_num-1;
       const model_names = [
-          "assets/data/cut_model/newton1__2.splat",
-          "assets/data/cut_model/allnations.splat",
-          "assets/data/cut_model/cloudbridge__newton1.splat",
-          "assets/data/cut_model/another_model.splat"
+          "assets/data/cut_model/(1)allnations.splat",
+          "assets/data/cut_model/(2)newton2.splat",
+          "assets/data/cut_model/(3)newton1.splat",
+          "assets/data/cut_model/(4)cloudbridge.splat",
+          "assets/data/cut_model/(5)fivestone2.splat",
+          "assets/data/cut_model/(6)fivestone1.splat"
       ];
-      path_name=model_names[selectedCoordinates.model_num];
+      path_name=model_names[model_index];
 
 
 
@@ -123,49 +126,24 @@
 
 
       //임시. n을 누르면 특정 모델로 바뀜 나중에 할것
-      // let isLoadingScene = false; // 씬 변경 중인지 체크하는 플래그
-      // let addedSceneIndexes = [];  // 현재 로드된 씬의 인덱스를 저장
+      document.addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "n") {
+            let selectedCoordinates = JSON.parse(localStorage.getItem("selectedCoordinates")) || { x: 0, y: 0, model_num: 1 };
 
-      // document.addEventListener("keydown", (event) => {
-      //     if (event.key.toLowerCase() === "n" && !isLoadingScene) {
-      //         console.log("N 키 입력됨 - 모델 변경 시작");
+            //모델 번호 변경 (순환)
+            selectedCoordinates.model_num = (selectedCoordinates.model_num % model_names.length) + 1;
 
-      //         isLoadingScene = true; // 로딩 플래그 활성화
+            //새로운 좌표 값 설정 (예제)
+            selectedCoordinates.x += 10;  // X 좌표 증가
+            selectedCoordinates.y += 5;   // Y 좌표 증가
 
-      //         // **1기존 씬 제거**
-      //         viewer.removeSplatScenes(addedSceneIndexes)
-      //             .then(() => {
-      //                 console.log("🗑 기존 씬 제거 완료!");
+            //변경된 값 저장
+            localStorage.setItem("selectedCoordinates", JSON.stringify(selectedCoordinates));
 
-      //                 // **2새로운 씬 추가**
-      //                 return viewer.addSplatScenes([
-      //                     {
-      //                         path: "assets/data/cut_model/cloudbridge__newton1.splat", // 새로운 모델
-      //                         rotation: [0, 0, 0, 0],
-      //                         scale: [50, 50, 50],
-      //                         position: [0, 50, 0],
-      //                     },
-      //                 ]);
-      //             })
-      //             .then((newSceneIndexes) => {
-      //                 console.log("새 모델 로드 완료!");
-
-      //                 // **추가된 씬의 인덱스를 업데이트**
-      //                 addedSceneIndexes = newSceneIndexes; 
-
-      //                 // **viewer.start() 중복 실행 방지**
-      //                 if (!viewer.isRunning) {
-      //                     viewer.start();
-      //                 }
-
-      //                 isLoadingScene = false; // 로딩 완료
-      //             })
-      //             .catch((err) => {
-      //                 console.error("오류 발생:", err);
-      //                 isLoadingScene = false; // 오류 발생 시 로딩 플래그 해제
-      //             });
-      //     }
-      // });
+            //페이지 새로고침하여 변경 적용
+            location.reload();
+        }
+    });
 
       
       
@@ -174,10 +152,7 @@
       viewer
         .addSplatScenes([
           {
-
             path: path_name,
-
-            //             path: "assets/data/cu_plus_all.splat",
             rotation: [0, 0, 0, 0],
             scale: [50, 50, 50],
             position: [0, 10, 0],
@@ -186,11 +161,7 @@
         .then(async () => {
           viewer.start();
           createBoxes();
-        });
-      
-
-
-      // 좌표를 읽은 후 박스 생성
+          // 좌표를 읽은 후 박스 생성
       /* const coordinates = await loadCoordinates();
       createTransparentBox(coordinates); */
       const coordinatesArray = await loadCoordinates();
@@ -200,7 +171,17 @@
 
         // JSON 파일에서 좌표를 읽어오는 함수
         async function loadCoordinates() {
-          const response = await fetch("./box_coord.json");
+          let box_coord = [
+              "box_coord(1).json",
+              "box_coord(2).json",
+              "box_coord(3).json",
+              "box_coord(4).json",
+              "box_coord(5).json",
+              "box_coord(6).json"
+          ];
+
+          const response = await fetch(box_coord[model_index]);
+          console.log(box_coord[model_index]);
           const data = await response.json();
           /* console.log("좌표", data); */
           /* return data; */
@@ -219,7 +200,7 @@
 
         // 3d 박스를 생성하는 함수
         function createTransparentBox(coordinates) {
-          const { leftTop, rightBottom, info } = coordinates;
+          const { leftTop, rightBottom, info, nextIndex } = coordinates;
           /* console.log("좌표", coordinates);
         console.log("leftTop:", coordinates.leftTop);
         console.log("rightBottom:", coordinates.rightBottom); */
@@ -234,8 +215,8 @@
 
           const boxGeometry = new THREE.BoxGeometry(width, height, depth);
           const boxMaterial = new THREE.MeshBasicMaterial({
-            color: 0x0000ff,
-            transparent: true,
+            color: 0x12592f,
+            transparent: false,
             opacity: 0,
           });
           const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -262,6 +243,23 @@
             }
             console.log("박스가 클릭되었습니다!");
             createRectangleWithText(boxMesh, info, clickPoint);
+            
+            if(nextIndex.index!=-1){ //여기로와    새로 nextIndex항목 만들었으니 createbox부터 다시 수정할 것
+              let selectedCoordinates = JSON.parse(localStorage.getItem("selectedCoordinates"));
+
+              //모델 번호 변경 (순환)
+              selectedCoordinates.model_num = nextIndex.index+1;
+
+              //새로운 좌표 값 설정 (예제)
+              selectedCoordinates.x = nextIndex.startX;  // 초기 X 좌표 수정
+              selectedCoordinates.y = nextIndex.startZ;  // 초기 Z 좌표 수정
+
+              //변경된 값 저장
+              localStorage.setItem("selectedCoordinates", JSON.stringify(selectedCoordinates));
+
+              //페이지 새로고침하여 변경 적용
+              location.reload();
+            } 
           };
 
           // Raycaster를 사용하여 클릭 이벤트 처리
@@ -312,7 +310,8 @@
             20
           );
           const rectMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: 0x12592f,
+            transparent : false,
             /* transparent: true, */
             opacity: 0,
           });
@@ -419,7 +418,7 @@
 
           currentTextMesh = { text: textMesh, background: backgroundMesh };
         }
-
+        });
 
 
       let maxZoom = 50; // 최대 줌 레벨

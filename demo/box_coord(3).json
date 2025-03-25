@@ -1,0 +1,39 @@
+[
+  {
+    "leftTop": { "x": 61.5, "y": -28.1, "z": 466.5 },
+    "rightBottom": { "x": 93.3, "y": 32.5, "z": 468.6 },
+    "info": {
+      "name": "312호 강의실\n",
+      "type": "box"
+    },
+    "nextIndex": {"index": -1}
+  },
+  {
+    "leftTop": { "x": -255.3, "y": -27.5, "z": 444.6 },
+    "rightBottom": { "x": -217.9, "y": 23.1, "z": 446.6 },
+    "info": {
+      "name": "313호 강의실\n",
+      "type": "box"
+    },
+    "nextIndex": {"index": -1}
+  }
+  ,
+  {
+    "leftTop": { "x": 1074, "y": -69, "z": 404 },
+    "rightBottom": { "x":1057, "y":9, "z":474 },
+    "info": {
+      "name": "뉴턴복도1로\n이동하시겠습니까?\n",
+      "type": "box"
+    },
+    "nextIndex": {"index": 1 ,"startX": 1029, "startZ": 455}
+  },
+  {
+    "leftTop": { "x": 1712, "y": -65, "z": 535 },
+    "rightBottom": { "x":1726, "y":-9, "z":476 },
+    "info": {
+      "name": "구름다리로\n이동하시겠습니까?\n",
+      "type": "box"
+    },
+    "nextIndex": {"index": 3 ,"startX": 1799, "startZ": 509}
+  }
+]
