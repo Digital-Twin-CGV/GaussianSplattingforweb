@@ -80,14 +80,15 @@
       let initialCameraPosition = { x: 0, y: -50, z: 0 };
 
       let path_name;
-      model_index=selectedCoordinates.model_num-1;
+      model_index=selectedCoordinates.model_num;
+      console.log(model_index);
       const model_names = [
         "assets/data/cut_model/(1)allnations.splat",
         "assets/data/cut_model/(2)newton2.splat",
         "assets/data/cut_model/(3)newton1.splat",
         "assets/data/cut_model/(4)cloudbridge.splat",
         "assets/data/cut_model/(5)fivestone2.splat",
-        "assets/data/cut_model/(6)fivestone1.splat",
+        "assets/data/cut_model/(6)fivestone1.splat"
       ];
       path_name=model_names[model_index];
 
@@ -132,57 +133,6 @@
         }
       });
 
-      // document.addEventListener("DOMContentLoaded", () => {
-      //   // URL 파라미터에서 좌표 데이터 읽어오기
-      //   const params = new URLSearchParams(window.location.search);
-      //   const gaussianX = parseFloat(params.get("left")); // minimap.html에서 left에 해당하는 값
-      //   const gaussianZ = parseFloat(params.get("bottom")); // minimap.html에서 bottom에 해당하는 값
-
-      //   // destinMode가 전달되었으면 추가로 읽어올 수 있음 (필요한 경우)
-      //   const destinMode = params.get("destin");
-
-      //   // 좌표가 정상적으로 전달되었는지 확인
-      //   if (!isNaN(gaussianX) && !isNaN(gaussianZ)) {
-      //     // 카메라 초기 위치 설정
-      //     // - X는 그대로 사용
-      //     // - Y(높이)는 고정 (예: 5)
-      //     // - Z는 약간의 오프셋(10)을 주어 배치
-      //     const initialCameraPosition = {
-      //       x: gaussianX,
-      //       y: -30,
-      //       z: gaussianZ,
-      //     };
-
-      //     // viewer 객체가 이미 생성되어 있다고 가정
-      //     viewer.camera.position.set(
-      //       initialCameraPosition.x,
-      //       initialCameraPosition.y,
-      //       initialCameraPosition.z
-      //     );
-      //     // 카메라가 선택된 좌표(gaussianX, gaussianZ)를 바라보도록 설정
-      //     viewer.camera.lookAt(gaussianX, 0, gaussianZ);
-
-      //     // 마커(구)를 추가하여 선택한 위치를 시각적으로 표시
-      //     const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-      //     const sphereMaterial = new THREE.MeshBasicMaterial({
-      //       color: 0x00ff00,
-      //     });
-      //     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-      //     sphereMesh.position.set(
-      //       gaussianX,
-      //       initialCameraPosition.y,
-      //       gaussianZ
-      //     );
-      //     viewer.splatMesh.add(sphereMesh);
-
-      //     console.log(
-      //       `마커 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-      //     );
-      //   } else {
-      //     console.warn("URL 파라미터에서 좌표를 읽어올 수 없습니다.");
-      //   }
-      // });
-
       const viewer = new GaussianSplats3D.Viewer({
         cameraUp: [0, -1, 0],
         initialCameraPosition: [
@@ -213,9 +163,6 @@
             location.reload();
         }
     });
-
-      
-      
 
       
       viewer
@@ -317,7 +264,7 @@
               let selectedCoordinates = JSON.parse(localStorage.getItem("selectedCoordinates"));
 
               //모델 번호 변경 (순환)
-              selectedCoordinates.model_num = nextIndex.index+1;
+              selectedCoordinates.model_num = nextIndex.index;
 
               //새로운 좌표 값 설정 (예제)
               selectedCoordinates.x = nextIndex.startX;  // 초기 X 좌표 수정
