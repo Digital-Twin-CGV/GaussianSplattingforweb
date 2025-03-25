@@ -32,19 +32,16 @@
         position: absolute;
         right: 10px;
         bottom: 10px;
-
-        display: flex;
-        flex-direction: column;
       }
 
       .selectrobot_zoom {
         color: #c0c0c0;
         border: 1px solid #c0c0c0;
-        padding: 15px;
+        padding: 5px;
       }
 
       .selectrobot_check_btn {
-        width: 250px;
+        width: 300px;
         height: 80px;
         border-radius: 10px;
         font-size: large;
@@ -53,17 +50,12 @@
       .selectrobot_map {
         display: flex;
         justify-content: center;
-        align-items: center;
-        overflow: hidden; /* 넘치는 부분을 감춤 */
-        border: 2px solid #333;
+
         position: relative;
       }
 
       #selectrobot_gaussian {
-        width: auto;
         height: 75vh;
-        width: 100%;
-        cursor: grab;
       }
 
       /* 모바일 화면 크기 기준 */
@@ -85,32 +77,19 @@
         <h3>빨간색으로 표시된 것은 사용 중인 로봇이니, 사용할 수 없습니다.</h3>
       </div>
       <div class="selectrobot_map" id="selectrobot_map">
+        <div class="selectrobot_zoom_btns">
+          <div class="selectrobot_zoom" id="selectrobot_zoom_in">+</div>
+          <div class="selectrobot_zoom" id="selectrobot_zoom_out">-</div>
+        </div>
         <img
           id="selectrobot_gaussian"
           alt="gaussian_img"
           src="assets/images/2dmap.png"
-          draggable="false"
         />
       </div>
 
       <div class="selectrobot_check">
         <button class="selectrobot_check_btn" type="button">선택 완료</button>
-      </div>
-      <div class="selectrobot_zoom_btns">
-        <button
-          class="selectrobot_zoom"
-          id="selectrobot_zoom_in"
-          onclick="zoomIn();"
-        >
-          +
-        </button>
-        <button
-          class="selectrobot_zoom"
-          id="selectrobot_zoom_out"
-          onclick="zoomOut()"
-        >
-          -
-        </button>
       </div>
     </div>
     <script>
@@ -158,9 +137,8 @@
         .subscribe();
 
       // 로봇 데이터 가져오기
-      let robots;
       async function robotData() {
-        robots = await getRobots();
+        const robots = await getRobots();
 
         // 기존 마커 제거
         const markers = document.querySelectorAll(
@@ -205,18 +183,16 @@
         container.className = "selectrobot_robot_marker_container";
         container.style.position = "absolute";
         container.style.left =
-          ((robot.position[0] + 2238) * 100) / 3118 -
+          ((robot.position[0] + 2750) * 100) / 3299 -
           (7.5 * 100) / minimapRect.width +
           "%";
         container.style.top =
-          ((-robot.position[1] + 2820) * 100) / 3462 -
+          ((-robot.position[1] + 2457) * 100) / 3133 -
           (7.5 * 100) / minimapRect.height +
           "%";
-        console.log(container.style.left, container.style.top);
         container.style.display = "flex";
         container.style.alignItems = "center";
         container.style.cursor = "pointer";
-        container.dataset.robotId = robot.id; // robot id 저장
 
         // marker
         const marker = document.createElement("div");
@@ -242,79 +218,6 @@
         });
 
         return container;
-      }
-
-      // 초기 확대 배율
-      let nowZoom = 1.0;
-      let startX = 0,
-        startY = 0;
-      let offsetX = 0,
-        offsetY = 0;
-      let isDragging = false;
-      const map = document.querySelector("#selectrobot_gaussian");
-
-      // 확대 기능
-      function zoomIn() {
-        if (nowZoom < 3.0) {
-          nowZoom += 0.1;
-          updateZoom();
-        } else {
-        }
-      }
-
-      // 축소 기능
-      function zoomOut() {
-        if (nowZoom > 0.7) {
-          nowZoom -= 0.1;
-          updateZoom();
-        } else {
-        }
-      }
-
-      // 확대/축소 적용
-      function updateZoom() {
-        map.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
-        updateMarkers();
-        console.log(`현재 배율: ${nowZoom}`);
-      }
-
-      // 드래그 기능
-      map.addEventListener("mousedown", (event) => {
-        isDragging = true;
-        startX = event.clientX - offsetX;
-        startY = event.clientY - offsetY;
-        map.style.cursor = "grabbing";
-      });
-
-      map.addEventListener("mouseup", (event) => {
-        isDragging = false;
-        map.style.cursor = "grab";
-      });
-
-      document.addEventListener("mousemove", (event) => {
-        if (!isDragging) return;
-        offsetX = event.clientX - startX;
-        offsetY = event.clientY - startY;
-        updateZoom();
-      });
-
-      // 마커 위치 업데이트
-      function updateMarkers() {
-        const minimapRect = map.getBoundingClientRect();
-        const markers = document.querySelectorAll(
-          ".selectrobot_robot_marker_container"
-        );
-
-        markers.forEach((container) => {
-          const robotId = parseInt(container.dataset.robotId, 10); // 마커에 저장된 로봇 ID 가져오기
-          const robot = robots.find((r) => r.id === robotId); // 해당 로봇 정보 찾기
-
-          // 원래의 위치 계산
-          createRobotMarker(robot);
-
-          // 확대/축소 및 이동 적용
-          container.style.transform = `scale(${nowZoom}) translate(${offsetX}px, ${offsetY}px)`;
-        });
       }
 
       // 선택된 로봇 번호, 선택된 로봇의 상태
@@ -358,9 +261,6 @@
           }
         }
       }
-
-      window.zoomIn = zoomIn;
-      window.zoomOut = zoomOut;
     </script>
   </body>
 </html>
