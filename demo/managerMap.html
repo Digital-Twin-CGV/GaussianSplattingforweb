@@ -387,22 +387,22 @@
         container.style.position = "absolute";
         container.style.left =
           ((robot.position[0] + 2750) * 100) / 3299 -
-          (7.5 * 100) / minimapRect.width +
+          (5 * 100) / minimapRect.width +
           "%";
         container.style.top =
           ((-robot.position[1] + 2457) * 100) / 3133 -
-          (7.5 * 100) / minimapRect.height +
+          (5 * 100) / minimapRect.height +
           "%";
         container.style.display = "flex";
-        container.style.alignItems = "center";
+        container.style.alignItems = "flex-start";
         container.style.cursor = "pointer";
 
         // marker
         const marker = document.createElement("div");
         marker.className = "managerMap_robot_marker";
         // marker 크기
-        marker.style.width = "15px";
-        marker.style.height = "15px";
+        marker.style.width = "10px";
+        marker.style.height = "10px";
         marker.style.borderRadius = "50%";
         marker.style.backgroundColor = applyColor(robot);
 
@@ -431,7 +431,6 @@
         const overlay = document.querySelector(".managerMap_modal_overlay");
         const useRobot = modal.querySelector(".managerMap_modal_use");
         const robotId = modal.querySelector(".managerMap_modal_title");
-        const robotCamera = modal.querySelector(".managerMap_modal_camera");
         const robotLogs = modal.querySelector(".managerMap_modal_logs");
         const robotControlBtn = document.querySelector(
           "#managerMap_modal_robot_btn"
@@ -453,8 +452,6 @@
         useRobot.innerHTML = robot.status === 0 ? "사용 가능" : "사용 불가";
 
         useRobot.style.color = applyColor(robot);
-
-        robotCamera.innerHTML = `<img src="./assets/images/robot1_camera.JPG" style = "width: 100%; border-radius: 10px;"/>`;
 
         // 로봇 로그
         robotLogs.innerHTML = logs.map((log) => `<div>${log}</div>`).join("");

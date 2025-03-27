@@ -138,12 +138,12 @@
           start.style.top = startCoordin.top + "%";
           start.style.left = startCoordin.left + "%";
           start.style.display = "flex";
-          start.style.alignItems = "center";
+          start.style.alignItems = "flex-start";
 
           // marker
           const startMarker = document.createElement("div");
-          startMarker.style.width = "15px";
-          startMarker.style.height = "15px";
+          startMarker.style.width = "10px";
+          startMarker.style.height = "10px";
           startMarker.style.borderRadius = "50%";
           startMarker.style.backgroundColor = "rgb(0, 217, 255)";
 
@@ -228,9 +228,9 @@
         // 이미지에서 클릭한 부분을 %로 좌표 표현 (marker)
         // 왼쪽 위를 원점
         const x =
-          (100 * (event.clientX - minimapRect.left - 7.5)) / minimapRect.width;
+          (100 * (event.clientX - minimapRect.left - 5)) / minimapRect.width;
         const y =
-          (100 * (event.clientY - minimapRect.top - 7.5)) / minimapRect.height;
+          (100 * (event.clientY - minimapRect.top - 5)) / minimapRect.height;
 
         // 사람이 선택한 부분
         selectedX = x;
@@ -310,12 +310,12 @@
           markerContainer.style.top = `${y}%`;
           markerContainer.style.left = `${x}%`;
           markerContainer.style.display = "flex";
-          markerContainer.style.alignItems = "center";
+          markerContainer.style.alignItems = "flex-start";
 
           // 마커 생성
           const marker = document.createElement("div");
-          marker.style.width = "15px";
-          marker.style.height = "15px";
+          marker.style.width = "10px";
+          marker.style.height = "10px";
           marker.style.backgroundColor = "red";
           marker.style.borderRadius = "50%";
 
@@ -419,18 +419,18 @@
             // robot marker와 label을 담을 container
             robotContainer.style.left =
               ((robot.position[0] + 2750) * 100) / 3299 -
-              (7.5 * 100) / minimapRect.width +
+              (5 * 100) / minimapRect.width +
               "%";
             robotContainer.style.top =
               ((-robot.position[1] + 2457) * 100) / 3133 -
-              (7.5 * 100) / minimapRect.height +
+              (5 * 100) / minimapRect.height +
               "%";
             robotContainer.style.display = "flex";
-            robotContainer.style.alignItems = "center";
+            robotContainer.style.alignItems = "flex-start";
 
             // robot marker
-            robotMarker.style.width = "15px";
-            robotMarker.style.height = "15px";
+            robotMarker.style.width = "10px";
+            robotMarker.style.height = "10px";
             robotMarker.style.borderRadius = "50%";
             robotMarker.style.backgroundColor = "#1dd200";
 
