@@ -184,22 +184,22 @@
         container.style.position = "absolute";
         container.style.left =
           ((robot.position[0] + 2750) * 100) / 3299 -
-          (7.5 * 100) / minimapRect.width +
+          (5 * 100) / minimapRect.width +
           "%";
         container.style.top =
           ((-robot.position[1] + 2457) * 100) / 3133 -
-          (7.5 * 100) / minimapRect.height +
+          (5 * 100) / minimapRect.height +
           "%";
         container.style.display = "flex";
-        container.style.alignItems = "center";
+        container.style.alignItems = "flex-start";
         container.style.cursor = "pointer";
 
         // marker
         const marker = document.createElement("div");
         marker.className = "selectrobot_robot_marker";
         // marker 크기
-        marker.style.width = "15px";
-        marker.style.height = "15px";
+        marker.style.width = "10px";
+        marker.style.height = "10px";
         marker.style.borderRadius = "50%";
         marker.style.backgroundColor = applyColor(robot);
 
