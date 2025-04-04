@@ -6509,35 +6509,33 @@ class OrbitControls extends EventDispatcher {
 
 
 
-    let modelData = []; // JSON 원본 데이터
-    let allWalls = []; // 특정 index의 벽 데이터를 저장할 배열
-    let selectedIndex = 1; // 원하는 index 값 (필요한 경우 변경 가능)
-
-    async function loadWallData() {
-      try {
-        const response = await fetch("../wall.json"); // JSON 파일 경로
-        const data = await response.json(); // JSON 데이터 가져오기
-        console.log("로드된 JSON 데이터:", data);
-    
-        // 특정 index와 일치하는 모델 찾기
-        console.log('selectedindex: ',selectedIndex);
-        const selectedModel = data.find(model => model.index === selectedIndex);
-    
-        if (selectedModel && selectedModel.walls) {
-          // ANGLE 항목만 배열로 저장
-          const angles = selectedModel.walls.map(wall => wall.ANGLE);
-          console.log("추출된 ANGLE 값들:", angles);
-        } else {
-          throw new Error(`index ${selectedIndex}에 해당하는 walls 데이터가 없음`);
-        }
-      } catch (error) {
-        console.error("JSON 데이터를 불러오는 중 오류 발생:", error);
-      }
-    }
     
 
-    // 페이지 로드 시 JSON 데이터 불러오기
-    loadWallData();
+    // async function loadWallData() {
+    //   try {
+    //     const response = await fetch("../wall.json"); // JSON 파일 경로
+    //     const data = await response.json(); // JSON 데이터 가져오기
+    //     console.log("로드된 JSON 데이터:", data);
+    
+    //     // 특정 index와 일치하는 모델 찾기
+    //     console.log('selectedindex: ',selectedIndex);
+    //     const selectedModel = data.find(model => model.index === selectedIndex);
+    
+    //     if (selectedModel && selectedModel.walls) {
+    //       // ANGLE 항목만 배열로 저장
+    //       const angles = selectedModel.walls.map(wall => walls.ANGLE);
+    //       console.log("추출된 ANGLE 값들:", angles);
+    //     } else {
+    //       throw new Error(`index ${selectedIndex}에 해당하는 walls 데이터가 없음`);
+    //     }
+    //   } catch (error) {
+    //     console.error("JSON 데이터를 불러오는 중 오류 발생:", error);
+    //   }
+    // }
+    
+
+    // // 페이지 로드 시 JSON 데이터 불러오기
+    // loadWallData();
 
 
     //여기로와
@@ -6552,7 +6550,7 @@ class OrbitControls extends EventDispatcher {
         // 현재 위치 가져오기
         const currentPos = scope.object.position;
         const currentrotate = scope.object.rotation;
-        //console.log(currentrotate); --> 회전각도보려면 키기
+        //console.log(currentrotate);
 
         if (scope.object.isPerspectiveCamera) {
           // perspective
@@ -6561,9 +6559,9 @@ class OrbitControls extends EventDispatcher {
           let targetDistance = offset.length(); 
 
           //회전방향 확인
-          //let check_rotation = Math.abs(currentrotate.x);
+          let check_rotation = Math.abs(currentrotate.x);
+          //console.log(check_rotation); // --> 회전각도보려면 키기
 
-          //console.log(check_rotation);
           targetDistance *= Math.tan(
             ((scope.object.fov / 2) * Math.PI) / 180.0
           );      
@@ -6892,37 +6890,137 @@ class OrbitControls extends EventDispatcher {
     // 팬을 위한 변수 및 함수
     let isKeyPressed = {}; 
     let panInterval = null;
+    let angle_limit=100;
+    let prevRotation = null;
+
+    let MAX_X = 0, MIN_X = 0;
+    let MAX_Y = 0, MIN_Y = 0;
+    let MAX_Z = 0, MIN_Z = 0;
+    let prevCameraAngle  = null; // 기준 방향
+    let prevRelativeAngle  = false;
+
+    // 이벤트 리스너 추가 (박스 안에 들어갔을 때 실행)
+    window.addEventListener("Wall_Collision_Check", (event) => {
+      const { angle, leftTop, rightBottom } = event.detail;
+  
+      // 박스의 경계값 저장
+      MAX_X = Math.max(leftTop.x, rightBottom.x);
+      MIN_X = Math.min(leftTop.x, rightBottom.x);
+      MAX_Y = Math.max(leftTop.y, rightBottom.y);
+      MIN_Y = Math.min(leftTop.y, rightBottom.y);
+      MAX_Z = Math.max(leftTop.z, rightBottom.z);
+      MIN_Z = Math.min(leftTop.z, rightBottom.z);
+  
+      // 벽을 정면으로 바라보는 각도 저장 (0~360°)
+      angle_limit = angle;
+  });
+
+
+    
 
     function handlePanEvent(event) { //여기로와22
       let needsUpdate = false;
+      let can_move=scope.keyPanSpeed;
+      const currentPos = scope.object.position;
 
+      // // 현재 카메라 방향 각도 (0~360°)
+      const currentDirectionForCheck = new THREE.Vector3();
+      scope.object.getWorldDirection(currentDirectionForCheck);
+      let cameraAngleforCheck = Math.atan2(currentDirectionForCheck.x, currentDirectionForCheck.z); // X-Z 평면 기준
+      cameraAngleforCheck = THREE.MathUtils.radToDeg(cameraAngleforCheck);
+      if (cameraAngleforCheck < 0) cameraAngleforCheck += 360; // 0~360°로 변환
+
+      // // 상대각 계산
+      const RelativeAngleforCheck = (targetAngle) => {
+        let diff = Math.abs(cameraAngleforCheck - targetAngle);
+        return diff > 180 ? 360 - diff : diff;
+      };
+      
+      const relativeAngle = RelativeAngleforCheck(angle_limit); // 호출해서 값 저장
+      
+      if (cameraAngleforCheck !== prevCameraAngle || relativeAngle !== prevRelativeAngle) {
+        console.log(`현재 각도: ${cameraAngleforCheck}°, 기준 각도: ${angle_limit}°, 상대 각도: ${relativeAngle}°`);
+        prevCameraAngle = cameraAngleforCheck;
+        prevRelativeAngle = relativeAngle;
+      }
+      
       if (event.type === 'keydown') {
         isKeyPressed[event.key] = true;
 
         if (!panInterval) {
           panInterval = setInterval(() => {
-            if (isKeyPressed['r']) {
-              pan(0, 0, scope.keyPanSpeed); // forward  temp.js참고해서 각각 이동범위와 각도 넣어서 하기
-              needsUpdate = true;
-            }
-            if (isKeyPressed['f']) {
-              pan(0, 0, -scope.keyPanSpeed); // back
-              needsUpdate = true;
-            }
-            if (isKeyPressed['a']) {
-              pan(scope.keyPanSpeed, 0, 0); // left
-              needsUpdate = true;
-            }
-            if (isKeyPressed['d']) {
-              pan(-scope.keyPanSpeed, 0, 0); // right
-              needsUpdate = true;
-            }
+            // 전진 (r)
+            // 현재 카메라 방향 각도 (0~360°)
+            const currentDirection = new THREE.Vector3();
+            scope.object.getWorldDirection(currentDirection);
+            let cameraAngle = Math.atan2(currentDirection.x, currentDirection.z); // X-Z 평면 기준
+            cameraAngle = THREE.MathUtils.radToDeg(cameraAngle);
+            if (cameraAngle < 0) cameraAngle += 360; // 0~360°로 변환
 
+            const isInsideBox = (
+              currentPos.x >= MIN_X && currentPos.x <= MAX_X &&
+              currentPos.y >= MIN_Y && currentPos.y <= MAX_Y &&
+              currentPos.z >= MIN_Z && currentPos.z <= MAX_Z
+            );
+          
+            // 상대각 계산
+            const getRelativeAngle = (targetAngle) => {
+              let diff = Math.abs(cameraAngle - targetAngle);
+              return diff > 180 ? 360 - diff : diff;
+            };
+            if (isKeyPressed["r"]) {
+              let forwardAngle = angle_limit;
+              let relative = getRelativeAngle(forwardAngle);
+              let can_move = !isInsideBox || relative > 90;
+    
+              if (!can_move) console.log("전진 차단");
+              if (can_move) pan(0, 0, scope.keyPanSpeed);
+    
+              needsUpdate = true;
+            }
+    
+            // 후진 (f)
+            if (isKeyPressed["f"]) {
+              let backwardAngle = (angle_limit + 180) % 360;
+              let relative = getRelativeAngle(backwardAngle);
+              let can_move = !isInsideBox || relative > 90;
+    
+              if (!can_move) console.log("후진 차단");
+              if (can_move) pan(0, 0, -scope.keyPanSpeed);
+    
+              needsUpdate = true;
+            }
+    
+            // 왼쪽 (a)
+            if (isKeyPressed["a"]) {
+              let leftAngle = (angle_limit + 90) % 360;
+              let relative = getRelativeAngle(leftAngle);
+              let can_move = !isInsideBox || relative > 90;
+    
+              if (!can_move) console.log("좌측 이동 차단");
+              if (can_move) pan(scope.keyPanSpeed, 0, 0);
+    
+              needsUpdate = true;
+            }
+    
+            // 오른쪽 (d)
+            if (isKeyPressed["d"]) {
+              let rightAngle = (angle_limit - 90 + 360) % 360;
+              let relative = getRelativeAngle(rightAngle);
+              let can_move = !isInsideBox || relative > 90;
+    
+              if (!can_move) console.log("우측 이동 차단");
+              if (can_move) pan(-scope.keyPanSpeed, 0, 0);
+
+              needsUpdate = true;
+            }
+        
             if (needsUpdate) {
               scope.update();
             }
           }, 100);
         }
+        
       } else if (event.type === 'keyup') {
         isKeyPressed[event.key] = false;
 
