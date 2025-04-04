@@ -197,7 +197,7 @@
           ];
 
           const response = await fetch(box_coord[model_index]);
-          console.log(box_coord[model_index]);
+          //console.log(box_coord[model_index]);
           const data = await response.json();
           /* console.log("좌표", data); */
           /* return data; */
@@ -217,9 +217,6 @@
         // 3d 박스를 생성하는 함수
         function createTransparentBox(coordinates) {
           const { leftTop, rightBottom, info, nextIndex } = coordinates;
-          /* console.log("좌표", coordinates);
-        console.log("leftTop:", coordinates.leftTop);
-        console.log("rightBottom:", coordinates.rightBottom); */
 
             const sizeOffset = 0;
             const width = leftTop.x - rightBottom.x * (1 + sizeOffset);
@@ -230,11 +227,22 @@
         ); */
 
             const boxGeometry = new THREE.BoxGeometry(width, height, depth);
-            const boxMaterial = new THREE.MeshBasicMaterial({
-              color: 0x12592f,
-              transparent: false,
-              opacity: 0,
-            });
+            let boxMaterial;
+            if(nextIndex.index!=-2){ //벽이 아니면 색있는 박스 생성
+              boxMaterial = new THREE.MeshBasicMaterial({
+                color: 0x12592f,
+                transparent: false,
+                opacity: 0,
+              });
+            }
+            else{
+              boxMaterial = new THREE.MeshBasicMaterial({ //벽이면 투명하게 생성
+                depthWrite: false, //렌더링X
+                depthTest: false, //다른 객체가 가려지지 않도록
+                transparent: true,
+                opacity: 0,
+              });
+            }
             const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
 
             const centerX = (leftTop.x + rightBottom.x) / 2;
@@ -250,7 +258,8 @@
             );
 
           // 박스 클릭
-          boxMesh.userData = { clickable: true, info: info };
+          boxMesh.userData = { clickable: true, info: info, nextIndex: nextIndex, angle: coordinates.angle ? coordinates.angle.ANGLE : null, 
+            leftTop: coordinates.leftTop, rightBottom: coordinates.rightBottom};
           boxMesh.onClick = (clickPoint) => {
             if (currentTextMesh) {
               viewer.splatMesh.remove(currentTextMesh.text);
@@ -260,59 +269,97 @@
             console.log("박스가 클릭되었습니다!");
             createRectangleWithText(boxMesh, info, clickPoint);
             
-            if(nextIndex.index!=-1){ //여기로와    새로 nextIndex항목 만들었으니 createbox부터 다시 수정할 것
+            if(nextIndex.index>-1){
               let selectedCoordinates = JSON.parse(localStorage.getItem("selectedCoordinates"));
-
               //모델 번호 변경 (순환)
               selectedCoordinates.model_num = nextIndex.index;
-
               //새로운 좌표 값 설정 (예제)
               selectedCoordinates.x = nextIndex.startX;  // 초기 X 좌표 수정
               selectedCoordinates.y = nextIndex.startZ;  // 초기 Z 좌표 수정
-
               //변경된 값 저장
               localStorage.setItem("selectedCoordinates", JSON.stringify(selectedCoordinates));
-
               //페이지 새로고침하여 변경 적용
               location.reload();
             } 
           };
 
-            // Raycaster를 사용하여 클릭 이벤트 처리
-            viewer.renderer.domElement.addEventListener("click", (event) => {
-              const mouse = new THREE.Vector2();
-              mouse.x =
-                (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
-                1;
-              mouse.y =
-                -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
-                1;
+          // Raycaster를 사용하여 클릭 이벤트 처리
+          viewer.renderer.domElement.addEventListener("click", (event) => {
+            const mouse = new THREE.Vector2();
+            mouse.x =
+              (event.clientX / viewer.renderer.domElement.clientWidth) * 2 -
+              1;
+            mouse.y =
+              -(event.clientY / viewer.renderer.domElement.clientHeight) * 2 +
+              1;
 
-              const raycaster = new THREE.Raycaster();
-              raycaster.setFromCamera(mouse, viewer.camera);
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, viewer.camera);
 
-              const intersects = raycaster.intersectObjects(
-                viewer.splatMesh.children,
-                true
-              );
+            const intersects = raycaster.intersectObjects(
+              viewer.splatMesh.children,
+              true
+            );
 
-              // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
-              if (
-                intersects.length > 0 &&
-                intersects[0].object.userData.clickable
-              ) {
-                // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
-                intersects[0].object.onClick(intersects[0].point);
-              } else {
-                // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
-                if (currentTextMesh) {
-                  viewer.splatMesh.remove(currentTextMesh.text);
-                  viewer.splatMesh.remove(currentTextMesh.background);
-                  currentTextMesh = null;
-                }
+            // 클릭한 대상이 클릭 가능한 객체(박스)인 경우
+            if (
+              intersects.length > 0 &&
+              intersects[0].object.userData.clickable
+            ) {
+              // 클릭한 대상이 3D 박스이면, 클릭한 위치(교차점)를 인자로 전달
+              intersects[0].object.onClick(intersects[0].point);
+            } else {
+              // 3D 박스 외의 영역을 클릭하면 기존 텍스트 제거
+              if (currentTextMesh) {
+                viewer.splatMesh.remove(currentTextMesh.text);
+                viewer.splatMesh.remove(currentTextMesh.background);
+                currentTextMesh = null;
               }
-            });
-          }
+            }
+          });
+        }
+
+        let isInsideSpecialBox = false; // 현재 박스 안에 있는지 추적
+
+        function checkCameraInsideBox() { //벽에 닿았는지 확인
+          const cameraPosition = viewer.camera.position;
+
+          viewer.splatMesh.children.forEach((child) => {
+            if (child.userData.clickable) {
+              const box = new THREE.Box3().setFromObject(child);
+
+              if (box.containsPoint(cameraPosition)) {
+                if (!child.userData.inside) {
+                  child.userData.inside = true;
+
+                  if (child.userData.nextIndex.index === -2 && !isInsideSpecialBox) {
+                    isInsideSpecialBox = true; // 한 번만 실행하도록 설정
+
+                    const event = new CustomEvent("Wall_Collision_Check", {
+                      detail: {
+                        angle: child.userData.angle, 
+                        leftTop: child.userData.leftTop, 
+                        rightBottom: child.userData.rightBottom
+                      }
+                    });
+                    window.dispatchEvent(event);
+                  }
+                }
+              } else {
+                if (child.userData.inside) {
+                  isInsideSpecialBox = false; // 박스 밖으로 나가면 다시 이벤트 발생 가능
+                }
+                child.userData.inside = false;
+              }
+            }
+          });
+
+          requestAnimationFrame(checkCameraInsideBox);
+        }
+
+        
+        //프로그램 시작 시 실행
+        checkCameraInsideBox();     
 
         function createRectangleWithText(boxMesh, info, clickPoint) {
           if (currentTextMesh) {
