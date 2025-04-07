@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
+    <link rel="stylesheet" href="commonCss.css" />
     <style>
       body {
         margin: 0;
@@ -28,7 +29,7 @@
         align-items: center;
       }
 
-      .selectrobot_zoom_btns {
+      /*.selectrobot_zoom_btns {
         position: absolute;
         right: 10px;
         bottom: 10px;
@@ -38,7 +39,7 @@
         color: #c0c0c0;
         border: 1px solid #c0c0c0;
         padding: 5px;
-      }
+      }*/
 
       .selectrobot_check_btn {
         width: 300px;
@@ -77,10 +78,10 @@
         <h3>빨간색으로 표시된 것은 사용 중인 로봇이니, 사용할 수 없습니다.</h3>
       </div>
       <div class="selectrobot_map" id="selectrobot_map">
-        <div class="selectrobot_zoom_btns">
+        <!-- <div class="selectrobot_zoom_btns">
           <div class="selectrobot_zoom" id="selectrobot_zoom_in">+</div>
           <div class="selectrobot_zoom" id="selectrobot_zoom_out">-</div>
-        </div>
+        </div> -->
         <img
           id="selectrobot_gaussian"
           alt="gaussian_img"
@@ -141,9 +142,7 @@
         const robots = await getRobots();
 
         // 기존 마커 제거
-        const markers = document.querySelectorAll(
-          ".selectrobot_robot_marker_container"
-        );
+        const markers = document.querySelectorAll(".robot_marker_container");
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
@@ -178,17 +177,17 @@
         const minimapRect = document
           .getElementById("selectrobot_gaussian")
           .getBoundingClientRect();
-        // marker와 label을 넣을 container
+        // marker 넣을 container
         const container = document.createElement("div");
-        container.className = "selectrobot_robot_marker_container";
+        container.className = "robot_marker_container";
         container.style.position = "absolute";
         container.style.left =
           ((robot.position[0] + 2750) * 100) / 3299 -
-          (5 * 100) / minimapRect.width +
+          (12 * 100) / minimapRect.width +
           "%";
         container.style.top =
           ((-robot.position[1] + 2457) * 100) / 3133 -
-          (5 * 100) / minimapRect.height +
+          (35 * 100) / minimapRect.height +
           "%";
         container.style.display = "flex";
         container.style.alignItems = "flex-start";
@@ -196,22 +195,11 @@
 
         // marker
         const marker = document.createElement("div");
-        marker.className = "selectrobot_robot_marker";
-        // marker 크기
-        marker.style.width = "10px";
-        marker.style.height = "10px";
-        marker.style.borderRadius = "50%";
-        marker.style.backgroundColor = applyColor(robot);
-
-        // 로봇 ID 표시. label
-        const label = document.createElement("span");
-        label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
-        label.style.color = applyColor(robot);
-        label.style.fontSize = "10px";
-        label.style.marginLeft = "5px";
+        marker.className = "robot_marker";
+        marker.innerHTML = `${robot.id}`;
+        marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
 
         container.appendChild(marker);
-        container.appendChild(label);
 
         container.addEventListener("click", () => {
           updateTitle(robot.id, robot.status);
@@ -244,9 +232,9 @@
 
       function openDemo(page) {
         if (
-          // 0: 사용 가능, 1: 사용 불가, 2: 충전 중, 3: 주행 중
-          // selectedAvailable === 1 ||
-          selectedAvailable === 2
+          // 0: Normal, 1: Driving, 2: Low Battery, 3: Emergency Stop, 4: Navigation Failure
+          selectedAvailable === 1
+          // selectedAvailable === 2
           // selectedAvailable === 3
         ) {
           alert("현재 사용이 불가능한 로봇입니다. 다른 로봇을 선택해주세요.");
