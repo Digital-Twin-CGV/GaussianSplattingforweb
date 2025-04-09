@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
+    <link rel="stylesheet" href="commonCss.css" />
     <style>
       body {
         margin: 0;
@@ -216,7 +217,7 @@
             <div style="color: #1dd200">사용 가능</div>
           </div>
         </div>
-        <div class="managerMap_map_container">
+        <div class="managerMap_map_container" id="managerMap_map">
           <img class="managerMap_map_img" src="assets/images/2dmap.png" />
         </div>
       </div>
@@ -378,20 +379,19 @@
       function createRobotMarker(robot) {
         // 미니맵의 정보
         const minimapRect = document
-          .getElementsByClassName("managerMap_map_img")[0]
+          .getElementById("managerMap_map")
           .getBoundingClientRect();
-        console.log(minimapRect);
-        // marker와 label을 담을 container
+        // marker 넣을 container
         const container = document.createElement("div");
-        container.className = "managerMap_robot_marker_container";
+        container.className = "robot_marker_container";
         container.style.position = "absolute";
         container.style.left =
           ((robot.position[0] + 2750) * 100) / 3299 -
-          (5 * 100) / minimapRect.width +
+          (12 * 100) / minimapRect.width +
           "%";
         container.style.top =
           ((-robot.position[1] + 2457) * 100) / 3133 -
-          (5 * 100) / minimapRect.height +
+          (35 * 100) / minimapRect.height +
           "%";
         container.style.display = "flex";
         container.style.alignItems = "flex-start";
@@ -399,22 +399,11 @@
 
         // marker
         const marker = document.createElement("div");
-        marker.className = "managerMap_robot_marker";
-        // marker 크기
-        marker.style.width = "10px";
-        marker.style.height = "10px";
-        marker.style.borderRadius = "50%";
-        marker.style.backgroundColor = applyColor(robot);
-
-        // 로봇 ID 표시. label
-        const label = document.createElement("span");
-        label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
-        label.style.color = applyColor(robot);
-        label.style.fontSize = "10px";
-        label.style.marginLeft = "5px";
+        marker.className = "robot_marker";
+        marker.innerHTML = `${robot.id}`;
+        marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
 
         container.appendChild(marker);
-        container.appendChild(label);
 
         // 모달 띄우기
         container.addEventListener("click", () => showRobotDetails(robot));

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
+    <link rel="stylesheet" href="commonCss.css" />
     <style>
       body {
         margin: 0;
@@ -173,7 +174,7 @@
         .getBoundingClientRect();
       // marker와 label을 넣을 container
       const container = document.createElement("div");
-      container.className = "moving_robot_marker_container";
+      container.className = "robot_marker_container";
       container.style.position = "absolute";
       const mapWidth = 3299; // 지도의 너비
       const mapHeight = 3133; // 지도의 높이
@@ -181,11 +182,11 @@
       const mapRobotY = 2457; // 지도 왼쪽 위를 (0, 0)이라할 때 로봇좌표계 원점의 y 좌표
       container.style.left =
         ((robot.position[0] + mapRobotX) * 100) / mapWidth -
-        (5 * 100) / minimapRect.width +
+        (12 * 100) / minimapRect.width +
         "%";
       container.style.top =
         ((-robot.position[1] + mapRobotY) * 100) / mapHeight -
-        (5 * 100) / minimapRect.height +
+        (35 * 100) / minimapRect.height +
         "%";
       container.style.display = "flex";
       container.style.alignItems = "flex-start";
@@ -193,28 +194,31 @@
 
       // marker
       const marker = document.createElement("div");
-      marker.className = "moving_robot_marker";
-      // marker 크기
-      marker.style.width = "10px";
-      marker.style.height = "10px";
-      marker.style.borderRadius = "50%";
-      marker.style.backgroundColor = "#1dd200";
-
-      // 로봇 ID 표시. label
-      const label = document.createElement("span");
-      label.innerHTML = `로봇 ${robot.id} (${robot.battery}%)`;
-      label.style.color = "#1dd200";
-      label.style.fontSize = "10px";
-      label.style.marginLeft = "5px";
+      marker.className = "robot_marker";
+      marker.innerHTML = `${robot.id}`;
+      marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
 
       container.appendChild(marker);
-      container.appendChild(label);
 
       container.addEventListener("click", () => {
         updateTitle(robot.id, robot.status);
       });
 
       return container;
+    }
+
+    // marker, label 색상 지정
+    function applyColor(robot) {
+      if (robot.status === 1) {
+        // 사용중이라면?
+        return "#ff0000";
+      } else if (robot.battery < 30) {
+        // 배터리가 30 이하라면?
+        return "#f2d406";
+      } else {
+        // 나머지
+        return "#1dd200";
+      }
     }
 
     // 출발지, 목적지 마커 표시

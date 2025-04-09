@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
+    <link rel="stylesheet" href="commonCss.css" />
     <style>
       body {
         margin: 0;
@@ -16,11 +17,6 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-      }
-
-      .minimap_robot {
-        position: absolute;
-        display: flex;
       }
 
       .minimap_title {
@@ -86,25 +82,13 @@
           alt="gaussian_img"
           src="assets/images/2dmap.png"
         />
-
-        <!-- 선택된 로봇 위치 -->
-        <div class="minimap_robot">
-          <div class="minimap_robot_marker"></div>
-          <div class="minimap_robot_label"></div>
-        </div>
       </div>
+    </div>
 
-      <div class="minimap_check">
-        <button
-          class="minimap_check_btn"
-          ,
-          type="button"
-          ,
-          onclick="openPage()"
-        >
-          선택 완료
-        </button>
-      </div>
+    <div class="minimap_check">
+      <button class="minimap_check_btn" , type="button" , onclick="openPage()">
+        선택 완료
+      </button>
     </div>
     <canvas id="colorCanvas" style="display: none"></canvas>
     <script type="module">
@@ -406,41 +390,67 @@
       // 로봇 마커 찍기
       async function robotData() {
         const robots = await getRobots();
-        const robotContainer = document.querySelector(`.minimap_robot`);
-        const robotMarker = document.querySelector(`.minimap_robot_marker`);
-        const robotLabel = document.querySelector(`.minimap_robot_label`);
+
+        // 기존 마커 제거
+        const markers = document.querySelectorAll(".robot_marker_container");
+        markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
           if (robot.id === parseInt(robotId)) {
-            // 미니맵의 정보
-            const minimapRect = document
-              .getElementById("minimap_gaussian")
-              .getBoundingClientRect();
-            // robot marker와 label을 담을 container
-            robotContainer.style.left =
-              ((robot.position[0] + 2750) * 100) / 3299 -
-              (5 * 100) / minimapRect.width +
-              "%";
-            robotContainer.style.top =
-              ((-robot.position[1] + 2457) * 100) / 3133 -
-              (5 * 100) / minimapRect.height +
-              "%";
-            robotContainer.style.display = "flex";
-            robotContainer.style.alignItems = "flex-start";
-
-            // robot marker
-            robotMarker.style.width = "10px";
-            robotMarker.style.height = "10px";
-            robotMarker.style.borderRadius = "50%";
-            robotMarker.style.backgroundColor = "#1dd200";
-
-            // robot label
-            robotLabel.innerHTML = `로봇${robot.id}`;
-            robotLabel.style.color = "#1dd200";
-            robotLabel.style.fontSize = "10px";
-            robotLabel.style.marginLeft = "5px";
+            const marker_container = createRobotMarker(robot);
+            document
+              .querySelector(".minimap_map")
+              .appendChild(marker_container);
           }
         });
+      }
+
+      // 로봇 마커 생성 함수
+      function createRobotMarker(robot) {
+        // 미니맵의 정보
+        const minimapRect = document
+          .getElementById("minimap_gaussian")
+          .getBoundingClientRect();
+        // marker 넣을 container
+        const container = document.createElement("div");
+        container.className = "robot_marker_container";
+        container.style.position = "absolute";
+        container.style.left =
+          ((robot.position[0] + 2750) * 100) / 3299 -
+          (12 * 100) / minimapRect.width +
+          "%";
+        container.style.top =
+          ((-robot.position[1] + 2457) * 100) / 3133 -
+          (35 * 100) / minimapRect.height +
+          "%";
+        container.style.display = "flex";
+        container.style.alignItems = "flex-start";
+        container.style.cursor = "pointer";
+
+        // marker
+        const marker = document.createElement("div");
+        marker.className = "robot_marker";
+        marker.innerHTML = `${robot.id}`;
+        marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
+
+        container.appendChild(marker);
+
+        return container;
+      }
+
+      // marker, label 색상 지정
+      function applyColor(robot) {
+        // 선택된 마커 색상 바꾸기
+        if (robot.status === 1) {
+          // 사용중이라면?
+          return "#ff0000";
+        } else if (robot.battery < 30) {
+          // 배터리가 30 이하라면?
+          return "#f2d406";
+        } else {
+          // 나머지
+          return "#1dd200";
+        }
       }
 
       function openHome(page) {
