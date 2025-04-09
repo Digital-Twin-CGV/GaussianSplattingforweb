@@ -1,0 +1,30 @@
+.robot_marker {
+  position: absolute;
+
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+
+  background-color: var(--marker-color);
+  border: 8px solid var(--marker-color);
+
+  /* 텍스트  */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.robot_marker::after {
+  position: absolute;
+  content: "";
+  width: 0px;
+  height: 0px;
+  bottom: -30px;
+  left: -6px;
+  border: 10px solid transparent;
+  border-top: 17px solid var(--marker-color);
+}
