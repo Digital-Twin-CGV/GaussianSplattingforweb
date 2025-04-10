@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>3D Gaussian Splat Viewer</title>
+    <title>GARO</title>
     <style>
       body {
         margin: 0;
@@ -57,7 +57,7 @@
       /* 반응형 */
       @media screen and (max-width: 1000px) {
         .main_large-button {
-          padding: 30px 60px; 
+          padding: 30px 60px;
           /* padding-left: 40px;
           padding-right: 40px; */
           font-size: 30px; /* 작은 화면에서 글씨 크기 줄이기 */
@@ -68,7 +68,6 @@
           padding: 20px 30px;
         }
       }
-
     </style>
   </head>
 
@@ -91,13 +90,13 @@
       function openDemo(page) {
         // 창 넘어가는 함수
         let url;
-        if (page == 'selectrobot') {
+        if (page == "selectrobot") {
           // 로봇 선택 페이지로 넘어갈 때
           // 출발지 선택 페이지 : destin=0, 목적지 선택 페이지 : destin=1
-          url = page + '.html?destin=0';
+          url = page + ".html?destin=0";
         } else {
           // 관리자 페이지로 넘어갈 때
-          url = page + '.html'; // url 만들기
+          url = page + ".html"; // url 만들기
         }
         window.location = url;
       }
@@ -120,7 +119,7 @@
       //     // 가로 모드일 때는 버튼만 보이게
       //     // mobileMessage.style.display = 'none';
       //     // buttons.style.display = 'block'; // 버튼 보이기
-          
+
       //      // 글씨 크기 원래 크기로 복구
       //     if (textElement) {
       //       textElement.style.fontSize = ''; // 기본 글씨 크기로 복구
