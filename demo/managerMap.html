@@ -6,7 +6,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
     <link rel="stylesheet" href="commonCss.css" />
-    <script src="functions.js"></script>
     <style>
       body {
         margin: 0;
@@ -342,23 +341,11 @@
         const robots = await getRobots();
 
         // 기존 마커 제거
-        const markers = document.querySelectorAll(
-          ".managerMap_robot_marker_container"
-        );
+        const markers = document.querySelectorAll(".robot_marker_container");
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
-          const marker_container = createRobotMarker(
-            robot,
-            "managerMap_map",
-            0
-          );
-
-          // 모달 띄우기
-          marker_container.addEventListener("click", () =>
-            showRobotDetails(robot)
-          );
-
+          const marker_container = createRobotMarker(robot);
           document
             .querySelector(".managerMap_map_container")
             .appendChild(marker_container);
@@ -370,6 +357,56 @@
       // log를 만들 response, request 데이터
       async function requestData() {
         const requests = await getRequest();
+      }
+
+      // 로봇 상태에 따른 색상
+      function applyColor(robot) {
+        if (robot.status === 1) {
+          // 사용중이라면?
+          return "#ff0000";
+        } else if (robot.battery < 30) {
+          // 배터리가 30 이하라면?
+          return "#f2d406";
+        } else {
+          // 나머지
+          return "#1dd200";
+        }
+      }
+
+      // 로봇 마커 생성 함수
+      function createRobotMarker(robot) {
+        // 미니맵의 정보
+        const minimapRect = document
+          .getElementById("managerMap_map")
+          .getBoundingClientRect();
+        // marker 넣을 container
+        const container = document.createElement("div");
+        container.className = "robot_marker_container";
+        container.style.position = "absolute";
+        container.style.left =
+          ((robot.position[0] + 2750) * 100) / 3299 -
+          (12 * 100) / minimapRect.width +
+          "%";
+        container.style.top =
+          ((-robot.position[1] + 2457) * 100) / 3133 -
+          (35 * 100) / minimapRect.height +
+          "%";
+        container.style.display = "flex";
+        container.style.alignItems = "flex-start";
+        container.style.cursor = "pointer";
+
+        // marker
+        const marker = document.createElement("div");
+        marker.className = "robot_marker";
+        marker.innerHTML = `${robot.id}`;
+        marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
+
+        container.appendChild(marker);
+
+        // 모달 띄우기
+        container.addEventListener("click", () => showRobotDetails(robot));
+
+        return container;
       }
 
       let controlRobotHandler; // 로봇 제어 이벤트 핸들러
