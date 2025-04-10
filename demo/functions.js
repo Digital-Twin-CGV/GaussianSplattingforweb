@@ -1,5 +1,5 @@
 // 로봇 마커 생성 함수
-function createRobotMarker(robot, minimapRectClass) {
+function createRobotMarker(robot, minimapRectClass, selected) {
   // 미니맵의 정보
   const minimapRect = document
     .getElementById(minimapRectClass)
@@ -18,25 +18,23 @@ function createRobotMarker(robot, minimapRectClass) {
     "%";
   container.style.display = "flex";
   container.style.alignItems = "flex-start";
-  container.style.cursor = "pointer";
 
   // marker
   const marker = document.createElement("div");
   marker.className = "robot_marker";
   marker.innerHTML = `${robot.id}`;
-  marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
+  marker.style.setProperty("--marker-color", applyColor(robot, selected)); //css에 값 넘기기
 
   container.appendChild(marker);
-
-  container.addEventListener("click", () => {
-    updateTitle(robot.id, robot.status);
-  });
 
   return container;
 }
 
 // marker, label 색상 지정
-function applyColor(robot) {
+function applyColor(robot, selected) {
+  if (selected === robot.id) {
+    return "#12f3fb";
+  }
   if (robot.status === 1) {
     // 사용중이라면?
     return "#ff0000";

@@ -6,6 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>3D Gaussian Splat Viewer</title>
     <link rel="stylesheet" href="commonCss.css" />
+    <script src="functions.js"></script>
     <style>
       body {
         margin: 0;
@@ -160,65 +161,10 @@
 
       robots.forEach((robot) => {
         if (robot.id === parseInt(robotId)) {
-          const marker = createRobotMarker(robot);
+          const marker = createRobotMarker(robot, "moving_map", 0);
           document.querySelector(".moving_map_container").appendChild(marker);
         }
       });
-    }
-
-    // 로봇 마커 생성 함수
-    function createRobotMarker(robot) {
-      // 미니맵의 정보
-      const minimapRect = document
-        .getElementById("moving_map")
-        .getBoundingClientRect();
-      // marker와 label을 넣을 container
-      const container = document.createElement("div");
-      container.className = "robot_marker_container";
-      container.style.position = "absolute";
-      const mapWidth = 3299; // 지도의 너비
-      const mapHeight = 3133; // 지도의 높이
-      const mapRobotX = 2750; // 지도 왼쪽 위를 (0, 0)이라할 때 로봇좌표계 원점의 x 좌표
-      const mapRobotY = 2457; // 지도 왼쪽 위를 (0, 0)이라할 때 로봇좌표계 원점의 y 좌표
-      container.style.left =
-        ((robot.position[0] + mapRobotX) * 100) / mapWidth -
-        (12 * 100) / minimapRect.width +
-        "%";
-      container.style.top =
-        ((-robot.position[1] + mapRobotY) * 100) / mapHeight -
-        (35 * 100) / minimapRect.height +
-        "%";
-      container.style.display = "flex";
-      container.style.alignItems = "flex-start";
-      container.style.cursor = "pointer";
-
-      // marker
-      const marker = document.createElement("div");
-      marker.className = "robot_marker";
-      marker.innerHTML = `${robot.id}`;
-      marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
-
-      container.appendChild(marker);
-
-      container.addEventListener("click", () => {
-        updateTitle(robot.id, robot.status);
-      });
-
-      return container;
-    }
-
-    // marker, label 색상 지정
-    function applyColor(robot) {
-      if (robot.status === 1) {
-        // 사용중이라면?
-        return "#ff0000";
-      } else if (robot.battery < 30) {
-        // 배터리가 30 이하라면?
-        return "#f2d406";
-      } else {
-        // 나머지
-        return "#1dd200";
-      }
     }
 
     // 출발지, 목적지 마커 표시

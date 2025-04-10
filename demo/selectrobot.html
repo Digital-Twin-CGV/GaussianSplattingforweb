@@ -149,21 +149,18 @@
         robots.forEach((robot) => {
           const marker_container = createRobotMarker(
             robot,
-            "selectrobot_gaussian"
+            "selectrobot_gaussian",
+            selectedRobot
           );
+          marker_container.style.cursor = "pointer";
           document
             .querySelector(".selectrobot_map")
             .appendChild(marker_container);
-        });
-      }
 
-      // marker 색상 지정
-      function robotColor(robot) {
-        // 선택된 마커 색상 바꾸기
-        if (robot.id === selectedRobot) {
-          return "#12f3fb";
-        }
-        applyColor(robot);
+          marker_container.addEventListener("click", () => {
+            updateTitle(robot.id, robot.status);
+          });
+        });
       }
 
       // 선택된 로봇 번호, 선택된 로봇의 상태
