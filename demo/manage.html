@@ -85,8 +85,8 @@
         color: red;
       }
 
-       /* 반응형 */
-       @media screen and (max-width: 1000px) {
+      /* 반응형 */
+      @media screen and (max-width: 1000px) {
         .manage_code_title {
           font-size: 30px;
           margin-bottom: 20px;
@@ -136,17 +136,17 @@
     </div>
     <script>
       // 헤더에 필요한 script
-      document.addEventListener('DOMContentLoaded', () => {
-        fetch('header.html')
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("header.html")
           .then((response) => response.text())
           .then((data) => {
-            document.getElementById('header').innerHTML = data;
+            document.getElementById("header").innerHTML = data;
           })
-          .catch((error) => console.error('Error loading header:', error));
+          .catch((error) => console.error("Error loading header:", error));
       });
 
       function openHome(page) {
-        let url = page + '.html';
+        let url = page + ".html";
         window.location = url;
       }
 
@@ -155,49 +155,49 @@
       }
     </script>
     <script type="module">
-      import { getPassword } from './supaDatabase/connectDatabase.js';
+      import { getPassword } from "./supaDatabase/connectDatabase.js";
 
       async function checkPassword() {
         const correctPw = await getPassword();
 
         // 사용자 입력 값 가져오기
-        const inputPw = document.getElementById('manage_code').value;
+        const inputPw = document.getElementById("manage_code").value;
 
         // 에러 메시지 영역
-        const errorMessage = document.getElementById('error_message');
+        const errorMessage = document.getElementById("error_message");
 
         // 유효성 검사
         if (inputPw == correctPw.password) {
           // 일치하면 다음 화면으로 이동
-          openDemo('managerMap'); // 이동할 페이지
+          openDemo("managerMap"); // 이동할 페이지
         } else {
           // 일치하지 않으면 에러 메시지 표시
-          errorMessage.textContent = '코드가 틀렸습니다.';
+          errorMessage.textContent = "코드가 틀렸습니다.";
         }
       }
       function openDemo(page) {
         // 창 넘어가는 함수
-        let url = page + '.html'; // url 만들기기
+        let url = page + ".html"; // url 만들기기
 
         window.location = url;
       }
 
       document
-        .getElementById('manage_check_btn')
-        .addEventListener('click', checkPassword);
+        .getElementById("manage_check_btn")
+        .addEventListener("click", checkPassword);
 
       document
-        .getElementById('manage_code')
-        .addEventListener('keydown', function (event) {
-          if (event.key === 'Enter') {
+        .getElementById("manage_code")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
             checkPassword();
           }
         });
 
-      window.addEventListener('pageshow', function () {
+      window.addEventListener("pageshow", function () {
         // 페이지가 다시 표시될 때 입력 필드 초기화
-        document.getElementById('manage_code').value = '';
-        document.getElementById('error_message').textContent = '';
+        document.getElementById("manage_code").value = "";
+        document.getElementById("error_message").textContent = "";
       });
     </script>
   </body>
