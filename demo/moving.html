@@ -154,9 +154,7 @@
     async function robotData() {
       const robots = await getRobots();
 
-      const markers = document.querySelectorAll(
-        ".moving_robot_marker_container"
-      );
+      const markers = document.querySelectorAll(".robot_marker_container");
       markers.forEach((marker) => marker.remove());
 
       robots.forEach((robot) => {
