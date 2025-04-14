@@ -556,27 +556,51 @@
         viewer.camera.updateProjectionMatrix();
       });
 
-      // url 파라미터 가져오기
-      // function getUrlParams() {
-        // const params = new URLSearchParams(window.location.search);
-        // const destin = params.get("destin");
-        // const robot = params.get("robot");
-        // const top = params.get("top");
-        // const left = params.get("left");
 
-      //   const destin = localStorage.getItem("destin"); 
-      //   const robot = localStorage.getItem("robot");
-      //   const top = localStorage.getItem("top");
-      //   const left = localStorage.getItem("left");
+      // 로봇 데이터
+      robotData();
 
-      //   return { destin, robot, top, left };
-      // }
+      // 실시간으로 DB 지켜보기
+      client
+        .channel("room1")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "robots",
+          },
+          (payload) => {
+            robotData();
+          }
+        )
+        .subscribe();
+
+      // 로봇 상태
+      let robotStatus = 0;
+
+      async function robotData() {
+        const robots = await getRobots();
+        const robotId = localStorage.getItem("robot");
+
+        robots.forEach((robot) => {
+          if (robot.id === parseInt(robotId)) {
+            robotStatus = robot.status;
+          }
+        });
+      }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
-        // const { destin, robot, top, left } = getUrlParams();
+        // 만약 로봇이 사용중이라면
+        if (robotStatus === 1) {
+          alert("이미 사용중인 로봇입니다. 로봇 선택 페이지로 이동합니다.");
+          window.location.href = "selectrobot.html";
+          return 0;
+        }
+        
         const destin = localStorage.getItem("destin"); 
         const robot = localStorage.getItem("robot");
         const top = localStorage.getItem("top");
@@ -602,7 +626,7 @@
           const startCoord = JSON.parse(localStorage.getItem("robotStart"));
           userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
           if (userConfirmed) {
-            insertRequest(robot, true, [
+            insertRequest(robotId, true, [
               startCoord.robotX,
               startCoord.robotY,
             ]).then(() => {
