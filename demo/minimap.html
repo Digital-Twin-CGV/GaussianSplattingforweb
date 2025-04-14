@@ -431,37 +431,64 @@
       // newton1.splat scaling
       // scaling, index(모델 인덱스)
       function convertToGaussian(x, y) {
-        let gaussianX = -34.875 * x + 2521.328;
-        let gaussianZ = 29.43 * y + -2241.936;
         let model_num = 0;
-
+        let gaussianX;
+        let gaussianZ;
+      
+        gaussianX = -20.532 * x + 2942.919
+          gaussianZ = 39.563 * y + -3147.322
         // 인덱스 0
         if (x >= 82.46 && x <= 90.73 && y >= 76.04 && y <= 88.64) {
           model_num = 0;
-
-          // 인덱스 1
-        } else if (x >= 55.5 && x <= 83.11 && y >= 87.26 && y <= 90.93) {
+          gaussianX = -41.165 * x + 3407.058
+          gaussianZ = 39.684 * y + -3087.733
+          
+        // 인덱스 1
+        } else if (
+            x >= 55.50 && x <= 83.11 && y >= 87.26 && y <= 90.93
+        ) {
           model_num = 1;
+          gaussianX = -45.964 * x + 3779.558
+          gaussianZ = 39.799 * y + -3126.132
 
-          // 인덱스 2
-        } else if (x >= 37.34 && x <= 56.15 && y >= 89.67 && y <= 92.87) {
+        // 인덱스 2
+        } else if (
+            x >= 37.34 && x <= 56.15 && y >= 89.67 && y <= 92.87
+        ) {
           model_num = 2;
-
-          // 인덱스 3
-        } else if (x >= 31.03 && x <= 37.77 && y >= 75.81 && y <= 92.87) {
+          gaussianX = -39.981 * x + 3349.914
+          gaussianZ = 38.273 * y + -2980.471
+        // 인덱스 3
+        } else if (
+            x >= 26.00 && x <= 38.00 && y >= 75.81 && y <= 94.42
+        ) {
           model_num = 3;
+          gaussianX = -63.470 * x + 4146.684
+          gaussianZ = 42.176 * y + -3318.681
 
-          // 인덱스 4
-        } else if (x >= 23.64 && x <= 32.88 && y >= 73.18 && y <= 75.47) {
+        // 인덱스 4
+        } else if (
+            x >= 23.64 && x <= 32.88 && y >= 73.18 && y <= 75.47
+        ) {
           model_num = 4;
+          gaussianX = -41.165 * x + 3407.058
+          gaussianZ = 39.684 * y + -3087.733
 
-          // 인덱스 5
-        } else if (x >= 18.75 && x <= 24.4 && y >= 36.55 && y <= 73.75) {
+        // 인덱스 5
+        } else if (
+            x >= 18.75 && x <= 24.40 && y >= 36.55 && y <= 73.75
+        ) {
           model_num = 5;
+          gaussianX = -20.532 * x + 2942.919
+          gaussianZ = 39.563 * y + -3147.322
 
-          // 인덱스 6
-        } else if (x >= 15.81 && x <= 20.16 && y >= 12.73 && y <= 37.0) {
+        // 인덱스 6
+        } else if (
+            x >= 15.81 && x <= 20.16 && y >= 12.73 && y <= 37.00
+        ) {
           model_num = 6;
+          gaussianX = -44.077 * x + 3470.849
+          gaussianZ = 44.223 * y + -3142.578
         }
 
         return { x: gaussianX, z: gaussianZ, model_num: model_num };

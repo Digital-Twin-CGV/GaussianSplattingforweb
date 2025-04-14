@@ -77,7 +77,7 @@
         localStorage.getItem("selectedCoordinates")
       );
       let model_index;
-      let initialCameraPosition = { x: 0, y: -50, z: 0 };
+      let initialCameraPosition = { x: 0, y: 0, z: 0 };
 
       let path_name;
       model_index = selectedCoordinates.model_num;
@@ -103,7 +103,7 @@
           direction.applyQuaternion(viewer.camera.quaternion);
           viewer.camera.position.set(
             selectedCoordinates.x,
-            -50,
+            0,
             selectedCoordinates.y
           );
           viewer.controls.target.copy(viewer.camera.position).add(direction);
@@ -545,7 +545,7 @@
           Math.min(350, viewer.camera.position.x)
         );
         viewer.camera.position.y = Math.max(
-          -50,
+          0,
           Math.min(350, viewer.camera.position.y)
         );
         viewer.camera.position.z = Math.max(
