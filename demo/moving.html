@@ -108,9 +108,11 @@
     import { client, getRobots } from "./supaDatabase/connectDatabase.js";
 
     const end = JSON.parse(localStorage.getItem("end")); // localStorage에서 출발지와 목적지를 불러옴
-    const params = new URLSearchParams(window.location.search); // url에서 가져오기
-    const robotId = params.get("robot"); // 선택된 로봇 번호
-    const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+    // const params = new URLSearchParams(window.location.search); // url에서 가져오기
+    // const robotId = params.get("robot"); // 선택된 로봇 번호
+    // const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+    const destin = localStorage.getItem("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+    const robotId = localStorage.getItem("robot"); // 선택된 로봇 번호
 
     window.openPage = openPage;
     // 제목 설정
@@ -216,9 +218,13 @@
     // 페이지 이동
     function openPage() {
       if (destin == 0) {
-        window.location = `checkpoint.html?robot=${robotId}`;
+        localStorage.setItem("robot", robotId);
+        window.location = `checkpoint.html`;
+        // window.location = `checkpoint.html?robot=${robotId}`;
       } else if (destin == 1) {
-        window.location = `report.html?robot=${robotId}`;
+        localStorage.setItem("robot", robotId);
+        window.location = `report.html`;
+        // window.location = `report.html?robot=${robotId}`;
       }
     }
   </script>

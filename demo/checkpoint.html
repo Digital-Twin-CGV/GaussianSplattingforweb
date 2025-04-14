@@ -27,8 +27,9 @@
 
       // url params
       function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        const robot = params.get("robot");
+        // const params = new URLSearchParams(window.location.search);
+        // const robot = params.get("robot");
+        const robot = localStorage.getItem("robot"); 
 
         return { robot };
       }
@@ -40,7 +41,10 @@
           insertRequest(robot, true, [robotEnd.robotX, robotEnd.robotY]).then(
             () => {
               // moving 페이지
-              window.location = `moving.html?robot=${robot}&destin=${1}`;
+              localStorage.setItem("robot", robot);
+              localStorage.setItem("destin", 1);
+              window.location = `moving.html`;
+              // window.location = `moving.html?robot=${robot}&destin=${1}`;
             }
           );
         } else if (page == "index") {

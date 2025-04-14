@@ -93,7 +93,8 @@
         if (page == "selectrobot") {
           // 로봇 선택 페이지로 넘어갈 때
           // 출발지 선택 페이지 : destin=0, 목적지 선택 페이지 : destin=1
-          url = page + ".html?destin=0";
+          url = page + ".html";
+          localStorage.setItem("destin", 0);
         } else {
           // 관리자 페이지로 넘어갈 때
           url = page + ".html"; // url 만들기

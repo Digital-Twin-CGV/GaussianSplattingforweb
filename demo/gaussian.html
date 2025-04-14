@@ -557,21 +557,32 @@
       });
 
       // url 파라미터 가져오기
-      function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        const destin = params.get("destin");
-        const robot = params.get("robot");
-        const top = params.get("top");
-        const left = params.get("left");
+      // function getUrlParams() {
+        // const params = new URLSearchParams(window.location.search);
+        // const destin = params.get("destin");
+        // const robot = params.get("robot");
+        // const top = params.get("top");
+        // const left = params.get("left");
 
-        return { destin, robot, top, left };
-      }
+      //   const destin = localStorage.getItem("destin"); 
+      //   const robot = localStorage.getItem("robot");
+      //   const top = localStorage.getItem("top");
+      //   const left = localStorage.getItem("left");
+
+      //   return { destin, robot, top, left };
+      // }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
-        const { destin, robot, top, left } = getUrlParams();
+        // const { destin, robot, top, left } = getUrlParams();
+        const destin = localStorage.getItem("destin"); 
+        const robot = localStorage.getItem("robot");
+        const top = localStorage.getItem("top");
+        const left = localStorage.getItem("left");
+        console.log(destin);
+
         let userConfirmed = false;
         let url;
 
@@ -583,7 +594,10 @@
 
         if (destin === "0") {
           // 목적지 페이지로
-          window.location = `minimap.html?destin=1&robot=${robot}`;
+          localStorage.setItem("destin", 1);
+          localStorage.setItem("robot", robot);
+          const url = `minimap.html`;
+          window.location.href = url;
         } else if (destin === "1") {
           const startCoord = JSON.parse(localStorage.getItem("robotStart"));
           userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
@@ -594,7 +608,11 @@
             ]).then(() => {
               // moving 페이지로
               if (userConfirmed) {
-                window.location = `moving.html?robot=${robot}&destin=${0}`;
+                localStorage.setItem("destin", 0);
+                localStorage.setItem("robot", robot);
+                const url = `moving.html`;
+                window.location.href = url;
+                // window.location = `moving.html?robot=${robot}&destin=${0}`;
               }
             });
           }

@@ -178,12 +178,12 @@
       }
 
       // URL 파라미터 가져오기
-      function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        const destin = params.get("destin");
+      // function getUrlParams() {
+      //   const params = new URLSearchParams(window.location.search);
+      //   const destin = params.get("destin");
 
-        return { destin };
-      }
+      //   return { destin };
+      // }
 
       function openDemo(page) {
         if (
@@ -196,9 +196,14 @@
         } else {
           if (selectedRobot) {
             // destin = 0. 출발지 선택 모드, destin = 1. 목적지 선택 모드
-            const { destin } = getUrlParams();
-            const url = page + `.html?destin=${destin}&robot=${selectedRobot}`;
-            window.location.href = url;
+            // const { destin } = getUrlParams();
+            // const url = page + `.html?destin=${destin}&robot=${selectedRobot}`;
+            // window.location.href = url;
+            const destin = 0;
+            localStorage.setItem("destin", destin);
+            const robot = localStorage.setItem("robot", selectedRobot);
+            const url = `${page}.html`;
+          window.location.href = url;
           } else {
             alert("로봇을 선택해주세요");
           }
