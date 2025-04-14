@@ -560,18 +560,57 @@
       function getUrlParams() {
         const params = new URLSearchParams(window.location.search);
         const destin = params.get("destin");
-        const robot = params.get("robot");
+        const robotId = params.get("robot");
         const top = params.get("top");
         const left = params.get("left");
 
-        return { destin, robot, top, left };
+        return { destin, robotId, top, left };
+      }
+
+      // 로봇 데이터
+      robotData();
+
+      // 실시간으로 DB 지켜보기
+      client
+        .channel("room1")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "robots",
+          },
+          (payload) => {
+            robotData();
+          }
+        )
+        .subscribe();
+
+      // 로봇 상태
+      let robotStatus = 0;
+
+      async function robotData() {
+        const robots = await getRobots();
+        const { robotId } = getUrlParams();
+
+        robots.forEach((robot) => {
+          if (robot.id === parseInt(robotId)) {
+            robotStatus = robot.status;
+          }
+        });
       }
 
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
-        const { destin, robot, top, left } = getUrlParams();
+        // 만약 로봇이 사용중이라면
+        if (robotStatus === 1) {
+          alert("이미 사용중인 로봇입니다. 로봇 선택 페이지로 이동합니다.");
+          window.location.href = "selectrobot.html";
+          return 0;
+        }
+        const { destin, robotId, top, left } = getUrlParams();
         let userConfirmed = false;
         let url;
 
@@ -583,18 +622,18 @@
 
         if (destin === "0") {
           // 목적지 페이지로
-          window.location = `minimap.html?destin=1&robot=${robot}`;
+          window.location = `minimap.html?destin=1&robot=${robotId}`;
         } else if (destin === "1") {
           const startCoord = JSON.parse(localStorage.getItem("robotStart"));
           userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
           if (userConfirmed) {
-            insertRequest(robot, true, [
+            insertRequest(robotId, true, [
               startCoord.robotX,
               startCoord.robotY,
             ]).then(() => {
               // moving 페이지로
               if (userConfirmed) {
-                window.location = `moving.html?robot=${robot}&destin=${0}`;
+                window.location = `moving.html?robot=${robotId}&destin=${0}`;
               }
             });
           }
