@@ -556,16 +556,6 @@
         viewer.camera.updateProjectionMatrix();
       });
 
-      // url 파라미터 가져오기
-      function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        const destin = params.get("destin");
-        const robotId = params.get("robot");
-        const top = params.get("top");
-        const left = params.get("left");
-
-        return { destin, robotId, top, left };
-      }
 
       // 로봇 데이터
       robotData();
@@ -591,7 +581,7 @@
 
       async function robotData() {
         const robots = await getRobots();
-        const { robotId } = getUrlParams();
+        const robotId = localStorage.getItem("robot");
 
         robots.forEach((robot) => {
           if (robot.id === parseInt(robotId)) {
@@ -610,7 +600,13 @@
           window.location.href = "selectrobot.html";
           return 0;
         }
-        const { destin, robotId, top, left } = getUrlParams();
+        
+        const destin = localStorage.getItem("destin"); 
+        const robot = localStorage.getItem("robot");
+        const top = localStorage.getItem("top");
+        const left = localStorage.getItem("left");
+        console.log(destin);
+
         let userConfirmed = false;
         let url;
 
@@ -622,7 +618,10 @@
 
         if (destin === "0") {
           // 목적지 페이지로
-          window.location = `minimap.html?destin=1&robot=${robotId}`;
+          localStorage.setItem("destin", 1);
+          localStorage.setItem("robot", robot);
+          const url = `minimap.html`;
+          window.location.href = url;
         } else if (destin === "1") {
           const startCoord = JSON.parse(localStorage.getItem("robotStart"));
           userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
@@ -633,7 +632,11 @@
             ]).then(() => {
               // moving 페이지로
               if (userConfirmed) {
-                window.location = `moving.html?robot=${robotId}&destin=${0}`;
+                localStorage.setItem("destin", 0);
+                localStorage.setItem("robot", robot);
+                const url = `moving.html`;
+                window.location.href = url;
+                // window.location = `moving.html?robot=${robot}&destin=${0}`;
               }
             });
           }

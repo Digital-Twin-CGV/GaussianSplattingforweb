@@ -88,9 +88,11 @@
         client,
       } from "./supaDatabase/connectDatabase.js";
 
-      const params = new URLSearchParams(window.location.search);
-      const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
-      const robotId = params.get("robot"); // 선택된 로봇 번호
+      // const params = new URLSearchParams(window.location.search);
+      // const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+      // const robotId = params.get("robot"); // 선택된 로봇 번호
+      const destin = localStorage.getItem("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
+      const robotId = localStorage.getItem("robot"); // 로봇 번호
 
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
@@ -406,6 +408,11 @@
             model_num: model_num,
           };
 
+          const destin = localStorage.getItem("destin");
+          localStorage.setItem("destin", destin);
+          localStorage.setItem("robot", robotId);
+          localStorage.setItem("top", markerTop);
+          localStorage.setItem("left", markerLeft);
           localStorage.setItem(
             destin === "0" ? "robotStart" : "robotEnd",
             JSON.stringify({ robotX, robotY })
@@ -415,7 +422,9 @@
             "selectedCoordinates",
             JSON.stringify(convertedCoordinates)
           );
-          window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
+          const url = `gaussian.html`;
+          window.location.href = url;
+          // window.location.href = `gaussian.html?destin=${destin}&robot=${robotId}&top=${markerTop}&left=${markerLeft}`;
         }
       }
 
