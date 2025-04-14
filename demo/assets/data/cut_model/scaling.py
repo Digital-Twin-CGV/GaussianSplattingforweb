@@ -12,15 +12,14 @@ def solve_linear_equations(x1, y1, gauss_x1, gauss_z1, x2, y2, gauss_x2, gauss_z
     return A, B, C, D
 
 # 예시 데이터
-x1, y1 = 42.703601931892386, 91.60342662378373
-gauss_x1, gauss_z1 = 1032.0517629971419, 453.9228944989291
+x1, y1 = 15.658492016300958, 13.2062793964938
+gauss_x1, gauss_z1 = 2780.6669889832947, -2558.5591961901564
 
-x2, y2 = 71.5167812138336, 89.05933218297325 
-gauss_x2, gauss_z2 = 27.20045181145656, 379.0510243948999
+x2, y2 = 19.55679955911998, 28.55048561480667
+gauss_x2, gauss_z2 = 2608.8405149246732, -1879.9950359554957
 
-# 계수 계산
 A, B, C, D = solve_linear_equations(x1, y1, gauss_x1, gauss_z1, x2, y2, gauss_x2, gauss_z2)
 
 # 결과 출력
-print(f"gauss_x = {A:.3f} * xPixel + {B:.3f}")
-print(f"gauss_z = {C:.3f} * yPixel + {D:.3f}")
+print(f"gaussianX = {A:.3f} * x + {B:.3f}")
+print(f"gaussianZ = {C:.3f} * y + {D:.3f}")
