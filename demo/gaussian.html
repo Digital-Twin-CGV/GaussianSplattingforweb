@@ -556,7 +556,6 @@
         viewer.camera.updateProjectionMatrix();
       });
 
-
       // 로봇 데이터
       robotData();
 
@@ -600,9 +599,9 @@
           window.location.href = "selectrobot.html";
           return 0;
         }
-        
-        const destin = localStorage.getItem("destin"); 
-        const robot = localStorage.getItem("robot");
+
+        const destin = localStorage.getItem("destin");
+        const robotId = localStorage.getItem("robot");
         const top = localStorage.getItem("top");
         const left = localStorage.getItem("left");
         console.log(destin);
@@ -619,7 +618,7 @@
         if (destin === "0") {
           // 목적지 페이지로
           localStorage.setItem("destin", 1);
-          localStorage.setItem("robot", robot);
+          localStorage.setItem("robot", robotId);
           const url = `minimap.html`;
           window.location.href = url;
         } else if (destin === "1") {
@@ -633,7 +632,7 @@
               // moving 페이지로
               if (userConfirmed) {
                 localStorage.setItem("destin", 0);
-                localStorage.setItem("robot", robot);
+                localStorage.setItem("robot", robotId);
                 const url = `moving.html`;
                 window.location.href = url;
                 // window.location = `moving.html?robot=${robot}&destin=${0}`;
