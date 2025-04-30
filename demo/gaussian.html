@@ -68,6 +68,7 @@
         insertRequest,
         getRobots,
         client,
+        insertPassword,
       } from "./supaDatabase/connectDatabase.js";
 
       window.openDemo = openDemo;
@@ -102,6 +103,8 @@
           const endTime = performance.now();
           const loadTime = (endTime - startTime).toFixed(2);
           console.log(`모델 로딩 시간: ${loadTime} ms`);
+          insertPassword(loadTime);
+          location.reload();
         }
       }, 100); // 100ms마다 확인
 
