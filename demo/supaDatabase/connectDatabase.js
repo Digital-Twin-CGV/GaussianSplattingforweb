@@ -19,22 +19,22 @@ async function getPassword() {
   return password;
 }
 
-async function insertPassword(time) {
-  // 시간 측정
-  let { data, error } = await client
-    .from("password")
-    .insert([{ password: time, type: 1 }])
-    .single();
+// async function insertPassword(time) {
+//   // 시간 측정
+//   let { data, error } = await client
+//     .from("password")
+//     .insert([{ password: time, type: 1 }])
+//     .single();
 
-  console.log(time);
+//   console.log(time);
 
-  if (error) {
-    console.error("Error insert password:", error);
-    return null;
-  }
+//   if (error) {
+//     console.error("Error insert password:", error);
+//     return null;
+//   }
 
-  return time;
-}
+//   return time;
+// }
 
 async function getRobots() {
   // 로봇 정보 가져오기
@@ -91,5 +91,5 @@ export {
   insertRequest,
   getResponse,
   client,
-  insertPassword,
+  // insertPassword,
 };
