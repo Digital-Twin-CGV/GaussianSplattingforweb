@@ -15317,10 +15317,15 @@ class Viewer {
     // const toNewFocalPoint = new THREE.Vector3();
     const outHits = [];
 
-    // 클릭한 곳에 구 찍어주기기
-    const sphereRadius = 5; // 구 반지름
-    const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    // 클릭한 곳에 구 찍어주기
+    // const sphereRadius = 5; // 구 반지름
+    // const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
+    // const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+    const textureLoader = new THREE.TextureLoader();
+    const markerTexture = textureLoader.load('assets/images/firstDestination.png'); 
+    
+    let markerSprite = null;
 
     return function () {
       if (!this.transitioningCameraTarget) {
@@ -15346,13 +15351,30 @@ class Viewer {
           );
 
           // 구 찍기기
-          const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphereMesh.position.set(
+          // const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          // sphereMesh.position.set(
+          //   intersectionPoint.x,
+          //   intersectionPoint.y,
+          //   intersectionPoint.z
+          // );
+          // this.splatMesh.add(sphereMesh);
+
+          if (markerSprite) {
+            this.splatMesh.remove(markerSprite);
+            markerSprite.material.map.dispose(); // 메모리 정리
+            markerSprite.material.dispose();
+            markerSprite = null;
+          }
+
+          const spriteMaterial = new THREE.SpriteMaterial({ map: markerTexture });
+          markerSprite = new THREE.Sprite(spriteMaterial);
+          markerSprite.scale.set(20, 20, 1); // 크기 조정 (원하는 값으로)
+          markerSprite.position.set(
             intersectionPoint.x,
             intersectionPoint.y,
             intersectionPoint.z
           );
-          this.splatMesh.add(sphereMesh);
+          this.splatMesh.add(markerSprite);
 
           //가우시안에서 찍은 위치 localstorage로 저장
           const coordData = {
