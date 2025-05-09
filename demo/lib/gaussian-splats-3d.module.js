@@ -6507,39 +6507,6 @@ class OrbitControls extends EventDispatcher {
       };
     })();
 
-
-
-    
-
-    // async function loadWallData() {
-    //   try {
-    //     const response = await fetch("../wall.json"); // JSON 파일 경로
-    //     const data = await response.json(); // JSON 데이터 가져오기
-    //     console.log("로드된 JSON 데이터:", data);
-    
-    //     // 특정 index와 일치하는 모델 찾기
-    //     console.log('selectedindex: ',selectedIndex);
-    //     const selectedModel = data.find(model => model.index === selectedIndex);
-    
-    //     if (selectedModel && selectedModel.walls) {
-    //       // ANGLE 항목만 배열로 저장
-    //       const angles = selectedModel.walls.map(wall => walls.ANGLE);
-    //       console.log("추출된 ANGLE 값들:", angles);
-    //     } else {
-    //       throw new Error(`index ${selectedIndex}에 해당하는 walls 데이터가 없음`);
-    //     }
-    //   } catch (error) {
-    //     console.error("JSON 데이터를 불러오는 중 오류 발생:", error);
-    //   }
-    // }
-    
-
-    // // 페이지 로드 시 JSON 데이터 불러오기
-    // loadWallData();
-
-
-    //여기로와
-
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (function () {
       const offset = new Vector3();
@@ -6550,17 +6517,12 @@ class OrbitControls extends EventDispatcher {
         // 현재 위치 가져오기
         const currentPos = scope.object.position;
         const currentrotate = scope.object.rotation;
-        //console.log(currentrotate);
 
         if (scope.object.isPerspectiveCamera) {
           // perspective
           const position = scope.object.position;
           offset.copy(position).sub(scope.target);
           let targetDistance = offset.length(); 
-
-          //회전방향 확인
-          let check_rotation = Math.abs(currentrotate.x);
-          //console.log(check_rotation); // --> 회전각도보려면 키기
 
           targetDistance *= Math.tan(
             ((scope.object.fov / 2) * Math.PI) / 180.0
@@ -6939,7 +6901,8 @@ class OrbitControls extends EventDispatcher {
       const relativeAngle = RelativeAngleforCheck(angle_limit); // 호출해서 값 저장
       
       if (cameraAngleforCheck !== prevCameraAngle || relativeAngle !== prevRelativeAngle) {
-        console.log(`현재 각도: ${cameraAngleforCheck}°, 기준 각도: ${angle_limit}°, 상대 각도: ${relativeAngle}°`);
+        //각도보려면 아래 사용
+        //console.log(`현재 각도: ${cameraAngleforCheck}°, 기준 각도: ${angle_limit}°, 상대 각도: ${relativeAngle}°`);
         prevCameraAngle = cameraAngleforCheck;
         prevRelativeAngle = relativeAngle;
       }
@@ -15390,6 +15353,13 @@ class Viewer {
             intersectionPoint.z
           );
           this.splatMesh.add(sphereMesh);
+
+          //가우시안에서 찍은 위치 localstorage로 저장
+          const coordData = {
+            x: intersectionPoint.x,
+            z: intersectionPoint.z,
+          };
+          localStorage.setItem("clickedCoords", JSON.stringify([coordData]));
         }
       }
     };
