@@ -8,27 +8,55 @@
     <style>
       body {
         margin: 0;
+        background-color: rgba(248, 248, 248, 1);
+      }
+
+      .report-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .report-map-container {
+        display: flex;
+        justify-content: center;
+
+        position: relative;
+      }
+
+      .report-complete-btn {
+        position: fixed;
+        bottom: 30px;
+
+        width: 90%;
+        border-radius: 40px;
+        padding: 15px 20px;
+
+        background-color: rgba(248, 248, 248, 1);
+        border: 1px solid rgba(63, 226, 244, 1);
+      }
+
+      /* 모바일 화면 크기 기준 */
+      @media screen and (max-width: 600px) {
+        #report-map {
+          height: 100%;
+          width: 100%;
+        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
-    <div>
-      이용해주셔서 감사합니다.
-      <button class="report_home">홈으로</button>
-      <button class="report_again">다시 사용하기</button>
+    <div class="report-container">
+      <div>사용해주셔서 감사합니다!</div>
+      <div class="report-map-container">
+        <img id="report-map" alt="2dmap" src="assets/images/Minimap.png" />
+      </div>
+      <button class="report-complete-btn">사용 완료</button>
     </div>
     <script type="module">
-      const params = new URLSearchParams(window.location.search);
-      const robotId = params.get("robot");
-      document.querySelector(".report_home").onclick = function () {
-        window.location.replace("index.html"); // stack에 담지 않기
-      };
-
-      document.querySelector(".report_again").onclick = function () {
-        window.location.replace(`minimap.html?destin=0&robot=${robotId}`);
-      };
+      import { getRobots, client } from "./supaDatabase/connectDatabase.js";
     </script>
   </body>
 </html>

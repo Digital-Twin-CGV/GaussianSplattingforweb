@@ -13,13 +13,6 @@
         background-color: rgba(248, 248, 248, 1);
       }
 
-      #header {
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        z-index: 1;
-      }
-
       .selectrobot_container {
         display: flex;
         flex-direction: column;
@@ -90,7 +83,7 @@
         background-color: white;
         width: 100%;
         max-height: 50%;
-        border-radius: 20px 20px 0 0;
+        border-radius: 28px 28px 0 0;
         padding: 20px;
         animation: slideUp 0.4s ease-out;
       }
@@ -98,7 +91,7 @@
       .selectrobot_modal_selectbtn {
         width: 100%;
         border-radius: 40px;
-        padding: 10px 20px;
+        padding: 15px 20px;
 
         background-color: white;
         border: 1px solid rgba(63, 226, 244, 1);
@@ -177,23 +170,21 @@
         </svg>
         <div style="margin-bottom: 3px">사용할 로봇을 선택해 주세요</div>
       </div>
+    </div>
 
-      <button id="openModalBtn">Open Modal</button>
-
-      <div id="selectrobot_modal">
-        <div class="selectrobot_modal-content">
-          <div class="selectrobot_modal_above">
-            <img
-              class="selectrobot_modal_robot"
-              src="assets/images/robot_photo.png"
-            />
-            <div class="selectrobot_modal_right">
-              <div class="selectrobot_modal_robot_name"></div>
-              <div class="selectrobot_modal_robot_battery"></div>
-            </div>
+    <div id="selectrobot_modal">
+      <div class="selectrobot_modal-content">
+        <div class="selectrobot_modal_above">
+          <img
+            class="selectrobot_modal_robot"
+            src="assets/images/robot_photo.png"
+          />
+          <div class="selectrobot_modal_right">
+            <div class="selectrobot_modal_robot_name"></div>
+            <div class="selectrobot_modal_robot_battery"></div>
           </div>
-          <button class="selectrobot_modal_selectbtn">로봇 선택하기</button>
         </div>
+        <button class="selectrobot_modal_selectbtn">로봇 선택하기</button>
       </div>
     </div>
     <script>
