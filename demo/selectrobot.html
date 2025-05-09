@@ -71,7 +71,7 @@
       }
 
       /* 전체 모달 배경 */
-      .selectrobot_modal {
+      #selectrobot_modal {
         display: none; /* 초기에는 숨김 */
         pointer-events: none; /* 클릭 무시 */
         position: fixed;
@@ -93,6 +93,22 @@
         border-radius: 20px 20px 0 0;
         padding: 20px;
         animation: slideUp 0.4s ease-out;
+      }
+
+      .selectrobot_modal_selectbtn {
+        width: 100%;
+        border-radius: 40px;
+        padding: 10px 20px;
+
+        background-color: white;
+        border: 1px solid rgba(63, 226, 244, 1);
+      }
+
+      .selectrobot_modal_above {
+        display: flex;
+        align-items: center;
+
+        margin-bottom: 10px;
       }
 
       /* 애니메이션 */
@@ -164,16 +180,19 @@
 
       <button id="openModalBtn">Open Modal</button>
 
-      <div id="selectrobot_modal" class="modal">
+      <div id="selectrobot_modal">
         <div class="selectrobot_modal-content">
           <div class="selectrobot_modal_above">
-            <div class="selectrobot_modal_robot"></div>
+            <img
+              class="selectrobot_modal_robot"
+              src="assets/images/robot_photo.png"
+            />
             <div class="selectrobot_modal_right">
               <div class="selectrobot_modal_robot_name"></div>
               <div class="selectrobot_modal_robot_battery"></div>
             </div>
           </div>
-          <button class="selectrobot_modal_selectbtn">선택완료</button>
+          <button class="selectrobot_modal_selectbtn">로봇 선택하기</button>
         </div>
       </div>
     </div>
@@ -202,7 +221,7 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         document
-          .querySelector(".selectrobot_check_btn")
+          .querySelector(".selectrobot_modal_selectbtn")
           .addEventListener("click", () => openDemo("minimap"));
       });
 
@@ -241,7 +260,7 @@
             .appendChild(marker_container);
 
           marker_container.addEventListener("click", () => {
-            updateSelection(robot.id, robot.status);
+            updateSelection(robot.id, robot.status, robot.battery);
           });
         });
       }
@@ -250,12 +269,18 @@
       let selectedRobot = null;
       let selectedAvailable = null;
 
-      function updateSelection(robotName, available) {
+      const modal = document.getElementById("selectrobot_modal");
+      const robotId = document.querySelector(".selectrobot_modal_robot_name");
+      const robotBattery = document.querySelector(
+        ".selectrobot_modal_robot_battery"
+      );
+      function updateSelection(robotName, available, battery) {
         selectedRobot = robotName;
         selectedAvailable = available;
 
-        const modal = document.getElementById("selectrobot_modal");
         modal.style.display = "flex";
+        robotId.innerHTML = `${robotName}번 로봇`;
+        robotBattery.innerHTML = `${battery}%`;
 
         // 색상 변경한 것 적용
         robotData();
