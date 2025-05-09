@@ -59,6 +59,7 @@
         console.log("뒤로가기");
         history.back();
       }
+      
     </script>
     <script type="module">
       import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
@@ -83,7 +84,6 @@
       model_index = selectedCoordinates.model_num;
       console.log(model_index);
       const model_names = [
-        // "assets/data/test3.splat",
         "assets/data/new_scaling/(1)allnations_t.splat",
         "assets/data/new_scaling/(2)newton2_t.splat",
         "assets/data/new_scaling/(3)newton1_t.splat",
@@ -94,18 +94,16 @@
       ];
       path_name = model_names[model_index];
 
-      // 모델 로딩 시간 측정
-      // const startTime = performance.now();
-      // const checkLoaded = setInterval(() => {
-      //   if (viewer.getSceneCount() > 0) {
-      //     clearInterval(checkLoaded);
-      //     const endTime = performance.now();
-      //     const loadTime = (endTime - startTime).toFixed(2);
-      //     console.log(`모델 로딩 시간: ${loadTime} ms`);
-      //     insertPassword(loadTime);
-      //     location.reload();
-      //   }
-      // }, 100); // 100ms마다 확인
+      // 예시: viewer가 'load' 이벤트를 제공한다고 가정
+      //const startTime = performance.now();
+      //const checkLoaded = setInterval(() => {
+      //  if (viewer.getSceneCount() > 0) {
+      //    clearInterval(checkLoaded);
+      //    const endTime = performance.now();
+      //    const loadTime = (endTime - startTime).toFixed(2);
+      //    console.log(`모델 로딩 시간: ${loadTime} ms`);
+      //  }
+      //}, 100); // 100ms마다 확인
 
       document.addEventListener("DOMContentLoaded", () => {
         selectedCoordinates = JSON.parse(
@@ -157,31 +155,7 @@
         sphericalHarmonicsDegree: 0,
       });
 
-      //임시. n을 누르면 특정 모델로 바뀜 나중에 할것
-      document.addEventListener("keydown", (event) => {
-        if (event.key.toLowerCase() === "n") {
-          let selectedCoordinates = JSON.parse(
-            localStorage.getItem("selectedCoordinates")
-          ) || { x: 0, y: 0, model_num: 1 };
 
-          //모델 번호 변경 (순환)
-          selectedCoordinates.model_num =
-            (selectedCoordinates.model_num % model_names.length) + 1;
-
-          //새로운 좌표 값 설정 (예제)
-          selectedCoordinates.x += 10; // X 좌표 증가
-          selectedCoordinates.y += 5; // Y 좌표 증가
-
-          //변경된 값 저장
-          localStorage.setItem(
-            "selectedCoordinates",
-            JSON.stringify(selectedCoordinates)
-          );
-
-          //페이지 새로고침하여 변경 적용
-          location.reload();
-        }
-      });
 
       viewer
         .addSplatScenes([
@@ -603,6 +577,11 @@
         });
       }
 
+
+
+
+      
+
       // 페이지 이동
       // 만약 destin이 0이면 목적지 선택으로 이동
       // 만약 destin이 1이면 moving 페이지로 이동
@@ -652,6 +631,59 @@
               }
             });
           }
+        }
+
+
+        // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
+        function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
+          let x, y;
+          switch (modelIndex) {
+            case 0:
+              x = (gaussianX - 3407.058) / -41.165;
+              y = (gaussianZ + 3087.733) / 39.684;
+              break;
+            case 1:
+              x = (gaussianX - 3779.558) / -45.964;
+              y = (gaussianZ + 3126.132) / 39.799;
+              break;
+            case 2:
+              x = (gaussianX - 3349.914) / -39.981;
+              y = (gaussianZ + 2980.471) / 38.273;
+              break;
+            case 3:
+              x = (gaussianX - 4146.684) / -63.470;
+              y = (gaussianZ + 3318.681) / 42.176;
+              break;
+            case 4:
+              x = (gaussianX - 3407.058) / -41.165;
+              y = (gaussianZ + 3087.733) / 39.684;
+              break;
+            case 5:
+              x = (gaussianX - 2942.919) / -20.532;
+              y = (gaussianZ + 3147.322) / 39.563;
+              break;
+            case 6:
+              x = (gaussianX - 3470.849) / -44.077;
+              y = (gaussianZ + 3142.578) / 44.223;
+              break;
+            default:
+              return null;
+          }
+          return { x, y };
+        }
+        //선택 완료 버튼 입력
+        const stored = localStorage.getItem("clickedCoords");
+        if (stored) {
+          // 가장 최근 클릭된 좌표 가져오기
+          const coord = JSON.parse(stored)[0]; 
+          const x = coord.x;
+          const z = coord.z;
+      
+          // 좌표 역변환 및 index(model_num) 계산
+          const clickedcoord = convertToModelIndex(model_index, x, z); // model_index와 x, z를 넘김
+      
+          // 결과를 로컬스토리지에 저장
+          localStorage.setItem("test", JSON.stringify(clickedcoord));
         }
       }
     </script>
