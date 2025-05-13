@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>GARO</title>
-    <link rel="stylesheet" href="commonCss.css" />
     <script src="functions.js"></script>
     <style>
       body {
         margin: 0;
-        background-color: rgba(248, 248, 248, 1);      
+        background-color: rgba(248, 248, 248, 1);
       }
 
       .minimap_container {
@@ -51,7 +50,7 @@
 
       /* 전체 모달 배경 */
       #selectdest_modal {
-        display:flex;
+        display: flex;
         pointer-events: none; /* 클릭 무시 */
         position: fixed;
         left: 0;
@@ -62,7 +61,7 @@
         align-items: flex-end;
         z-index: 1000;
       }
-      
+
       /* 모달 내용 */
       .selectdest_modal-content {
         pointer-events: auto;
@@ -152,9 +151,19 @@
       <div class="selectdest_modal-content">
         <div class="selectdest_modal_above">
           <div class="selectdest_modal_title" id="robot-info"></div>
-          <div class="selectdest_modal_detail" >지도를 움직여 위치를 지정하세요.</div>
+          <div class="selectdest_modal_detail">
+            지도를 움직여 위치를 지정하세요.
+          </div>
         </div>
-        <button class="complete_selection", type="button" , onclick="openPage()">선택 완료</button>
+        <button
+          class="complete_selection"
+          ,
+          type="button"
+          ,
+          onclick="openPage()"
+        >
+          선택 완료
+        </button>
       </div>
     </div>
     <canvas id="colorCanvas" style="display: none"></canvas>
@@ -299,7 +308,7 @@
 
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
         console.log(color);
-        if (color === "rgb(255, 255, 255)" ) {
+        if (color === "rgb(255, 255, 255)") {
           if (markerContainer) {
             minimap.removeChild(markerContainer);
           }
@@ -520,61 +529,49 @@
         let model_num = 0;
         let gaussianX;
         let gaussianZ;
-      
-        gaussianX = -20.532 * x + 2942.919
-          gaussianZ = 39.563 * y + -3147.322
+
+        gaussianX = -20.532 * x + 2942.919;
+        gaussianZ = 39.563 * y + -3147.322;
         // 인덱스 0
         if (x >= 82.46 && x <= 90.73 && y >= 76.04 && y <= 88.64) {
           model_num = 0;
-          gaussianX = -41.165 * x + 3407.058
-          gaussianZ = 39.684 * y + -3087.733
-          
-        // 인덱스 1
-        } else if (
-            x >= 55.50 && x <= 83.11 && y >= 87.26 && y <= 90.93
-        ) {
+          gaussianX = -41.165 * x + 3407.058;
+          gaussianZ = 39.684 * y + -3087.733;
+
+          // 인덱스 1
+        } else if (x >= 55.5 && x <= 83.11 && y >= 87.26 && y <= 90.93) {
           model_num = 1;
-          gaussianX = -45.964 * x + 3779.558
-          gaussianZ = 39.799 * y + -3126.132
+          gaussianX = -45.964 * x + 3779.558;
+          gaussianZ = 39.799 * y + -3126.132;
 
-        // 인덱스 2
-        } else if (
-            x >= 37.34 && x <= 56.15 && y >= 89.67 && y <= 92.87
-        ) {
+          // 인덱스 2
+        } else if (x >= 37.34 && x <= 56.15 && y >= 89.67 && y <= 92.87) {
           model_num = 2;
-          gaussianX = -39.981 * x + 3349.914
-          gaussianZ = 38.273 * y + -2980.471
-        // 인덱스 3
-        } else if (
-            x >= 26.00 && x <= 38.00 && y >= 75.81 && y <= 94.42
-        ) {
+          gaussianX = -39.981 * x + 3349.914;
+          gaussianZ = 38.273 * y + -2980.471;
+          // 인덱스 3
+        } else if (x >= 26.0 && x <= 38.0 && y >= 75.81 && y <= 94.42) {
           model_num = 3;
-          gaussianX = -63.470 * x + 4146.684
-          gaussianZ = 42.176 * y + -3318.681
+          gaussianX = -63.47 * x + 4146.684;
+          gaussianZ = 42.176 * y + -3318.681;
 
-        // 인덱스 4
-        } else if (
-            x >= 23.64 && x <= 32.88 && y >= 73.18 && y <= 75.47
-        ) {
+          // 인덱스 4
+        } else if (x >= 23.64 && x <= 32.88 && y >= 73.18 && y <= 75.47) {
           model_num = 4;
-          gaussianX = -41.165 * x + 3407.058
-          gaussianZ = 39.684 * y + -3087.733
+          gaussianX = -41.165 * x + 3407.058;
+          gaussianZ = 39.684 * y + -3087.733;
 
-        // 인덱스 5
-        } else if (
-            x >= 18.75 && x <= 24.40 && y >= 36.55 && y <= 73.75
-        ) {
+          // 인덱스 5
+        } else if (x >= 18.75 && x <= 24.4 && y >= 36.55 && y <= 73.75) {
           model_num = 5;
-          gaussianX = -20.532 * x + 2942.919
-          gaussianZ = 39.563 * y + -3147.322
+          gaussianX = -20.532 * x + 2942.919;
+          gaussianZ = 39.563 * y + -3147.322;
 
-        // 인덱스 6
-        } else if (
-            x >= 15.81 && x <= 20.16 && y >= 12.73 && y <= 37.00
-        ) {
+          // 인덱스 6
+        } else if (x >= 15.81 && x <= 20.16 && y >= 12.73 && y <= 37.0) {
           model_num = 6;
-          gaussianX = -44.077 * x + 3470.849
-          gaussianZ = 44.223 * y + -3142.578
+          gaussianX = -44.077 * x + 3470.849;
+          gaussianZ = 44.223 * y + -3142.578;
         }
 
         return { x: gaussianX, z: gaussianZ, model_num: model_num };

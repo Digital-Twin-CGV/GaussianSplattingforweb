@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>GARO</title>
-    <link rel="stylesheet" href="commonCss.css" />
     <script src="functions.js"></script>
     <style>
       body {
@@ -160,7 +159,6 @@
     // 로봇 좌표계의 목적지
     const robotEnd = JSON.parse(localStorage.getItem("robotEnd"));
 
-    console.log(start, end);
     let destin = 0; // 출발지인지 목적지인지. 0 : 출발지, 2 : 목적지
     const robotId = localStorage.getItem("robot"); // 선택된 로봇 번호
 
@@ -179,7 +177,7 @@
       );
       startDestinMarker.forEach((index) => index.remove());
 
-      marking();
+      marking(destin, start, end, ".moving_map_container");
 
       if (destin === 0) {
         titleElement.innerHTML = "로봇이 첫 번째 목적지로 이동중입니다.";
@@ -272,40 +270,6 @@
           document.querySelector(".moving_map_container").appendChild(marker);
         }
       });
-    }
-
-    // 출발지, 목적지 마커 표시
-    function marking() {
-      const destinMarkerContainer = document.createElement("div");
-
-      let markerLocation;
-
-      if (destin == 0 || destin == 1) {
-        markerLocation = start;
-        destinMarkerContainer.innerHTML = `<svg width="25" height="34" viewBox="0 0 25 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.4424 0.657196C18.917 0.657292 24.166 5.9062 24.166 12.3808C24.166 15.4793 22.9704 18.6694 21.0674 21.9424C19.4009 24.8085 17.1715 27.7709 14.6709 30.83L13.583 32.1474C13.0262 32.8153 12.0288 32.8545 11.4199 32.2675L11.3037 32.1425C8.39128 28.6168 5.75173 25.2156 3.83984 21.9414C1.92964 18.67 0.718796 15.4801 0.71875 12.3808C0.71875 5.90614 5.9677 0.657196 12.4424 0.657196Z" fill="#6BE3F0" stroke="#6BE3F0"/>
-<path d="M12.2175 17.0466L12.2175 11.8529L12.1367 11.8529L10.549 12.9562L10.549 11.7363L12.2219 10.5747L13.5719 10.5747L13.5719 17.0466L12.2175 17.0466Z" fill="white"/>
-</svg>
-`;
-      } else if (destin == 2 || destin == 3) {
-        markerLocation = end;
-        destinMarkerContainer.innerHTML = `<svg width="25" height="34" viewBox="0 0 25 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.562 0.657837C19.101 0.657837 24.4018 5.95871 24.4019 12.4977C24.4019 15.6271 23.1946 18.8493 21.272 22.1559C19.5884 25.0514 17.3365 28.0446 14.8101 31.1354L13.7114 32.4664C13.1509 33.1391 12.1459 33.1784 11.5327 32.5875L11.4155 32.4606C8.47302 28.8984 5.80593 25.4626 3.87451 22.1549C1.94472 18.85 0.722168 15.6278 0.722168 12.4977C0.722195 5.95873 6.02306 0.657864 12.562 0.657837Z" fill="#6BE3F0" stroke="#6BE3F0"/>
-<path d="M10.0191 17.1204L10.0191 16.2005L12.1262 14.1205C12.4344 13.8244 12.673 13.5812 12.8422 13.3909C13.0114 13.1975 13.1292 13.0299 13.1957 12.8879C13.2621 12.7429 13.2954 12.5933 13.2954 12.4393L13.2954 12.4257C13.2954 12.2384 13.2546 12.0737 13.173 11.9317C13.0945 11.7897 12.9797 11.6795 12.8286 11.6009C12.6776 11.5194 12.4978 11.4786 12.2894 11.4786C12.0779 11.4786 11.8906 11.5239 11.7275 11.6145C11.5643 11.7021 11.4374 11.8245 11.3468 11.9816C11.2562 12.1356 11.2109 12.3169 11.2109 12.5254L11.2109 12.548L9.94655 12.548L9.94202 12.5254C9.94202 12.1085 10.0432 11.7414 10.2456 11.4242C10.4511 11.107 10.7335 10.8593 11.093 10.681C11.4556 10.5028 11.8755 10.4137 12.3528 10.4137C12.8029 10.4137 13.1987 10.4937 13.5401 10.6538C13.8845 10.8139 14.1534 11.036 14.3467 11.32C14.5431 11.6039 14.6413 11.9347 14.6413 12.3124L14.6413 12.326C14.6413 12.5737 14.5929 12.8169 14.4962 13.0556C14.3996 13.2912 14.2364 13.5465 14.0068 13.8214C13.7772 14.0963 13.463 14.418 13.0643 14.7866L11.4873 16.2594L11.8543 15.6612L11.8543 16.2594L11.4873 16.0192L14.7364 16.0192L14.7364 17.1204L10.0191 17.1204Z" fill="white"/>
-</svg>
-`;
-      }
-
-      destinMarkerContainer.style.position = "absolute";
-      destinMarkerContainer.className = "moving_start_marker";
-      destinMarkerContainer.style.top = markerLocation.top + "%";
-      destinMarkerContainer.style.left = markerLocation.left + "%";
-      destinMarkerContainer.style.display = "flex";
-      destinMarkerContainer.style.alignItems = "flex-start";
-
-      document
-        .querySelector(".moving_map_container")
-        .appendChild(destinMarkerContainer);
     }
 
     function robotPath(path) {
