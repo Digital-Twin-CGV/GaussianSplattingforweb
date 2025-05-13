@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>GARO</title>
+    <script src="functions.js"></script>
     <style>
       body {
         margin: 0;
         /* overflow: hidden; */
-        background-color: #F8F8F8;
+        background-color: #f8f8f8;
       }
       .managerMap_container {
         display: flex;
@@ -17,34 +18,6 @@
         align-items: center;
 
         position: relative;
-      }
-
-      .managerMap_battery {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-      }
-
-      .managerMap_circle {
-        width: 18px;
-        height: 18px;
-        border-radius: 20px;
-
-        margin-right: 10px;
-      }
-
-      .managerMap_battery_colorbox {
-        display: flex;
-        align-items: center;
-
-        margin-bottom: 5px;
-
-        font-weight: bold;
-      }
-
-      .robot_info,
-      .robot_battery {
-        margin-bottom: 10px;
       }
 
       /* 미니맵 컨테이너 */
@@ -57,7 +30,7 @@
 
       /* 미니맵 */
       .managerMap_map_img {
-        height: 95vh;
+        width: 95vh;
       }
 
       /* 모바일 화면 크기 기준 */
@@ -66,118 +39,6 @@
           height: 100%;
           width: 100%;
         }
-      }
-
-      /* 모달의 위치 */
-      .managerMap_modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        display: none;
-        z-index: 1000;
-        width: 70%;
-        height: 70%;
-        min-width: 1200px;
-        min-height: 700px;
-      }
-
-      /* 모달의 제목 */
-      .managerMap_modal_header {
-        flex: 1;
-
-        font-size: 20px;
-        margin-bottom: 10px;
-
-        display: flex;
-        align-items: center;
-
-        font-weight: bold;
-      }
-
-      .managerMap_modal_info {
-        padding: 30px;
-
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* 로봇 정보들 */
-      .managerMap_modal_body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        font-size: 16px;
-      }
-      /* 닫기 버튼 */
-      .managerMap_modal_close {
-        position: absolute;
-        right: 20px;
-        cursor: pointer;
-        font-size: 50px;
-      }
-      /* 모달의 바깥 부분 */
-      .managerMap_modal_overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        z-index: 999;
-      }
-
-      .managerMap_modal_above {
-        flex: 1;
-        display: flex;
-      }
-      .managerMap_modal_camera {
-        flex: 2;
-        padding: 0px 10%;
-      }
-      .managerMap_modal_btns {
-        flex: 1;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-evenly;
-      }
-      .managerMap_modal_btn {
-        color: white;
-        font-size: 30px;
-        font-weight: bold;
-
-        padding: 5% 20%;
-
-        border-radius: 8px;
-        border: none;
-
-        cursor: pointer;
-      }
-      .managerMap_modal_logtitle {
-        font-size: 20px;
-        font-weight: bold;
-
-        padding-bottom: 10px;
-      }
-      .managerMap_modal_logbox {
-        flex: 1;
-        margin-top: 30px;
-
-        padding: 10px 20px;
-        border-radius: 10px;
-
-        background-color: #d9d9d9;
-      }
-      .managerMap_modal_logs {
-        height: 100px;
-        overflow-y: auto;
       }
 
       /* 경로 선 */
@@ -190,103 +51,18 @@
   </head>
 
   <body>
-    <div id="header"></div>
     <div class="managerMap_container">
       <div class="managerMap_map">
-        <div class="managerMap_battery">
-          <div class="managerMap_battery_colorbox">
-            <div
-              class="managerMap_circle"
-              style="background-color: #ff0000"
-            ></div>
-            <div style="color: #ff0000">사용중</div>
-          </div>
-          <div class="managerMap_battery_colorbox">
-            <div
-              class="managerMap_circle"
-              style="background-color: #f2d406"
-            ></div>
-            <div style="color: #f2d406">배터리 부족</div>
-          </div>
-          <div class="managerMap_battery_colorbox">
-            <div
-              class="managerMap_circle"
-              style="background-color: #1dd200"
-            ></div>
-            <div style="color: #1dd200">사용 가능</div>
-          </div>
-        </div>
         <div class="managerMap_map_container" id="managerMap_map">
-          <img class="managerMap_map_img" src="assets/images/Minimap.png" />
+          <img
+            class="managerMap_map_img"
+            id="managerMap_map_img"
+            src="assets/images/Minimap.png"
+          />
         </div>
       </div>
     </div>
 
-    <!-- 모달 오버레이 -->
-    <div class="managerMap_modal_overlay"></div>
-
-    <!-- 모달 -->
-    <div class="managerMap_modal">
-      <!-- &items = x 표시 -->
-      <span class="managerMap_modal_close">&times;</span>
-      <div class="managerMap_modal_info">
-        <div class="managerMap_modal_header">
-          <!-- 로봇 ID -->
-          <div
-            class="managerMap_modal_title"
-            style="font-size: 40px; padding-right: 40px"
-          ></div>
-          <!-- 로봇 상태 -->
-          <div class="managerMap_modal_use" style="font-size: 25px"></div>
-        </div>
-        <div class="managerMap_modal_body">
-          <div class="managerMap_modal_above">
-            <!-- 로봇 카메라 -->
-            <div class="managerMap_modal_camera"></div>
-            <div class="managerMap_modal_btns">
-              <button
-                class="managerMap_modal_btn"
-                style="background-color: #1dd200"
-                id="managerMap_modal_robot_btn"
-              >
-                로봇 제어
-              </button>
-              <button
-                class="managerMap_modal_btn"
-                style="background-color: #ff0000"
-                id="managerMap_modal_stop_btn"
-              >
-                즉시 정지
-              </button>
-            </div>
-          </div>
-          <div class="managerMap_modal_logbox">
-            <div class="managerMap_modal_logtitle">상태 로그</div>
-            <div class="managerMap_modal_logs"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
-      // 헤더에 필요한 script
-      document.addEventListener("DOMContentLoaded", () => {
-        fetch("header.html")
-          .then((response) => response.text())
-          .then((data) => {
-            document.getElementById("header").innerHTML = data;
-          })
-          .catch((error) => console.error("Error loading header:", error));
-      });
-
-      function openHome(page) {
-        let url = page + ".html";
-        window.location = url;
-      }
-
-      function goBack() {
-        history.back();
-      }
-    </script>
     <script type="module">
       import {
         getRobots,
@@ -344,7 +120,11 @@
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
-          const marker_container = createRobotMarker(robot);
+          const marker_container = createRobotMarker(
+            robot,
+            "managerMap_map_img",
+            0
+          );
           document
             .querySelector(".managerMap_map_container")
             .appendChild(marker_container);
@@ -358,124 +138,8 @@
         const requests = await getRequest();
       }
 
-      // 로봇 상태에 따른 색상
-      function applyColor(robot) {
-        if (robot.status === 1) {
-          // 사용중이라면?
-          return "#ff0000";
-        } else if (robot.battery < 30) {
-          // 배터리가 30 이하라면?
-          return "#f2d406";
-        } else {
-          // 나머지
-          return "#1dd200";
-        }
-      }
-
-      // 로봇 마커 생성 함수
-      function createRobotMarker(robot) {
-        // 미니맵의 정보
-        const minimapRect = document
-          .getElementById("managerMap_map")
-          .getBoundingClientRect();
-        // marker 넣을 container
-        const container = document.createElement("div");
-        container.className = "robot_marker_container";
-        container.style.position = "absolute";
-        container.style.left =
-          ((robot.position[0] + 2750) * 100) / 3299 -
-          (12 * 100) / minimapRect.width +
-          "%";
-        container.style.top =
-          ((-robot.position[1] + 2457) * 100) / 3133 -
-          (35 * 100) / minimapRect.height +
-          "%";
-        container.style.display = "flex";
-        container.style.alignItems = "flex-start";
-        container.style.cursor = "pointer";
-
-        // marker
-        const marker = document.createElement("div");
-        marker.className = "robot_marker";
-        marker.innerHTML = `${robot.id}`;
-        marker.style.setProperty("--marker-color", applyColor(robot)); //css에 값 넘기기
-
-        container.appendChild(marker);
-
-        // 모달 띄우기
-        container.addEventListener("click", () => showRobotDetails(robot));
-
-        return container;
-      }
-
       let controlRobotHandler; // 로봇 제어 이벤트 핸들러
       let stopRobotHandler; // 로봇 정지 이벤트 핸들러
-
-      // 모달 안
-      function showRobotDetails(robot) {
-        const modal = document.querySelector(".managerMap_modal");
-        const overlay = document.querySelector(".managerMap_modal_overlay");
-        const useRobot = modal.querySelector(".managerMap_modal_use");
-        const robotId = modal.querySelector(".managerMap_modal_title");
-        const robotLogs = modal.querySelector(".managerMap_modal_logs");
-        const robotControlBtn = document.querySelector(
-          "#managerMap_modal_robot_btn"
-        );
-        const robotStopBtn = document.querySelector(
-          "#managerMap_modal_stop_btn"
-        );
-
-        // 로봇 제어 이벤트 리스너
-        controlRobotHandler = () => controlRobot(robot);
-        robotControlBtn.addEventListener("click", controlRobotHandler);
-
-        // 로봇 정지 이벤트 리스너
-        stopRobotHandler = () => stopRobot(robot);
-        robotStopBtn.addEventListener("click", stopRobotHandler);
-
-        robotId.innerHTML = `로봇${robot.id}`;
-
-        useRobot.innerHTML = robot.status === 0 ? "사용 가능" : "사용 불가";
-
-        useRobot.style.color = applyColor(robot);
-
-        // 로봇 로그
-        robotLogs.innerHTML = logs.map((log) => `<div>${log}</div>`).join("");
-
-        // 모달을 열 때 스크롤을 맨 아래로 설정
-        setTimeout(() => {
-          robotLogs.scrollTop = robotLogs.scrollHeight;
-        }, 0);
-
-        modal.style.display = "block";
-        overlay.style.display = "block";
-      }
-
-      // 모달 닫기
-      function closeModal() {
-        const modal = document.querySelector(".managerMap_modal");
-        const overlay = document.querySelector(".managerMap_modal_overlay");
-        const robotControlBtn = document.querySelector(
-          "#managerMap_modal_robot_btn"
-        );
-        const robotStopBtn = document.querySelector(
-          "#managerMap_modal_stop_btn"
-        );
-
-        modal.style.display = "none";
-        overlay.style.display = "none";
-        // 이벤트 리스너 제거
-        robotControlBtn.removeEventListener("click", controlRobotHandler);
-        robotStopBtn.removeEventListener("click", stopRobotHandler);
-      }
-
-      // 모달 닫기 이벤트
-      document
-        .querySelector(".managerMap_modal_close")
-        .addEventListener("click", closeModal);
-      document
-        .querySelector(".managerMap_modal_overlay")
-        .addEventListener("click", closeModal);
 
       // 로봇 제어 버튼
       function controlRobot(robot) {
