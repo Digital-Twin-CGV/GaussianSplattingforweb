@@ -6783,9 +6783,9 @@ class OrbitControls extends EventDispatcher {
     // HTML에 버튼 추가
     const controlsContainer = document.createElement("div");
     controlsContainer.style.position = "absolute";
-    controlsContainer.style.bottom = "20px";
-    controlsContainer.style.right = "20px";
-    controlsContainer.style.transform = "translateX(-50%)";
+    controlsContainer.style.bottom = "180px";
+    controlsContainer.style.right = "0px";
+    controlsContainer.style.transform = "translateX(-20%)";
     controlsContainer.style.display = "flex";
     controlsContainer.style.flexDirection = "column";
     controlsContainer.style.alignItems = "center";
@@ -6794,17 +6794,17 @@ class OrbitControls extends EventDispatcher {
     // 버튼 생성 함수 (이미지를 사용)
     function createButton(imageSrc, keyCode) {
       const button = document.createElement("button");
-      button.style.margin = "5px";
-      button.style.padding = "10px";
+      button.style.margin = "1px";
+      // button.style.padding = "10px";
       button.style.cursor = "pointer";
-      button.style.border = "1px solid black";
-      button.style.borderRadius = "5px";
-      button.style.background = "#fff";
+      button.style.border = "none";
+      // button.style.borderRadius = "5px";
+      button.style.background = "transparent";
 
       const img = document.createElement("img");
       img.src = imageSrc;
-      img.style.width = "30px"; // 이미지 크기 조절
-      img.style.height = "30px";
+      img.style.width = "45px"; // 이미지 크기 조절
+      img.style.height = "45px";
       button.appendChild(img);
 
       // 클릭 시 해당 키 코드로 처리
@@ -6999,10 +6999,10 @@ class OrbitControls extends EventDispatcher {
     window.addEventListener("keyup", handlePanEvent);
 
     // 버튼 클릭 시 트리거할 키 코드 매핑 (이미지 사용)
-    const upButton = createButton("../../assets/images/up_arrow.jpg", 'r');
-    const downButton = createButton("../../assets/images/down_arrow.jpg", 'f');
-    const leftButton = createButton("../../assets/images/left_arrow.jpg", 'a');
-    const rightButton = createButton("../../assets/images/right_arrow.jpg", 'd');
+    const upButton = createButton("../../assets/images/arrow-up.png", 'r');
+    const downButton = createButton("../../assets/images/arrow-down.png", 'f');
+    const leftButton = createButton("../../assets/images/arrow-left.png", 'a');
+    const rightButton = createButton("../../assets/images/arrow-right.png", 'd');
 
     // 버튼 배치
     const row = document.createElement("div");
