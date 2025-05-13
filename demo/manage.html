@@ -9,8 +9,27 @@
       body {
         margin: 0;
       }
+
       .manage_container {
         width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .logo_container {
+        width: 50vw;
+        height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #3FE2F4;
+      }
+      .login_container {
+        width: 50vw;
         height: 100vh;
 
         display: flex;
@@ -19,21 +38,16 @@
         justify-content: space-evenly;
       }
 
-      .manage_bao {
-        border-radius: 27px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.664);
-
-        border: 5px solid #638c6d;
-      }
-
       .manage_code {
         display: flex;
         align-items: center;
       }
 
       .manage_text_label {
-        font-size: 40px;
-        font-weight: bold;
+        font-size: 24px;
+        color: #8E8E8E;
+        margin-bottom: 4px;
+        /* font-weight: bold; */
       }
 
       .manage_inputbox {
@@ -41,37 +55,40 @@
         flex-direction: column;
         align-items: flex-end;
 
-        color: #638c6d;
+        color: #222222;
       }
 
       .manage_code_box {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: left;
       }
 
       .manage_code_title {
-        font-size: 40px;
-        margin-bottom: 30px;
+        font-size: 64px;
+        margin-bottom: 74px;
       }
 
-      #manage_code {
-        width: 500px;
-        height: 50px;
+      #manage_code, #user_name {
+        width: 437px;
+        height: 62px;
+        margin-bottom: 24px;
 
-        font-size: 30px;
-        border-radius: 12px;
-        border: 3px solid #638c6d;
+        font-size: 20px;
+        border-radius: 50px;
+        border: 1px solid #87EEFA;
 
         text-align: center;
       }
 
       #manage_check_btn {
+        width: 437px;
+        height: 64px;
         border: none;
-        border-radius: 20px;
-        background-color: #638c6d;
+        border-radius: 50px;
+        background-color: #87EEFA;
 
-        font-size: 40px;
+        font-size: 20px;
         font-weight: bold;
         color: white;
 
@@ -122,17 +139,33 @@
   </head>
 
   <body>
-    <div id="header"></div>
+    <!-- <div id="header"></div> -->
     <div class="manage_container">
-      <img class="manage_bao" src="assets/images/won_bao.png" />
-      <div class="manage_inputbox">
-        <div class="manage_code_box">
-          <div class="manage_code_title">코드를 입력하세요</div>
-          <input type="password" name="manage_code" id="manage_code" />
+      <div class="logo_container">
+        <div class="logo">
+          <svg width="364" height="124" viewBox="0 0 364 124" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M226.167 36.2338H241.369V49.2219C245.059 42.8754 255.243 34.1675 271.773 34.1675C276.939 34.1675 280.333 34.6103 283.285 35.6434V50.1075C280.038 48.6315 275.906 47.746 270.74 47.746C253.472 47.746 241.369 61.6197 241.369 76.9693V120.657H226.167V36.2338Z" fill="white"/>
+            <path d="M61.9888 123.682C25.8287 123.682 0 97.5586 0 61.8412C0 26.1239 25.8287 0 61.9888 0C92.0977 0 114.679 17.5635 120.878 40.1451H104.053C99.1821 25.2383 82.5042 14.1689 62.284 14.1689C34.9794 14.1689 15.4972 34.0938 15.4972 61.8412C15.4972 89.7362 34.9794 109.809 62.5792 109.809C86.7844 109.809 104.791 93.8688 106.562 72.4679H59.4798V59.037H123.092V64.3503C123.092 99.1821 96.5254 123.682 61.9888 123.682Z" fill="white"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M321.337 107.235C337.487 107.235 350.579 94.1425 350.579 77.9928C350.579 61.843 337.487 48.751 321.337 48.751C305.187 48.751 292.095 61.843 292.095 77.9928C292.095 94.1425 305.187 107.235 321.337 107.235ZM321.337 120.656C344.899 120.656 364 101.555 364 77.9928C364 54.4304 344.899 35.3293 321.337 35.3293C297.774 35.3293 278.673 54.4304 278.673 77.9928C278.673 101.555 297.774 120.656 321.337 120.656Z" fill="white"/>
+            <path d="M173.775 35.7585C196.62 36.3374 215 54.8748 215.33 77.781H215.338V120.366H201.916V109.471C194.279 116.663 183.992 121.072 172.673 121.072L171.573 121.057C148.885 120.483 130.599 102.197 130.024 79.5095L130.01 78.408C130.011 54.8459 149.111 35.7451 172.673 35.7449L173.775 35.7585ZM172.673 49.1667C156.524 49.1669 143.432 62.2585 143.432 78.408C143.432 94.5576 156.524 107.65 172.673 107.65C188.823 107.65 201.916 94.5577 201.916 78.408C201.915 62.2583 188.823 49.1667 172.673 49.1667Z" fill="white"/>
+          </svg>
+            
         </div>
       </div>
-      <button id="manage_check_btn">확인</button>
-      <p id="error_message" class="error"></p>
+      <div class="login_container">
+        <!-- <img class="manage_bao" src="assets/images/won_bao.png" /> -->
+        <div class="manage_inputbox">
+          <div class="manage_code_box">
+            <div class="manage_code_title">Login</div>
+            <div class="manage_text_label">User Name</div>
+            <input type="input" name="user_name" id="user_name" />
+            <div class="manage_text_label">Password</div>
+            <input type="password" name="manage_code" id="manage_code" />
+          </div>
+        </div>
+        <button id="manage_check_btn">Login</button>
+        <p id="error_message" class="error"></p>
+      </div>
     </div>
     <script>
       // 헤더에 필요한 script
@@ -156,6 +189,24 @@
     </script>
     <script type="module">
       import { getPassword } from "./supaDatabase/connectDatabase.js";
+
+      async function checkUsername() {
+        // 사용자 입력 값 가져오기
+        const inputName = document.getElementById("user_name").value;
+
+        // 에러 메시지 영역
+        const errorMessage = document.getElementById("error_message");
+
+        // 유효성 검사
+        if (inputName == "") {
+          // 일치하지 않으면 에러 메시지 표시
+          errorMessage.textContent = "이름을 입력하세요.";
+          return false;
+        } else {
+          errorMessage.textContent = "";
+          return true;
+        }
+      }
 
       async function checkPassword() {
         const correctPw = await getPassword();
