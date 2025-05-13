@@ -97,7 +97,7 @@
           />
         </svg>
 
-        <div class="managerMap_robots">로봇들</div>
+        <div class="managerMap_robots"></div>
       </div>
       <div class="managerMap_map">
         <div class="managerMap_map_container" id="managerMap_map">
@@ -164,10 +164,14 @@
 
         // 기존 마커 제거
         const markers = document.querySelectorAll(".robot_marker_container");
+
+        // 로봇 id 순서대로
+        robots.sort((a, b) => a.id - b.id);
+
         markers.forEach((marker) => marker.remove());
 
         robots.forEach((robot) => {
-          const marker_container = createRobotMarker(
+          const marker_container = managerRobotMarker(
             robot,
             "managerMap_map_img",
             0
@@ -175,7 +179,23 @@
           document
             .querySelector(".managerMap_map_container")
             .appendChild(marker_container);
+
+          const robot_information = robotList(robot);
         });
+      }
+
+      // 로봇 리스트
+      function robotList(robot) {
+        const list = document.querySelector(".managerMap_robots");
+        const robotInfoContainer = document.createElement("div");
+
+        const robotName = document.createElement("div");
+
+        robotName.innerHTML = `Robot ${robot.id}`;
+
+        robotInfoContainer.appendChild(robotName);
+
+        list.appendChild(robotInfoContainer);
       }
 
       const logs = [];
