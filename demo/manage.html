@@ -26,7 +26,7 @@
         justify-content: center;
         align-items: center;
 
-        background-color: #3FE2F4;
+        background-color: #3fe2f4;
       }
       .login_container {
         width: 50vw;
@@ -45,7 +45,7 @@
 
       .manage_text_label {
         font-size: 24px;
-        color: #8E8E8E;
+        color: #8e8e8e;
         margin-bottom: 4px;
         /* font-weight: bold; */
       }
@@ -69,14 +69,20 @@
         margin-bottom: 74px;
       }
 
-      #manage_code, #user_name {
+      input:focus {
+        background-color: white;
+        outline: 2px solid #87eefa;
+      }
+
+      #manage_code,
+      #user_name {
         width: 437px;
         height: 62px;
         margin-bottom: 24px;
 
         font-size: 20px;
         border-radius: 50px;
-        border: 1px solid #87EEFA;
+        border: 1px solid #87eefa;
 
         text-align: center;
       }
@@ -86,7 +92,7 @@
         height: 64px;
         border: none;
         border-radius: 50px;
-        background-color: #87EEFA;
+        background-color: #87eefa;
 
         font-size: 20px;
         font-weight: bold;
@@ -104,52 +110,41 @@
 
       /* 반응형 */
       @media screen and (max-width: 1000px) {
-        .manage_code_title {
-          font-size: 30px;
-          margin-bottom: 20px;
-        }
-
-        #manage_code {
-          width: 400px;
-          height: 50px;
-
-          font-size: 30px;
-          border-radius: 12px;
-          border: 3px solid #638c6d;
-
-          text-align: center;
-        }
-
-        #manage_check_btn {
-          border: none;
-          border-radius: 10px;
-          background-color: #638c6d;
-
-          font-size: 25px;
-          font-weight: bold;
-          color: white;
-
-          padding: 10px 120px;
-
-          cursor: pointer;
-        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
-    <!-- <div id="header"></div> -->
     <div class="manage_container">
       <div class="logo_container">
         <div class="logo">
-          <svg width="364" height="124" viewBox="0 0 364 124" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M226.167 36.2338H241.369V49.2219C245.059 42.8754 255.243 34.1675 271.773 34.1675C276.939 34.1675 280.333 34.6103 283.285 35.6434V50.1075C280.038 48.6315 275.906 47.746 270.74 47.746C253.472 47.746 241.369 61.6197 241.369 76.9693V120.657H226.167V36.2338Z" fill="white"/>
-            <path d="M61.9888 123.682C25.8287 123.682 0 97.5586 0 61.8412C0 26.1239 25.8287 0 61.9888 0C92.0977 0 114.679 17.5635 120.878 40.1451H104.053C99.1821 25.2383 82.5042 14.1689 62.284 14.1689C34.9794 14.1689 15.4972 34.0938 15.4972 61.8412C15.4972 89.7362 34.9794 109.809 62.5792 109.809C86.7844 109.809 104.791 93.8688 106.562 72.4679H59.4798V59.037H123.092V64.3503C123.092 99.1821 96.5254 123.682 61.9888 123.682Z" fill="white"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M321.337 107.235C337.487 107.235 350.579 94.1425 350.579 77.9928C350.579 61.843 337.487 48.751 321.337 48.751C305.187 48.751 292.095 61.843 292.095 77.9928C292.095 94.1425 305.187 107.235 321.337 107.235ZM321.337 120.656C344.899 120.656 364 101.555 364 77.9928C364 54.4304 344.899 35.3293 321.337 35.3293C297.774 35.3293 278.673 54.4304 278.673 77.9928C278.673 101.555 297.774 120.656 321.337 120.656Z" fill="white"/>
-            <path d="M173.775 35.7585C196.62 36.3374 215 54.8748 215.33 77.781H215.338V120.366H201.916V109.471C194.279 116.663 183.992 121.072 172.673 121.072L171.573 121.057C148.885 120.483 130.599 102.197 130.024 79.5095L130.01 78.408C130.011 54.8459 149.111 35.7451 172.673 35.7449L173.775 35.7585ZM172.673 49.1667C156.524 49.1669 143.432 62.2585 143.432 78.408C143.432 94.5576 156.524 107.65 172.673 107.65C188.823 107.65 201.916 94.5577 201.916 78.408C201.915 62.2583 188.823 49.1667 172.673 49.1667Z" fill="white"/>
+          <svg
+            width="364"
+            height="124"
+            viewBox="0 0 364 124"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M226.167 36.2338H241.369V49.2219C245.059 42.8754 255.243 34.1675 271.773 34.1675C276.939 34.1675 280.333 34.6103 283.285 35.6434V50.1075C280.038 48.6315 275.906 47.746 270.74 47.746C253.472 47.746 241.369 61.6197 241.369 76.9693V120.657H226.167V36.2338Z"
+              fill="white"
+            />
+            <path
+              d="M61.9888 123.682C25.8287 123.682 0 97.5586 0 61.8412C0 26.1239 25.8287 0 61.9888 0C92.0977 0 114.679 17.5635 120.878 40.1451H104.053C99.1821 25.2383 82.5042 14.1689 62.284 14.1689C34.9794 14.1689 15.4972 34.0938 15.4972 61.8412C15.4972 89.7362 34.9794 109.809 62.5792 109.809C86.7844 109.809 104.791 93.8688 106.562 72.4679H59.4798V59.037H123.092V64.3503C123.092 99.1821 96.5254 123.682 61.9888 123.682Z"
+              fill="white"
+            />
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M321.337 107.235C337.487 107.235 350.579 94.1425 350.579 77.9928C350.579 61.843 337.487 48.751 321.337 48.751C305.187 48.751 292.095 61.843 292.095 77.9928C292.095 94.1425 305.187 107.235 321.337 107.235ZM321.337 120.656C344.899 120.656 364 101.555 364 77.9928C364 54.4304 344.899 35.3293 321.337 35.3293C297.774 35.3293 278.673 54.4304 278.673 77.9928C278.673 101.555 297.774 120.656 321.337 120.656Z"
+              fill="white"
+            />
+            <path
+              d="M173.775 35.7585C196.62 36.3374 215 54.8748 215.33 77.781H215.338V120.366H201.916V109.471C194.279 116.663 183.992 121.072 172.673 121.072L171.573 121.057C148.885 120.483 130.599 102.197 130.024 79.5095L130.01 78.408C130.011 54.8459 149.111 35.7451 172.673 35.7449L173.775 35.7585ZM172.673 49.1667C156.524 49.1669 143.432 62.2585 143.432 78.408C143.432 94.5576 156.524 107.65 172.673 107.65C188.823 107.65 201.916 94.5577 201.916 78.408C201.915 62.2583 188.823 49.1667 172.673 49.1667Z"
+              fill="white"
+            />
           </svg>
-            
         </div>
       </div>
       <div class="login_container">
@@ -167,26 +162,7 @@
         <p id="error_message" class="error"></p>
       </div>
     </div>
-    <script>
-      // 헤더에 필요한 script
-      document.addEventListener("DOMContentLoaded", () => {
-        fetch("header.html")
-          .then((response) => response.text())
-          .then((data) => {
-            document.getElementById("header").innerHTML = data;
-          })
-          .catch((error) => console.error("Error loading header:", error));
-      });
-
-      function openHome(page) {
-        let url = page + ".html";
-        window.location = url;
-      }
-
-      function goBack() {
-        history.back();
-      }
-    </script>
+    <script></script>
     <script type="module">
       import { getPassword } from "./supaDatabase/connectDatabase.js";
 
