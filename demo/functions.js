@@ -182,8 +182,8 @@ function marking(destin, start, end, className) {
 
     startMarkerContainer.style.position = "absolute";
     startMarkerContainer.className = "moving_start_marker";
-    startMarkerContainer.style.top = markerLocation.top + "%";
-    startMarkerContainer.style.left = markerLocation.left + "%";
+    startMarkerContainer.style.top = markerLocation.y + "%";
+    startMarkerContainer.style.left = markerLocation.x + "%";
     startMarkerContainer.style.display = "flex";
     startMarkerContainer.style.alignItems = "flex-start";
 
@@ -200,8 +200,8 @@ function marking(destin, start, end, className) {
 
     endMarkerContainer.style.position = "absolute";
     endMarkerContainer.className = "moving_start_marker";
-    endMarkerContainer.style.top = markerLocation.top + "%";
-    endMarkerContainer.style.left = markerLocation.left + "%";
+    endMarkerContainer.style.top = markerLocation.y + "%";
+    endMarkerContainer.style.left = markerLocation.x + "%";
     endMarkerContainer.style.display = "flex";
     endMarkerContainer.style.alignItems = "flex-start";
 
