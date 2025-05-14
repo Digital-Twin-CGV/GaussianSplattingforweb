@@ -325,7 +325,7 @@
           let model_index = -1; // 기본값 (해당 없음)
 
           // 인덱스 0
-          if (x >= 81.26 && x <= 88.375 && y >= 72.34 && y <= 83.21) {
+          if (x >= 80.29 && x <= 90 && y >= 70 && y <= 83.21) {
             model_index = 0;
 
             // 인덱스 1
@@ -515,14 +515,13 @@
         let gaussianX;
         let gaussianZ;
 
-        gaussianX = -63.331 * x + 5254.578
-        gaussianZ = 35.306 * y + -2564.824
+        gaussianX = 0
+        gaussianZ = 0
         // 인덱스 0
-        if (x >= 81.26 && x <= 90 && y >= 72.34 && y <= 83.21) {
+        if (x >= 80.29 && x <= 90 && y >= 70 && y <= 83.21) {
           model_num = 0;
-          gaussianX = -63.331 * x + 5254.578
-          gaussianZ = 35.306 * y + -2564.824
-
+          gaussianX = -38.323 * x + 3100.527
+          gaussianZ = 33.498 * y + -2383.184
 
           // 인덱스 1
         } else if (x >= 54.17 && x <= 79.3 && y >= 82.1 && y <= 86.6) {
