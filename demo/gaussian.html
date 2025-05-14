@@ -212,22 +212,6 @@
             detail: selectedCoordinates,
           });
           window.dispatchEvent(event); // 이벤트 디스패치
-
-          // const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-          // const sphereMaterial = new THREE.MeshBasicMaterial({
-          //   color: 0x00ff00,
-          // });
-
-          // const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          // sphereMesh.position.set(
-          //   initialCameraPosition.x,
-          //   initialCameraPosition.y,
-          //   initialCameraPosition.z
-          // );
-          // viewer.splatMesh.add(sphereMesh);
-          // console.log(
-          //   `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-          // );
         }
       });
 
@@ -666,38 +650,38 @@
       // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
       function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
         let x, y;
-        switch (modelIndex) {
-          case 0:
-            x = (gaussianX - 3407.058) / -41.165;
-            y = (gaussianZ + 3087.733) / 39.684;
-            break;
-          case 1:
-            x = (gaussianX - 3779.558) / -45.964;
-            y = (gaussianZ + 3126.132) / 39.799;
-            break;
-          case 2:
-            x = (gaussianX - 3349.914) / -39.981;
-            y = (gaussianZ + 2980.471) / 38.273;
-            break;
-          case 3:
-            x = (gaussianX - 4146.684) / -63.47;
-            y = (gaussianZ + 3318.681) / 42.176;
-            break;
-          case 4:
-            x = (gaussianX - 3407.058) / -41.165;
-            y = (gaussianZ + 3087.733) / 39.684;
-            break;
-          case 5:
-            x = (gaussianX - 2942.919) / -20.532;
-            y = (gaussianZ + 3147.322) / 39.563;
-            break;
-          case 6:
-            x = (gaussianX - 3470.849) / -44.077;
-            y = (gaussianZ + 3142.578) / 44.223;
-            break;
-          default:
-            return null;
-        }
+          switch (modelIndex) {
+            case 0:
+              x = (gaussianX - 5254.578) / -63.331;
+              y = (gaussianZ + 2564.824) / 35.306;
+              break;
+            case 1:
+              x = (gaussianX - 1706.192) / -14.615;
+              y = (gaussianZ + 976.434) / 16.791;
+              break;
+            case 2:
+              x = (gaussianX - 6450.991) / -100.724;
+              y = (gaussianZ + 2076.530) / 30.022;
+              break;
+            case 3:
+              x = (gaussianX - 3743.210) / -53.927;
+              y = (gaussianZ + 3385.644) / 45.414;
+              break;
+            case 4:
+              x = (gaussianX - 3470.419) / -44.725;
+              y = (gaussianZ - 5095.013) / -74.848;
+              break;
+            case 5:
+              x = (gaussianX - 2997.170) / -24.712;
+              y = (gaussianZ + 2495.009) / 30.273;
+              break;
+            case 6:
+              x = (gaussianX - 3211.722) / -34.713;
+              y = (gaussianZ + 2556.940) / 28.583;
+              break;
+            default:
+              return null;
+          }
 
         // 가우시안에서 선택하여 바뀐 미니맵 좌표
         localStorage.setItem(
@@ -766,6 +750,7 @@
             });
           }
         }
+
       }
     </script>
   </body>
