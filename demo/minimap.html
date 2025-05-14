@@ -197,8 +197,8 @@
           const startCoordin = JSON.parse(localStorage.getItem("start"));
           start.className = "minimap_start";
           start.style.position = "absolute";
-          start.style.top = startCoordin.top + "%";
-          start.style.left = startCoordin.left + "%";
+          start.style.top = startCoordin.y + "%";
+          start.style.left = startCoordin.x + "%";
           start.style.display = "flex";
           start.style.alignItems = "flex-start";
 
@@ -206,7 +206,8 @@
           const startMarker = document.createElement("div");
           startMarker.style.width = "27px";
           startMarker.style.height = "34px";
-          startMarker.style.backgroundImage = "url('assets/images/firstDestination.png')";
+          startMarker.style.backgroundImage =
+            "url('assets/images/firstDestination.png')";
           startMarker.style.backgroundSize = "cover";
           startMarker.style.backgroundRepeat = "no-repeat";
           startMarker.style.backgroundPosition = "center";
@@ -378,8 +379,11 @@
           const marker = document.createElement("div");
           marker.style.width = "38px";
           marker.style.height = "48px";
-          marker.style.backgroundImage = destin === "0" ? "url('assets/images/firstDestination.png')" : "url('assets/images/secondDestination.png')";
-            // "url('assets/images/firstDestination.png')";
+          marker.style.backgroundImage =
+            destin === "0"
+              ? "url('assets/images/firstDestination.png')"
+              : "url('assets/images/secondDestination.png')";
+          // "url('assets/images/firstDestination.png')";
           marker.style.backgroundSize = "cover";
           marker.style.backgroundRepeat = "no-repeat";
           marker.style.backgroundPosition = "center";
@@ -508,10 +512,6 @@
           localStorage.setItem("robot", robotId);
           localStorage.setItem("top", markerTop);
           localStorage.setItem("left", markerLeft);
-          localStorage.setItem(
-            destin === "0" ? "robotStart" : "robotEnd",
-            JSON.stringify({ robotX, robotY })
-          );
 
           localStorage.setItem(
             "selectedCoordinates",
