@@ -20,7 +20,6 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   container.style.alignItems = "flex-start";
 
   // SVG 로봇 마커 추가
-  console.log("selected : ", selected);
   if (selected == robot.id) {
     container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 106" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M60 48.5C60 63.9579 48.3685 78.4261 33.2985 99.3802C31.6838 101.625 28.3253 101.619 26.7174 99.3689C11.7466 78.4209 0 63.9551 0 48.5C0 31.9315 13.4315 18.5 30 18.5C46.5685 18.5 60 31.9315 60 48.5Z" fill="#303030"/>
@@ -71,22 +70,100 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   return container;
 }
 
-// marker, label 색상 지정
-// function applyColor(robot, selected) {
-//   if (selected === robot.id) {
-//     return "#12f3fb";
-//   }
-//   if (robot.status === 1) {
-//     // 사용중이라면?
-//     return "#ff0000";
-//   } else if (robot.battery < 30) {
-//     // 배터리가 30 이하라면?
-//     return "#f2d406";
-//   } else {
-//     // 나머지
-//     return "#1dd200";
-//   }
-// }
+// 관리자 페이지 마커
+// 로봇 마커 생성 함수
+function managerRobotMarker(robot, minimapRectClass, selected) {
+  // 미니맵의 정보
+  const minimapRect = document
+    .getElementById(minimapRectClass)
+    .getBoundingClientRect();
+  // marker 넣을 container
+  const container = document.createElement("div");
+  container.className = "robot_marker_container";
+  container.style.position = "absolute";
+  container.style.left =
+    ((robot.position[0] + 2750) * 100) / 3299 -
+    (20 * 100) / minimapRect.width +
+    "%";
+  container.style.top =
+    ((-robot.position[1] + 2457) * 100) / 3133 -
+    (48 * 100) / minimapRect.height +
+    "%";
+  container.style.display = "flex";
+  container.style.alignItems = "flex-start";
+
+  // SVG 로봇 마커 추가
+  if (selected == robot.id) {
+    container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M60 48.5C60 63.9579 48.3685 78.4261 33.2985 99.3802C31.6838 101.625 28.3253 101.619 26.7174 99.3689C11.7466 78.4209 0 63.9551 0 48.5C0 31.9315 13.4315 18.5 30 18.5C46.5685 18.5 60 31.9315 60 48.5Z" fill="#303030"/>
+<circle cx="30" cy="48.5" r="26" fill="white"/>
+<rect x="11.9173" y="34.9173" width="36.1654" height="21.8598" rx="4.58644" fill="#98F5FF" stroke="#222222" stroke-width="1.83458"/>
+<path d="M25.0002 49.7969C26.509 51.2869 30.6213 53.3729 35.0002 49.7969" stroke="#222222" stroke-width="1.83458" stroke-linecap="round"/>
+<path d="M21.6572 55.8389C23.4213 55.8389 24.832 57.2478 24.832 58.9609C24.832 60.6741 23.4213 62.083 21.6572 62.083C19.8933 62.0828 18.4834 60.674 18.4834 58.9609C18.4834 57.248 19.8934 55.8391 21.6572 55.8389Z" fill="#4E4E4E" stroke="#222222" stroke-width="1.83439"/>
+<path d="M21.6572 55.8389C23.4213 55.8389 24.832 57.2478 24.832 58.9609C24.832 60.6741 23.4213 62.083 21.6572 62.083C19.8933 62.0828 18.4834 60.674 18.4834 58.9609C18.4834 57.248 19.8934 55.8391 21.6572 55.8389Z" fill="#4E4E4E" stroke="#222222" stroke-width="1.83439"/>
+<path d="M39.7175 55.8389C41.4816 55.8389 42.8923 57.2478 42.8923 58.9609C42.8923 60.6741 41.4816 62.083 39.7175 62.083C37.9536 62.0828 36.5437 60.674 36.5437 58.9609C36.5437 57.248 37.9537 55.8391 39.7175 55.8389Z" fill="#4E4E4E" stroke="#222222" stroke-width="1.83439"/>
+<path d="M39.7175 55.8389C41.4816 55.8389 42.8923 57.2478 42.8923 58.9609C42.8923 60.6741 41.4816 62.083 39.7175 62.083C37.9536 62.0828 36.5437 60.674 36.5437 58.9609C36.5437 57.248 37.9537 55.8391 39.7175 55.8389Z" fill="#4E4E4E" stroke="#222222" stroke-width="1.83439"/>
+<path d="M24.1016 41.751C24.6701 41.751 25.3633 42.3503 25.3633 43.4004C25.3632 44.4504 24.6701 45.0498 24.1016 45.0498C23.5331 45.0496 22.8409 44.4503 22.8408 43.4004C22.8408 42.3505 23.533 41.7512 24.1016 41.751Z" fill="#222222" stroke="#222222" stroke-width="1.68147"/>
+<path d="M36.2065 41.751C36.7751 41.751 37.4683 42.3503 37.4683 43.4004C37.4682 44.4504 36.7751 45.0498 36.2065 45.0498C35.638 45.0496 34.9459 44.4503 34.9458 43.4004C34.9458 42.3505 35.638 41.7512 36.2065 41.751Z" fill="#222222" stroke="#222222" stroke-width="1.68147"/>
+<path d="M30 22V7" stroke="#222222" stroke-width="4" stroke-linejoin="round"/>
+<circle cx="30" cy="9" r="7" fill="#6BE3F0" stroke="#222222" stroke-width="4"/>
+</svg>
+`;
+    container.style.zIndex = "1";
+  } else {
+    if (robot.status == 3) {
+      container.innerHTML = `
+        <svg width="40" height="52" viewBox="0 0 78 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_437_503)">
+<path d="M69 35.5C69 50.9579 57.3685 65.4261 42.2985 86.3802C40.6838 88.6253 37.3253 88.6188 35.7174 86.3689C20.7466 65.4209 9 50.9551 9 35.5C9 18.9315 22.4315 5.5 39 5.5C55.5685 5.5 69 18.9315 69 35.5Z" fill="#1DD200"/>
+<circle cx="39" cy="35" r="26" fill="white"/>
+<text x="39" y="40" text-anchor="middle" fill="black" font-size="20" font-family="Arial" dominant-baseline="middle">
+      ${robot.id}
+    </text>
+</g>
+<defs>
+<filter id="filter0_d_437_503" x="0.3" y="0.8" width="77.4" height="99.9605" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4.35"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_437_503"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_437_503" result="shape"/>
+</filter>
+</defs>
+</svg>
+      `;
+    } else {
+      container.innerHTML = `<svg width="40" height="52" viewBox="0 0 78 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_437_606)">
+<path d="M69 35.5C69 50.9579 57.3685 65.4261 42.2985 86.3802C40.6838 88.6253 37.3253 88.6188 35.7174 86.3689C20.7466 65.4209 9 50.9551 9 35.5C9 18.9315 22.4315 5.5 39 5.5C55.5685 5.5 69 18.9315 69 35.5Z" fill="#FF0000"/>
+<circle cx="39" cy="35" r="26" fill="white"/>
+<text x="39" y="40" text-anchor="middle" fill="black" font-size="20" font-family="Arial" dominant-baseline="middle">
+      ${robot.id}
+    </text>
+</g>
+<defs>
+<filter id="filter0_d_437_606" x="0.3" y="0.8" width="77.4" height="99.9605" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4.35"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_437_606"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_437_606" result="shape"/>
+</filter>
+</defs>
+</svg>
+
+  `;
+    }
+  }
+
+  return container;
+}
 
 // 출발지, 목적지 마커 표시
 function marking(destin, start, end, className) {
