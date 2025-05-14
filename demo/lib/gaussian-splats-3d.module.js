@@ -6805,6 +6805,14 @@ class OrbitControls extends EventDispatcher {
       img.src = imageSrc;
       img.style.width = "45px"; // 이미지 크기 조절
       img.style.height = "45px";
+
+      // ↓↓↓ 복사/드래그 방지 추가
+      img.style.userSelect = "none";
+      img.style.webkitUserDrag = "none";
+      img.style.webkitTouchCallout = "none";
+      img.setAttribute("draggable", "false");
+      img.oncontextmenu = () => false; // 우클릭 방지
+
       button.appendChild(img);
 
       // 클릭 시 해당 키 코드로 처리
