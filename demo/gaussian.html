@@ -39,7 +39,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        flex-direction: column;    
+        flex-direction: column;
       }
 
       .gaussian_check_btn {
@@ -70,13 +70,12 @@
         padding: 0 15px;
         border: none;
         color: white;
-        background-color: #3FE2F4;
+        background-color: #3fe2f4;
         font-size: 16px;
 
         display: flex;
         align-items: center;
         justify-content: center;
-        
         cursor: pointer;
       }
     </style>
@@ -88,7 +87,7 @@
       <div id="header"></div>
     </div>
     <div class="gaussian_check">
-      <div class="gaussian_check_btn" >
+      <div class="gaussian_check_btn">
         <svg
           width="24"
           height="24"
@@ -115,11 +114,18 @@
             fill="#A4A4A4"
           />
         </svg>
-        <div style="margin-bottom: 3px">3D 환경에서 정확한 위치를 선택해주세요.</div>
+        <div style="margin-bottom: 3px">
+          3D 환경에서 정확한 위치를 선택해주세요.
+        </div>
       </div>
-      <button id="gaussian_complete_btn" class="gaussian_complete_btn" onclick="openDemo()">확인</button>
+      <button
+        id="gaussian_complete_btn"
+        class="gaussian_complete_btn"
+        onclick="openDemo()"
+      >
+        확인
+      </button>
     </div>
-
 
     <script>
       // 헤더
@@ -141,7 +147,6 @@
         console.log("뒤로가기");
         history.back();
       }
-      
     </script>
     <script type="module">
       import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
@@ -154,8 +159,8 @@
       } from "./supaDatabase/connectDatabase.js";
 
       window.openDemo = openDemo;
-
-      const urlParams = new URLSearchParams(window.location.search);
+      const destin = localStorage.getItem("destin");
+      const robotId = localStorage.getItem("robot");
       let selectedCoordinates = JSON.parse(
         localStorage.getItem("selectedCoordinates")
       );
@@ -221,8 +226,6 @@
         sphericalHarmonicsDegree: 0,
       });
 
-
-
       viewer
         .addSplatScenes([
           {
@@ -252,7 +255,7 @@
               "box_coord(4).json",
               "box_coord(5).json",
               "box_coord(6).json",
-              "box_coord(7).json"
+              "box_coord(7).json",
             ];
 
             const response = await fetch(box_coord[model_index]);
@@ -290,7 +293,7 @@
             if (nextIndex.index != -2) {
               //벽이 아니면 색있는 박스 생성
               boxMaterial = new THREE.MeshBasicMaterial({
-                color: 0xBEBEBE,  //벽 및 박스색상 회색
+                color: 0xbebebe, //벽 및 박스색상 회색
                 transparent: false,
                 opacity: 0,
               });
@@ -644,66 +647,9 @@
         });
       }
 
-
-
-
-      
-
-      // 페이지 이동
-      // 만약 destin이 0이면 목적지 선택으로 이동
-      // 만약 destin이 1이면 moving 페이지로 이동
-      function openDemo() {
-        // 만약 로봇이 사용중이라면
-        if (robotStatus === 1) {
-          alert("이미 사용중인 로봇입니다. 로봇 선택 페이지로 이동합니다.");
-          window.location.href = "selectrobot.html";
-          return 0;
-        }
-
-        const destin = localStorage.getItem("destin");
-        const robotId = localStorage.getItem("robot");
-        const top = localStorage.getItem("top");
-        const left = localStorage.getItem("left");
-        console.log(destin);
-
-        let userConfirmed = false;
-        let url;
-
-        //미니맵에서 찍은 위치 로컬 스토리지에 저장
-        localStorage.setItem(
-          destin === "0" ? "start" : "end",
-          JSON.stringify({ top, left })
-        );
-
-        if (destin === "0") {
-          // 목적지 페이지로
-          localStorage.setItem("destin", 1);
-          localStorage.setItem("robot", robotId);
-          const url = `minimap.html`;
-          window.location.href = url;
-        } else if (destin === "1") {
-          const startCoord = JSON.parse(localStorage.getItem("robotStart"));
-          userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
-          if (userConfirmed) {
-            insertRequest(robotId, true, [
-              startCoord.robotX,
-              startCoord.robotY,
-            ]).then(() => {
-              // moving 페이지로
-              if (userConfirmed) {
-                localStorage.setItem("destin", 0);
-                localStorage.setItem("robot", robotId);
-                const url = `moving.html`;
-                window.location.href = url;
-              }
-            });
-          }
-        }
-
-
-        // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
-        function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
-          let x, y;
+      // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
+      function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
+        let x, y;
           switch (modelIndex) {
             case 0:
               x = (gaussianX - 5254.578) / -63.331;
@@ -736,22 +682,75 @@
             default:
               return null;
           }
-          return {x, y};
+
+        // 가우시안에서 선택하여 바뀐 미니맵 좌표
+        localStorage.setItem(
+          destin === "0" ? "start" : "end",
+          JSON.stringify({ x, y })
+        );
+
+        // % 좌표에서 로봇 좌표로
+        x = (x * 3299) / 100 - 2750;
+        y = (y * -3133) / 100 + 2457;
+
+        return { x, y };
+      }
+
+      // 페이지 이동
+      // 만약 destin이 0이면 목적지 선택으로 이동
+      // 만약 destin이 1이면 moving 페이지로 이동
+      function openDemo() {
+        // 만약 로봇이 사용중이라면
+        if (robotStatus === 1) {
+          alert("이미 사용중인 로봇입니다. 로봇 선택 페이지로 이동합니다.");
+          window.location.href = "selectrobot.html";
+          return 0;
         }
+
+        let userConfirmed = false;
+
         //선택 완료 버튼 입력
         const stored = localStorage.getItem("clickedCoords");
         if (stored) {
           // 가장 최근 클릭된 좌표 가져오기
-          const coord = JSON.parse(stored)[0]; 
+          const coord = JSON.parse(stored)[0];
           const x = coord.x;
           const z = coord.z;
-      
+
           // 좌표 역변환 및 index(model_num) 계산
           const clickedcoord = convertToModelIndex(model_index, x, z); // model_index와 x, z를 넘김
-      
-          // 결과를 로컬스토리지에 저장
-          localStorage.setItem("test", JSON.stringify(clickedcoord));
+
+          // 출발지 선택 or 목적지 선택
+          localStorage.setItem(
+            destin === "0" ? "robotStart" : "robotEnd",
+            JSON.stringify({ clickedcoord })
+          );
         }
+
+        if (destin === "0") {
+          // 목적지 페이지로
+          localStorage.setItem("destin", 1);
+          const url = `minimap.html`;
+          window.location.href = url;
+        } else if (destin === "1") {
+          const startCoord = JSON.parse(localStorage.getItem("robotStart"));
+          userConfirmed = window.confirm("로봇을 이동시키시겠습니까?");
+          if (userConfirmed) {
+            insertRequest(robotId, true, [
+              startCoord.clickedcoord.x,
+              startCoord.clickedcoord.y,
+            ]).then(() => {
+              // moving 페이지로
+              if (userConfirmed) {
+                localStorage.setItem("destin", 0);
+                localStorage.setItem("robot", robotId);
+                const url = `moving.html`;
+                window.location.href = url;
+              }
+            });
+          }
+        }
+
       }
     </script>
   </body>

@@ -218,7 +218,10 @@
     window.startDestin = startDestin;
     function startDestin() {
       if (destin === 1) {
-        insertRequest(robotId, true, [robotEnd.robotX, robotEnd.robotY]);
+        insertRequest(robotId, true, [
+          robotEnd.clickedcoord.x,
+          robotEnd.clickedcoord.y,
+        ]);
         destin = destin + 1;
         setTitle();
       } else if (destin === 3) {
