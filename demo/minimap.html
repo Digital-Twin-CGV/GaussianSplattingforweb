@@ -80,6 +80,13 @@
 
         background-color: white;
         border: 1px solid rgba(63, 226, 244, 1);
+
+        cursor: pointer;
+      }
+      .complete_selection:hover {
+        background-color: rgba(63, 226, 244, 1);
+        color: white;
+        font-weight: bold;
       }
 
       .selectdest_modal_above {
@@ -206,8 +213,7 @@
           const startMarker = document.createElement("div");
           startMarker.style.width = "27px";
           startMarker.style.height = "34px";
-          startMarker.style.backgroundImage =
-            "url('assets/images/firstDestination.png')";
+          startMarker.style.backgroundImage = "url('assets/images/firstDestination.svg')";
           startMarker.style.backgroundSize = "cover";
           startMarker.style.backgroundRepeat = "no-repeat";
           startMarker.style.backgroundPosition = "center";
@@ -309,7 +315,7 @@
 
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
         console.log(color);
-        if (color === "rgb(255, 255, 255)") {
+        if (color === "rgb(208, 230, 246)") {
           if (markerContainer) {
             minimap.removeChild(markerContainer);
           }

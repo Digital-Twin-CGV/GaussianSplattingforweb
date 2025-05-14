@@ -76,6 +76,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -212,21 +213,21 @@
           });
           window.dispatchEvent(event); // 이벤트 디스패치
 
-          const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
-          const sphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-          });
+          // const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+          // const sphereMaterial = new THREE.MeshBasicMaterial({
+          //   color: 0x00ff00,
+          // });
 
-          const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphereMesh.position.set(
-            initialCameraPosition.x,
-            initialCameraPosition.y,
-            initialCameraPosition.z
-          );
-          viewer.splatMesh.add(sphereMesh);
-          console.log(
-            `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
-          );
+          // const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          // sphereMesh.position.set(
+          //   initialCameraPosition.x,
+          //   initialCameraPosition.y,
+          //   initialCameraPosition.z
+          // );
+          // viewer.splatMesh.add(sphereMesh);
+          // console.log(
+          //   `구 추가됨 {x: ${sphereMesh.position.x}, y: ${sphereMesh.position.y}, z: ${sphereMesh.position.z}}`
+          // );
         }
       });
 

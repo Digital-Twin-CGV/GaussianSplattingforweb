@@ -6805,6 +6805,14 @@ class OrbitControls extends EventDispatcher {
       img.src = imageSrc;
       img.style.width = "45px"; // 이미지 크기 조절
       img.style.height = "45px";
+
+      // ↓↓↓ 복사/드래그 방지 추가
+      img.style.userSelect = "none";
+      img.style.webkitUserDrag = "none";
+      img.style.webkitTouchCallout = "none";
+      img.setAttribute("draggable", "false");
+      img.oncontextmenu = () => false; // 우클릭 방지
+
       button.appendChild(img);
 
       // 클릭 시 해당 키 코드로 처리
@@ -15317,18 +15325,74 @@ class Viewer {
     // const toNewFocalPoint = new THREE.Vector3();
     const outHits = [];
 
+    // SVG 파일을 불러와서 캔버스 텍스처로 만드는 함수
+    const loadSvgAsTexture = (url) => {
+      return new Promise((resolve, reject) => {
+          fetch(url)
+              .then(response => response.text())
+              .then(svgText => {
+                  const img = new Image();
+                  // 이미지 로드 성공 시
+                  img.onload = () => {
+                      // 캔버스 생성
+                      const canvas = document.createElement('canvas');
+                      // SVG 크기에 맞춰 캔버스 크기 설정
+                      canvas.width = img.width;
+                      canvas.height = img.height;
+                      const ctx = canvas.getContext('2d');
+
+                      // 캔버스에 SVG 이미지 그리기
+                      ctx.drawImage(img, 0, 0);
+
+                      // 캔버스 텍스처 생성
+                      const texture = new THREE.CanvasTexture(canvas);
+                      // 텍스처 업데이트 플래그 설정
+                      texture.needsUpdate = true;
+                      resolve(texture); // 완성된 텍스처 반환!
+                  };
+                  // 이미지 로드 실패 시
+                  img.onerror = (err) => {
+                      reject(new Error('SVG 이미지 로드 실패', err));
+                  };
+
+                  // SVG 내용을 Data URL 형태로 이미지 소스에 넣어줌
+                  img.src = 'data:image/svg+xml;base64,' + btoa(svgText);
+              })
+              .catch(reject); 
+      });
+    };
+  
+
     // 클릭한 곳에 구 찍어주기
     // const sphereRadius = 5; // 구 반지름
     // const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
     // const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-    const textureLoader = new THREE.TextureLoader();
-    const markerTexture = textureLoader.load('assets/images/firstDestination.png'); 
+    // const textureLoader = new THREE.TextureLoader();
+    // const markerTexture = textureLoader.load('assets/images/firstDestination.png'); 
     
     let markerSprite = null;
+    let markerTexture = null;
+
+    const destin = localStorage.getItem('destin') || '0';
+    let markerUrl;
+
+    if(destin === '1') 
+      markerUrl = 'assets/images/secondDestination.svg';
+    else 
+      markerUrl = 'assets/images/firstDestination.svg';
+
+    // 비동기로 SVG 텍스처를 미리 불러옴
+    loadSvgAsTexture(markerUrl)
+        .then(texture => {
+            markerTexture = texture; // 불러온 텍스처를 변수에 저장
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
     return function () {
-      if (!this.transitioningCameraTarget) {
+      if (!this.transitioningCameraTarget && markerTexture) {
         this.getRenderDimensions(renderDimensions);
         outHits.length = 0;
         this.raycaster.setFromCameraAndScreenPosition(
