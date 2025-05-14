@@ -280,7 +280,7 @@
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
 
-        // 이미지에서 클릭한 부분을 %로 좌표 표현 (marker)
+        // 이미지에서 marker 위치
         // 왼쪽 위를 원점
         const x =
           (100 * (event.clientX - minimapRect.left - 19)) / minimapRect.width;
@@ -302,9 +302,9 @@
             minimap.removeChild(markerContainer);
           }
 
-          // 사람이 선택한 부분
-          selectedX = x;
-          selectedY = y;
+          // 사람이 선택한 부분. %.
+          selectedX = (x * minimapRect.width) / 100 + 19;
+          selectedY = (y * minimapRect.height) / 100 + 48;
 
           // a, b는 클릭한 부분을 로봇 좌표로 변경한 것 (지도의 빨간 1px짜리가 원점)
           // 사용자는 왼쪽 위가 원점
@@ -351,11 +351,10 @@
             // 인덱스 6
           } else if (x >= 14.1 && x <= 18.1 && y >= 8.25 && y <= 31.5) {
             model_index = 6;
-          }
-          else{
+          } else {
             setMarkerSelected(false);
           }
-          
+
           console.log("x", x, "y", y, "모델 인덱스 : ", model_index);
 
           // 마커와 라벨을 감싸는 컨테이너 생성
@@ -368,12 +367,15 @@
 
           // 마커 생성
           const marker = document.createElement("div");
-          marker.innerHTML = destin === "0" ? `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
+          marker.innerHTML =
+            destin === "0"
+              ? `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
 <ellipse cx="67" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
 <path d="M65.4652 69.9286V42.6818H65.325L56.7256 48.5237V42.2612L65.4418 36.2089H72.4521V69.9286H65.4652Z" fill="white"/>
 </svg>
-` : `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
+`
+              : `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
 <ellipse cx="67.0002" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
 <path d="M54.0853 69.9286V65.0915L66.0029 53.9451C67.4672 52.5897 68.5733 51.4603 69.3211 50.5567C70.0688 49.6532 70.5751 48.8431 70.84 48.1265C71.1204 47.4099 71.2606 46.6621 71.2606 45.8832V45.8364C71.2606 44.9173 71.0425 44.1072 70.6063 43.4062C70.1701 42.6896 69.5625 42.1288 68.7836 41.7237C68.0203 41.3187 67.1401 41.1162 66.1431 41.1162C64.9903 41.1162 63.9777 41.3498 63.1053 41.8172C62.2329 42.269 61.5474 42.8999 61.0489 43.71C60.5504 44.5045 60.2856 45.408 60.2544 46.4206L60.231 46.6309H53.6881V46.444C53.6881 44.3253 54.2255 42.4559 55.3004 40.8357C56.3753 39.2 57.8475 37.9226 59.7169 37.0034C61.6019 36.0843 63.7284 35.6247 66.0963 35.6247C68.4798 35.6247 70.5751 36.0454 72.3823 36.8866C74.1894 37.7123 75.5992 38.8651 76.6118 40.345C77.6244 41.825 78.1307 43.523 78.1307 45.4392V45.4859C78.1307 46.8413 77.8815 48.1031 77.383 49.2715C76.9 50.4243 76.0977 51.655 74.9761 52.9636C73.8544 54.2566 72.3199 55.7989 70.3726 57.5904L60.6049 66.4935L63.3156 61.7499V66.4935L60.6283 64.3203H78.5981V69.9286H54.0853Z" fill="white"/>
@@ -479,8 +481,6 @@
         }
         if (isMarkerSelected) {
           // 사람이 선택한 부분
-          const markerTop = selectedY;
-          const markerLeft = selectedX;
           const {
             x: gaussianX,
             z: gaussianZ,
@@ -496,8 +496,8 @@
           const destin = localStorage.getItem("destin");
           localStorage.setItem("destin", destin);
           localStorage.setItem("robot", robotId);
-          localStorage.setItem("top", markerTop);
-          localStorage.setItem("left", markerLeft);
+          localStorage.setItem("top", selectedY);
+          localStorage.setItem("left", selectedX);
 
           localStorage.setItem(
             "selectedCoordinates",
@@ -510,6 +510,8 @@
 
       // newton1.splat scaling
       // scaling, index(모델 인덱스)
+      //      selectedX = (x * minimapRect.width) / 100 + 19;
+      //     selectedY = (y * minimapRect.height) / 100 + 48;
       function convertToGaussian(x, y) {
         let model_num = -1;
         let gaussianX;
@@ -526,40 +528,40 @@
           // 인덱스 1
         } else if (x >= 54.17 && x <= 79.3 && y >= 82.1 && y <= 86.6) {
           model_num = 1;
-          gaussianX = -14.615 * x + 1706.192
-          gaussianZ = 16.791 * y + -976.434
+          gaussianX = -14.615 * x + 1706.192;
+          gaussianZ = 16.791 * y + -976.434;
 
           // 인덱스 2
         } else if (x >= 34.32 && x <= 52.643 && y >= 86.1 && y <= 88.4) {
           model_num = 2;
-          gaussianX = -100.724 * x + 6450.991
-          gaussianZ = 30.022 * y + -2076.530
+          gaussianX = -100.724 * x + 6450.991;
+          gaussianZ = 30.022 * y + -2076.53;
 
           // 인덱스 3
         } else if (x >= 29.5 && x <= 31.8 && y >= 72.2 && y <= 88.17) {
           model_num = 3;
-          gaussianX = -53.927 * x + 3743.210
-          gaussianZ = 45.414 * y + -3385.644
+          gaussianX = -53.927 * x + 3743.21;
+          gaussianZ = 45.414 * y + -3385.644;
 
           // 인덱스 4
         } else if (x >= 21.8 && x <= 30 && y >= 69.6 && y <= 70.6) {
           model_num = 4;
-          gaussianX = -44.725 * x + 3470.419
-          gaussianZ = -74.848 * y + 5095.013
+          gaussianX = -44.725 * x + 3470.419;
+          gaussianZ = -74.848 * y + 5095.013;
 
           // 인덱스 5
         } else if (x >= 17.3 && x <= 22.8 && y >= 33.5 && y <= 66.46) {
           model_num = 5;
-          gaussianX = -24.712 * x + 2997.170
-          gaussianZ = 30.273 * y + -2495.009
+          gaussianX = -24.712 * x + 2997.17;
+          gaussianZ = 30.273 * y + -2495.009;
 
           // 인덱스 6
         } else if (x >= 14.1 && x <= 18.1 && y >= 8.25 && y <= 31.5) {
           model_num = 6;
-          gaussianX = -34.713 * x + 3211.722
-          gaussianZ = 28.583 * y + -2556.940
+          gaussianX = -34.713 * x + 3211.722;
+          gaussianZ = 28.583 * y + -2556.94;
         }
-        
+
         return { x: gaussianX, z: gaussianZ, model_num: model_num };
       }
 
