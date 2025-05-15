@@ -280,17 +280,24 @@
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
 
-        // 이미지에서 marker 위치
         // 왼쪽 위를 원점
+        // 이미지에서 marker 위치
         const x =
           (100 * (event.clientX - minimapRect.left - 19)) / minimapRect.width;
         const y =
-          (100 * (event.clientY - minimapRect.top - 48)) / minimapRect.height;
+          (100 * (event.clientY - minimapRect.top - 42)) / minimapRect.height;
 
+        // 사람이 선택한 부분. %.
+        selectedX =
+          (100 * (event.clientX - minimapRect.left)) / minimapRect.width;
+        selectedY =
+          (100 * (event.clientY - minimapRect.top)) / minimapRect.height;
+
+        // 왼쪽 위를 원점
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
           (x * minimapRect.width) / 100 + 19,
-          (y * minimapRect.height) / 100 + 48,
+          (y * minimapRect.height) / 100 + 42,
           1,
           1
         ).data;
@@ -302,9 +309,7 @@
             minimap.removeChild(markerContainer);
           }
 
-          // 사람이 선택한 부분. %.
-          selectedX = (x * minimapRect.width) / 100 + 19;
-          selectedY = (y * minimapRect.height) / 100 + 48;
+          console.log(selectedX, selectedY);
 
           // a, b는 클릭한 부분을 로봇 좌표로 변경한 것 (지도의 빨간 1px짜리가 원점)
           // 사용자는 왼쪽 위가 원점
@@ -517,13 +522,13 @@
         let gaussianX;
         let gaussianZ;
 
-        gaussianX = 0
-        gaussianZ = 0
+        gaussianX = 0;
+        gaussianZ = 0;
         // 인덱스 0
         if (x >= 80.29 && x <= 90 && y >= 70 && y <= 83.21) {
           model_num = 0;
-          gaussianX = -38.323 * x + 3100.527
-          gaussianZ = 33.498 * y + -2383.184
+          gaussianX = -38.323 * x + 3100.527;
+          gaussianZ = 33.498 * y + -2383.184;
 
           // 인덱스 1
         } else if (x >= 54.17 && x <= 79.3 && y >= 82.1 && y <= 86.6) {
