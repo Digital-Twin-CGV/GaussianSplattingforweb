@@ -59,16 +59,30 @@
         max-height: 50%;
         border-radius: 20px 20px 0 0;
         padding: 20px;
+        padding-top: 10px;
         /* animation: slideUp 0.4s ease-out; */
+      }
+
+      .modal-line {
+        width: 40px;
+        border: 2px solid #bbbbbb;
+        border-radius: 10px;
+        margin-bottom: 32px;
       }
 
       .complete_selection {
         width: 100%;
+        height: 56px;
         border-radius: 40px;
+
         padding: 10px 20px;
+        margin-bottom: 30px;
 
         background-color: white;
         border: 1px solid rgba(63, 226, 244, 1);
+        color: #222222;
+        font-size: 16px;
+        font-weight: bold ;
 
         cursor: pointer;
       }
@@ -88,6 +102,7 @@
       .selectdest_modal_title {
         font-size: 16px;
         color: #222222;
+        font-weight: bold;
 
         display: flex;
         justify-content: center;
@@ -100,6 +115,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        margin-top: 5px;
+        margin-bottom: 30px;
       }
 
       /* 애니메이션 */
@@ -137,6 +155,7 @@
 
     <div id="selectdest_modal">
       <div class="selectdest_modal-content">
+        <hr class="modal-line" />
         <div class="selectdest_modal_above">
           <div class="selectdest_modal_title" id="robot-info"></div>
           <div class="selectdest_modal_detail">
@@ -192,10 +211,10 @@
 
           // marker
           const startMarker = document.createElement("div");
-          startMarker.innerHTML = `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
-<ellipse cx="67" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
-<path d="M65.4652 69.9286V42.6818H65.325L56.7256 48.5237V42.2612L65.4418 36.2089H72.4521V69.9286H65.4652Z" fill="white"/>
+          startMarker.innerHTML = `
+          <svg width="23" height="32" viewBox="0 0 23 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.4424 1.15625C17.0886 1.15635 21.666 5.73368 21.666 11.3799C21.666 14.1007 20.6117 17.0209 18.7705 20.1875C16.9354 23.3436 14.3687 26.6593 11.4453 30.168C8.54609 26.6575 5.97826 23.3407 4.13477 20.1836C2.285 17.0156 1.2188 14.0976 1.21875 11.3799C1.21875 5.73362 5.79612 1.15625 11.4424 1.15625Z" fill="white" stroke="#6BE3F0" stroke-width="2"/>
+<path d="M11.2175 16.0449L11.2175 10.8513L11.1367 10.8513L9.54903 11.9546L9.54903 10.7346L11.2219 9.57302L12.5719 9.57302L12.5719 16.0449L11.2175 16.0449Z" fill="#6BE3F0"/>
 </svg>
 `;
           // startMarker.style.backgroundImage = "url('assets/images/firstDestination.svg')";
