@@ -6080,7 +6080,7 @@ class OrbitControls extends EventDispatcher {
     this.enablePan = true;
     this.panSpeed = 10.0;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
-    this.keyPanSpeed = 5000.0; // pixels moved per arrow key push
+    this.keyPanSpeed = 10000.0; // pixels moved per arrow key push
     this.zoomToCursor = false;
 
     // Set to true to automatically rotate around the target
