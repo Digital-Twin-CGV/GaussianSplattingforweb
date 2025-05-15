@@ -32,6 +32,7 @@
 
         text-align: center;
         font-size: 16px;
+        font-weight: bold;
         cursor: pointer;
       }
       .main_manager {
@@ -76,7 +77,7 @@
 
   <body>
     <div class="main_container">
-      <div class="logo">
+      <div class="logo" id="logo">
         <svg width="207" height="71" viewBox="0 0 207 71" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M128.105 20.5235H136.716V27.8802C138.806 24.2854 144.574 19.3531 153.938 19.3531C156.863 19.3531 158.786 19.6039 160.458 20.1891V28.3818C158.619 27.5458 156.278 27.0442 153.352 27.0442C143.571 27.0442 136.716 34.9025 136.716 43.5969V68.3422H128.105V20.5235Z" fill="#87EEFA"/>
           <path d="M35.1117 70.0561C14.6299 70.0561 0 55.2591 0 35.0281C0 14.7971 14.6299 0 35.1117 0C52.1659 0 64.9566 9.94831 68.4678 22.739H58.9374C56.1787 14.2955 46.732 8.02552 35.2789 8.02552C19.813 8.02552 8.77792 19.3114 8.77792 35.0281C8.77792 50.8283 19.813 62.1978 35.4461 62.1978C49.1563 62.1978 59.3554 53.1691 60.3586 41.0472H33.6905V33.4397H69.7217V36.4493C69.7217 56.1787 54.6739 70.0561 35.1117 70.0561Z" fill="#87EEFA"/>
@@ -95,6 +96,19 @@
     </div>
 
     <script>
+      let clickCount = 0;
+      const logoElement = document.getElementById("logo");
+
+      if(logoElement) {
+        logoElement.addEventListener("click", function() {
+          clickCount++;
+          if (clickCount === 5) {
+            alert("관리자 모드로 전환합니다.");
+            window.location.href = "manage.html";
+          }
+        });
+      }
+      
       function openDemo(page) {
         // 창 넘어가는 함수
         let url;
