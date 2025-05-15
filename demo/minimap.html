@@ -181,9 +181,6 @@
         client,
       } from "./supaDatabase/connectDatabase.js";
 
-      // const params = new URLSearchParams(window.location.search);
-      // const destin = params.get("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
-      // const robotId = params.get("robot"); // 선택된 로봇 번호
       const destin = localStorage.getItem("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
       const robotId = localStorage.getItem("robot"); // 로봇 번호
 
@@ -217,18 +214,12 @@
 <path d="M11.2175 16.0449L11.2175 10.8513L11.1367 10.8513L9.54903 11.9546L9.54903 10.7346L11.2219 9.57302L12.5719 9.57302L12.5719 16.0449L11.2175 16.0449Z" fill="#6BE3F0"/>
 </svg>
 `;
-          // startMarker.style.backgroundImage = "url('assets/images/firstDestination.svg')";
           startMarker.style.backgroundSize = "cover";
           startMarker.style.backgroundRepeat = "no-repeat";
           startMarker.style.backgroundPosition = "center";
-          // startMarker.style.borderRadius = "50%";
-          // startMarker.style.backgroundColor = "rgb(0, 217, 255)";
 
           // label
           const startLabel = document.createElement("span");
-          // startLabel.innerHTML = `출발지`;
-          // startLabel.style.fontSize = "14px";
-          // startLabel.style.color = "rgb(0, 217, 255)";
 
           start.appendChild(startMarker);
           start.appendChild(startLabel);
@@ -249,10 +240,6 @@
         // 이미지 상의 클릭 범위를 기준으로 실제 좌표를 계산
         const leftTop = { x: -410, y: 212 }; // 좌측 상단
         const rightBottom = { x: 485, y: -512 }; // 우측 하단
-
-        // 화면 기준 X, Y를 0~1로 정규화 (이미지의 크기를 기준으로 비율을 계산)
-        // const normalizedX = x / width; // 화면의 X 좌표를 0 ~ 1로 정규화
-        // const normalizedY = y / height; // 화면의 Y 좌표를 0 ~ 1로 정규화
 
         const miniMapWidth = window.innerWidth;
         const miniMapHeight = window.innerHeight;
@@ -299,12 +286,18 @@
         // 미니맵의 정보
         const minimapRect = minimap.getBoundingClientRect();
 
-        // 왼쪽 위를 원점
         // 이미지에서 marker 위치
+        // 왼쪽 위를 원점
         const x =
           (100 * (event.clientX - minimapRect.left - 19)) / minimapRect.width;
         const y =
           (100 * (event.clientY - minimapRect.top - 42)) / minimapRect.height;
+
+        // 마커 좌표
+        localStorage.setItem(
+          destin === "0" ? "start" : "end",
+          JSON.stringify({ x, y })
+        );
 
         // 사람이 선택한 부분. %.
         selectedX =
@@ -312,7 +305,11 @@
         selectedY =
           (100 * (event.clientY - minimapRect.top)) / minimapRect.height;
 
-        // 왼쪽 위를 원점
+        console.log(selectedX, selectedY);
+        console.log(
+          (selectedX * 3299) / 100 - 2750,
+          (selectedY * -3133) / 100 + 2457
+        );
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
           (x * minimapRect.width) / 100 + 19,
@@ -427,16 +424,6 @@
         }
       });
 
-      function isClickInside(event, element) {
-        const rect = element.getBoundingClientRect();
-        return (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        );
-      }
-
       document.addEventListener("DOMContentLoaded", () => {
         canvas.width = background.width;
         canvas.height = background.height;
@@ -517,11 +504,8 @@
             model_num: model_num,
           };
 
-          const destin = localStorage.getItem("destin");
           localStorage.setItem("destin", destin);
           localStorage.setItem("robot", robotId);
-          localStorage.setItem("top", selectedY);
-          localStorage.setItem("left", selectedX);
 
           localStorage.setItem(
             "selectedCoordinates",
