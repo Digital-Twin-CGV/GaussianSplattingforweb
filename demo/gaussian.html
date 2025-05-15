@@ -652,39 +652,38 @@
       // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
       function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
         let x, y;
-          switch (modelIndex) {
-            case 0:
-              x = (gaussianX - 3349.587) / -40.145;
-              y = (gaussianZ + 2652.041) / 34.244;
-              break;
-            case 1:
-              x = (gaussianX - 3499.309) / -41.775;
-              y = (gaussianZ + 3107.619) / 39.479;
-              break;
-            case 2:
-              x = (gaussianX - 6450.991) / -100.724;
-              y = (gaussianZ + 2076.530) / 30.022;
-              break;
-            case 3:
-              x = (gaussianX - 3743.210) / -53.927;
-              y = (gaussianZ + 3385.644) / 45.414;
-              break;
-            case 4:
-              x = (gaussianX - 3470.419) / -44.725;
-              y = (gaussianZ - 5095.013) / -74.848;
-              break;
-            case 5:
-              x = (gaussianX - 3264.911) / -33.608;
-              y = (gaussianZ + 2674.893) / 30.348;
-              break;
-            case 6:
-              x = (gaussianX - 3434.542) / -40.911;
-              y = (gaussianZ + 2988.287) / 37.845;
-              break;
-            default:
-              return null;
-          }
-
+        switch (modelIndex) {
+          case 0:
+            x = (gaussianX - 3349.587) / -40.145;
+            y = (gaussianZ + 2652.041) / 34.244;
+            break;
+          case 1:
+            x = (gaussianX - 3499.309) / -41.775;
+            y = (gaussianZ + 3107.619) / 39.479;
+            break;
+          case 2:
+            x = (gaussianX - 6450.991) / -100.724;
+            y = (gaussianZ + 2076.53) / 30.022;
+            break;
+          case 3:
+            x = (gaussianX - 3743.21) / -53.927;
+            y = (gaussianZ + 3385.644) / 45.414;
+            break;
+          case 4:
+            x = (gaussianX - 3470.419) / -44.725;
+            y = (gaussianZ - 5095.013) / -74.848;
+            break;
+          case 5:
+            x = (gaussianX - 3264.911) / -33.608;
+            y = (gaussianZ + 2674.893) / 30.348;
+            break;
+          case 6:
+            x = (gaussianX - 3434.542) / -40.911;
+            y = (gaussianZ + 2988.287) / 37.845;
+            break;
+          default:
+            return null;
+        }
 
         // 가우시안에서 선택하여 바뀐 미니맵 좌표
         localStorage.setItem(
@@ -692,9 +691,11 @@
           JSON.stringify({ x, y })
         );
 
+        console.log("3d->2d", x, y);
+
         // % 좌표에서 로봇 좌표로
         x = (x * 3299) / 100 - 2750;
-        y = (y * -3133) / 100 + 2457;
+        y = (-y * 3133) / 100 + 2457;
 
         return { x, y };
       }
@@ -722,7 +723,7 @@
 
           // 좌표 역변환 및 index(model_num) 계산
           const clickedcoord = convertToModelIndex(model_index, x, z); // model_index와 x, z를 넘김
-
+          console.log("clickedcoord:", clickedcoord);
           // 출발지 선택 or 목적지 선택
           localStorage.setItem(
             destin === "0" ? "robotStart" : "robotEnd",
@@ -753,7 +754,6 @@
             });
           }
         }
-
       }
     </script>
   </body>
