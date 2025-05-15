@@ -125,7 +125,7 @@
   </head>
   <body>
     <div class="moving_container">
-      <button class="moving_stop">주행 취소</button>
+      <button class="moving_stop" onclick="stopRobot()">주행 취소</button>
       <button onclick="openPage()" class="moving_testbtn">임시 버튼</button>
       <div class="moving_map_container">
         <img id="moving_map" alt="2dmap" src="assets/images/Minimap2.png" />
@@ -163,6 +163,22 @@
     const robotId = localStorage.getItem("robot"); // 선택된 로봇 번호
 
     window.openPage = openPage;
+    window.stopRobot = stopRobot;
+
+    // 로봇 정지 버튼
+    function stopRobot() {
+      const confirmStop = confirm(`로봇 ${robotId}을 즉시 정지하시겠습니까?`);
+
+      if (confirmStop) {
+        // DB에 정지 요청
+        insertRequest(robotId, false);
+        alert(`로봇 ${robotId}을 즉시 정지합니다.`);
+      } else {
+        // 사용자가 취소를 눌렀을 때
+        alert("정지 요청이 취소되었습니다.");
+      }
+    }
+
     // 제목 설정
     setTitle();
     function setTitle() {
