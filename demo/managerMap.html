@@ -406,6 +406,20 @@
 
         // 로봇 로그
         const robotLog = document.querySelector(".managerMap_modal_log");
+
+        // 긴급정지 버튼
+        const robotStopBtn = document.querySelector(".managerMap_modal_stop");
+        robotStopBtn.onclick = function () {
+          stopRobot(robot);
+        };
+
+        // 제어 버튼
+        const robotControlBtn = document.querySelector(
+          ".managerMap_modal_control"
+        );
+        robotStopBtn.onclick = function () {
+          controlRobot(robot);
+        };
       }
 
       // 로봇 상태 색상
@@ -424,9 +438,6 @@
         const requests = await getRequest();
       }
 
-      let controlRobotHandler; // 로봇 제어 이벤트 핸들러
-      let stopRobotHandler; // 로봇 정지 이벤트 핸들러
-
       // 로봇 제어 버튼
       function controlRobot(robot) {
         if (robot.status === 3) {
@@ -438,9 +449,18 @@
 
       // 로봇 정지 버튼
       function stopRobot(robot) {
-        // DB에 정지 요청
-        insertRequest(robot.id, false);
-        alert(`로봇${robot.id}을 즉시 정지합니다.`);
+        const confirmStop = confirm(
+          `로봇 ${robot.id}을 즉시 정지하시겠습니까?`
+        );
+
+        if (confirmStop) {
+          // DB에 정지 요청
+          insertRequest(robot.id, false);
+          alert(`로봇 ${robot.id}을 즉시 정지합니다.`);
+        } else {
+          // 사용자가 취소를 눌렀을 때
+          alert("정지 요청이 취소되었습니다.");
+        }
       }
     </script>
   </body>
