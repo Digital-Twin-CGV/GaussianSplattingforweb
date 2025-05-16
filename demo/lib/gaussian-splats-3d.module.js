@@ -6522,11 +6522,11 @@ class OrbitControls extends EventDispatcher {
           // perspective
           const position = scope.object.position;
           offset.copy(position).sub(scope.target);
-          let targetDistance = offset.length(); 
+          let targetDistance = offset.length();
 
           targetDistance *= Math.tan(
             ((scope.object.fov / 2) * Math.PI) / 180.0
-          );      
+          );
           panForward(
             (2 * deltaZ * targetDistance) / element.clientHeight,
             scope.object.matrix
@@ -6539,8 +6539,7 @@ class OrbitControls extends EventDispatcher {
             (2 * deltaY * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
-        } 
-        else if (scope.object.isOrthographicCamera) {
+        } else if (scope.object.isOrthographicCamera) {
           // orthographic
           panForward(
             // 추가된 Z축 이동
@@ -6561,8 +6560,7 @@ class OrbitControls extends EventDispatcher {
               element.clientHeight,
             scope.object.matrix
           );
-        } 
-        else {
+        } else {
           console.warn(
             "WARNING: OrbitControls.js encountered an unknown camera type - pan disabled."
           );
@@ -6819,29 +6817,28 @@ class OrbitControls extends EventDispatcher {
       // 터치 & 마우스 이벤트 추가
       button.addEventListener("mousedown", (e) => {
         e.preventDefault(); // 기본 동작 방지
-        triggerKeyEvent(keyCode, 'keydown');
+        triggerKeyEvent(keyCode, "keydown");
       });
 
       button.addEventListener("mouseup", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keyup');
+        triggerKeyEvent(keyCode, "keyup");
       });
 
       button.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keydown');
+        triggerKeyEvent(keyCode, "keydown");
       });
 
       button.addEventListener("touchend", (e) => {
         e.preventDefault();
-        triggerKeyEvent(keyCode, 'keyup');
+        triggerKeyEvent(keyCode, "keyup");
       });
 
       // 모바일에서 길게 누르면 나오는 메뉴 방지
       button.addEventListener("contextmenu", (e) => {
         e.preventDefault();
       });
-
 
       return button;
     }
@@ -6858,21 +6855,24 @@ class OrbitControls extends EventDispatcher {
     }
 
     // 팬을 위한 변수 및 함수
-    let isKeyPressed = {}; 
+    let isKeyPressed = {};
     let panInterval = null;
-    let angle_limit=100;
+    let angle_limit = 100;
     let prevRotation = null;
 
-    let MAX_X = 0, MIN_X = 0;
-    let MAX_Y = 0, MIN_Y = 0;
-    let MAX_Z = 0, MIN_Z = 0;
-    let prevCameraAngle  = null; // 기준 방향
-    let prevRelativeAngle  = false;
+    let MAX_X = 0,
+      MIN_X = 0;
+    let MAX_Y = 0,
+      MIN_Y = 0;
+    let MAX_Z = 0,
+      MIN_Z = 0;
+    let prevCameraAngle = null; // 기준 방향
+    let prevRelativeAngle = false;
 
     // 이벤트 리스너 추가 (박스 안에 들어갔을 때 실행)
     window.addEventListener("Wall_Collision_Check", (event) => {
       const { angle, leftTop, rightBottom } = event.detail;
-  
+
       // 박스의 경계값 저장
       MAX_X = Math.max(leftTop.x, rightBottom.x);
       MIN_X = Math.min(leftTop.x, rightBottom.x);
@@ -6880,23 +6880,24 @@ class OrbitControls extends EventDispatcher {
       MIN_Y = Math.min(leftTop.y, rightBottom.y);
       MAX_Z = Math.max(leftTop.z, rightBottom.z);
       MIN_Z = Math.min(leftTop.z, rightBottom.z);
-  
+
       // 벽을 정면으로 바라보는 각도 저장 (0~360°)
       angle_limit = angle;
-  });
+    });
 
-
-    
-
-    function handlePanEvent(event) { //여기로와22
+    function handlePanEvent(event) {
+      //여기로와22
       let needsUpdate = false;
-      let can_move=scope.keyPanSpeed;
+      let can_move = scope.keyPanSpeed;
       const currentPos = scope.object.position;
 
       // // 현재 카메라 방향 각도 (0~360°)
       const currentDirectionForCheck = new THREE.Vector3();
       scope.object.getWorldDirection(currentDirectionForCheck);
-      let cameraAngleforCheck = Math.atan2(currentDirectionForCheck.x, currentDirectionForCheck.z); // X-Z 평면 기준
+      let cameraAngleforCheck = Math.atan2(
+        currentDirectionForCheck.x,
+        currentDirectionForCheck.z
+      ); // X-Z 평면 기준
       cameraAngleforCheck = THREE.MathUtils.radToDeg(cameraAngleforCheck);
       if (cameraAngleforCheck < 0) cameraAngleforCheck += 360; // 0~360°로 변환
 
@@ -6905,17 +6906,20 @@ class OrbitControls extends EventDispatcher {
         let diff = Math.abs(cameraAngleforCheck - targetAngle);
         return diff > 180 ? 360 - diff : diff;
       };
-      
+
       const relativeAngle = RelativeAngleforCheck(angle_limit); // 호출해서 값 저장
-      
-      if (cameraAngleforCheck !== prevCameraAngle || relativeAngle !== prevRelativeAngle) {
+
+      if (
+        cameraAngleforCheck !== prevCameraAngle ||
+        relativeAngle !== prevRelativeAngle
+      ) {
         //각도보려면 아래 사용
         //console.log(`현재 각도: ${cameraAngleforCheck}°, 기준 각도: ${angle_limit}°, 상대 각도: ${relativeAngle}°`);
         prevCameraAngle = cameraAngleforCheck;
         prevRelativeAngle = relativeAngle;
       }
-      
-      if (event.type === 'keydown') {
+
+      if (event.type === "keydown") {
         isKeyPressed[event.key] = true;
 
         if (!panInterval) {
@@ -6924,16 +6928,21 @@ class OrbitControls extends EventDispatcher {
             // 현재 카메라 방향 각도 (0~360°)
             const currentDirection = new THREE.Vector3();
             scope.object.getWorldDirection(currentDirection);
-            let cameraAngle = Math.atan2(currentDirection.x, currentDirection.z); // X-Z 평면 기준
+            let cameraAngle = Math.atan2(
+              currentDirection.x,
+              currentDirection.z
+            ); // X-Z 평면 기준
             cameraAngle = THREE.MathUtils.radToDeg(cameraAngle);
             if (cameraAngle < 0) cameraAngle += 360; // 0~360°로 변환
 
-            const isInsideBox = (
-              currentPos.x >= MIN_X && currentPos.x <= MAX_X &&
-              currentPos.y >= MIN_Y && currentPos.y <= MAX_Y &&
-              currentPos.z >= MIN_Z && currentPos.z <= MAX_Z
-            );
-          
+            const isInsideBox =
+              currentPos.x >= MIN_X &&
+              currentPos.x <= MAX_X &&
+              currentPos.y >= MIN_Y &&
+              currentPos.y <= MAX_Y &&
+              currentPos.z >= MIN_Z &&
+              currentPos.z <= MAX_Z;
+
             // 상대각 계산
             const getRelativeAngle = (targetAngle) => {
               let diff = Math.abs(cameraAngle - targetAngle);
@@ -6943,59 +6952,58 @@ class OrbitControls extends EventDispatcher {
               let forwardAngle = angle_limit;
               let relative = getRelativeAngle(forwardAngle);
               let can_move = !isInsideBox || relative > 90;
-    
+
               if (!can_move) console.log("전진 차단");
               if (can_move) pan(0, 0, scope.keyPanSpeed);
-    
+
               needsUpdate = true;
             }
-    
+
             // 후진 (f)
             if (isKeyPressed["f"]) {
               let backwardAngle = (angle_limit + 180) % 360;
               let relative = getRelativeAngle(backwardAngle);
               let can_move = !isInsideBox || relative > 90;
-    
+
               if (!can_move) console.log("후진 차단");
               if (can_move) pan(0, 0, -scope.keyPanSpeed);
-    
+
               needsUpdate = true;
             }
-    
+
             // 왼쪽 (a)
             if (isKeyPressed["a"]) {
               let leftAngle = (angle_limit + 90) % 360;
               let relative = getRelativeAngle(leftAngle);
               let can_move = !isInsideBox || relative > 90;
-    
+
               if (!can_move) console.log("좌측 이동 차단");
               if (can_move) pan(scope.keyPanSpeed, 0, 0);
-    
+
               needsUpdate = true;
             }
-    
+
             // 오른쪽 (d)
             if (isKeyPressed["d"]) {
               let rightAngle = (angle_limit - 90 + 360) % 360;
               let relative = getRelativeAngle(rightAngle);
               let can_move = !isInsideBox || relative > 90;
-    
+
               if (!can_move) console.log("우측 이동 차단");
               if (can_move) pan(-scope.keyPanSpeed, 0, 0);
 
               needsUpdate = true;
             }
-        
+
             if (needsUpdate) {
               scope.update();
             }
           }, 100);
         }
-        
-      } else if (event.type === 'keyup') {
+      } else if (event.type === "keyup") {
         isKeyPressed[event.key] = false;
 
-        if (Object.values(isKeyPressed).every(val => !val)) {
+        if (Object.values(isKeyPressed).every((val) => !val)) {
           clearInterval(panInterval);
           panInterval = null;
         }
@@ -7007,10 +7015,13 @@ class OrbitControls extends EventDispatcher {
     window.addEventListener("keyup", handlePanEvent);
 
     // 버튼 클릭 시 트리거할 키 코드 매핑 (이미지 사용)
-    const upButton = createButton("../../assets/images/arrow-up.png", 'r');
-    const downButton = createButton("../../assets/images/arrow-down.png", 'f');
-    const leftButton = createButton("../../assets/images/arrow-left.png", 'a');
-    const rightButton = createButton("../../assets/images/arrow-right.png", 'd');
+    const upButton = createButton("../../assets/images/arrow-up.png", "r");
+    const downButton = createButton("../../assets/images/arrow-down.png", "f");
+    const leftButton = createButton("../../assets/images/arrow-left.png", "a");
+    const rightButton = createButton(
+      "../../assets/images/arrow-right.png",
+      "d"
+    );
 
     // 버튼 배치
     const row = document.createElement("div");
@@ -15328,40 +15339,39 @@ class Viewer {
     // SVG 파일을 불러와서 캔버스 텍스처로 만드는 함수
     const loadSvgAsTexture = (url) => {
       return new Promise((resolve, reject) => {
-          fetch(url)
-              .then(response => response.text())
-              .then(svgText => {
-                  const img = new Image();
-                  // 이미지 로드 성공 시
-                  img.onload = () => {
-                      // 캔버스 생성
-                      const canvas = document.createElement('canvas');
-                      // SVG 크기에 맞춰 캔버스 크기 설정
-                      canvas.width = img.width;
-                      canvas.height = img.height;
-                      const ctx = canvas.getContext('2d');
+        fetch(url)
+          .then((response) => response.text())
+          .then((svgText) => {
+            const img = new Image();
+            // 이미지 로드 성공 시
+            img.onload = () => {
+              // 캔버스 생성
+              const canvas = document.createElement("canvas");
+              // SVG 크기에 맞춰 캔버스 크기 설정
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext("2d");
 
-                      // 캔버스에 SVG 이미지 그리기
-                      ctx.drawImage(img, 0, 0);
+              // 캔버스에 SVG 이미지 그리기
+              ctx.drawImage(img, 0, 0);
 
-                      // 캔버스 텍스처 생성
-                      const texture = new THREE.CanvasTexture(canvas);
-                      // 텍스처 업데이트 플래그 설정
-                      texture.needsUpdate = true;
-                      resolve(texture); // 완성된 텍스처 반환!
-                  };
-                  // 이미지 로드 실패 시
-                  img.onerror = (err) => {
-                      reject(new Error('SVG 이미지 로드 실패', err));
-                  };
+              // 캔버스 텍스처 생성
+              const texture = new THREE.CanvasTexture(canvas);
+              // 텍스처 업데이트 플래그 설정
+              texture.needsUpdate = true;
+              resolve(texture); // 완성된 텍스처 반환!
+            };
+            // 이미지 로드 실패 시
+            img.onerror = (err) => {
+              reject(new Error("SVG 이미지 로드 실패", err));
+            };
 
-                  // SVG 내용을 Data URL 형태로 이미지 소스에 넣어줌
-                  img.src = 'data:image/svg+xml;base64,' + btoa(svgText);
-              })
-              .catch(reject); 
+            // SVG 내용을 Data URL 형태로 이미지 소스에 넣어줌
+            img.src = "data:image/svg+xml;base64," + btoa(svgText);
+          })
+          .catch(reject);
       });
     };
-  
 
     // 클릭한 곳에 구 찍어주기
     // const sphereRadius = 5; // 구 반지름
@@ -15369,27 +15379,25 @@ class Viewer {
     // const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
     // const textureLoader = new THREE.TextureLoader();
-    // const markerTexture = textureLoader.load('assets/images/firstDestination.png'); 
-    
+    // const markerTexture = textureLoader.load('assets/images/firstDestination.png');
+
     let markerSprite = null;
     let markerTexture = null;
 
-    const destin = localStorage.getItem('destin') || '0';
+    const destin = localStorage.getItem("destin") || "0";
     let markerUrl;
 
-    if(destin === '1') 
-      markerUrl = 'assets/images/secondDestination.svg';
-    else 
-      markerUrl = 'assets/images/firstDestination.svg';
+    if (destin === "1") markerUrl = "assets/images/secondDestination.svg";
+    else markerUrl = "assets/images/firstDestination.svg";
 
     // 비동기로 SVG 텍스처를 미리 불러옴
     loadSvgAsTexture(markerUrl)
-        .then(texture => {
-            markerTexture = texture; // 불러온 텍스처를 변수에 저장
-        })
-        .catch(error => {
-            console.error(error);
-        });
+      .then((texture) => {
+        markerTexture = texture; // 불러온 텍스처를 변수에 저장
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     return function () {
       if (!this.transitioningCameraTarget && markerTexture) {
@@ -15430,7 +15438,9 @@ class Viewer {
             markerSprite = null;
           }
 
-          const spriteMaterial = new THREE.SpriteMaterial({ map: markerTexture });
+          const spriteMaterial = new THREE.SpriteMaterial({
+            map: markerTexture,
+          });
           markerSprite = new THREE.Sprite(spriteMaterial);
           markerSprite.scale.set(20, 20, 1); // 크기 조정 (원하는 값으로)
           markerSprite.position.set(
@@ -15443,7 +15453,7 @@ class Viewer {
           //가우시안에서 찍은 위치 localstorage로 저장
           const coordData = {
             x: intersectionPoint.x,
-            z: intersectionPoint.z,
+            y: intersectionPoint.z,
           };
           localStorage.setItem("clickedCoords", JSON.stringify([coordData]));
         }
