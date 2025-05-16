@@ -652,6 +652,8 @@
       // Z 좌표 기준으로 index 추정 (간단 예시, 필요 시 정확한 로직 조정)
       function convertToModelIndex(modelIndex, gaussianX, gaussianZ) {
         let x, y;
+        console.log(gaussianX, gaussianZ);
+
         switch (modelIndex) {
           case 0:
             x = (gaussianX - 3349.587) / -40.145;
@@ -685,7 +687,6 @@
             return null;
         }
 
-        // 가우시안에서 선택하여 바뀐 미니맵 좌표
         localStorage.setItem(
           destin === "0" ? "start" : "end",
           JSON.stringify({ x, y })
@@ -719,7 +720,7 @@
           // 가장 최근 클릭된 좌표 가져오기
           const coord = JSON.parse(stored)[0];
           const x = coord.x;
-          const z = coord.z;
+          const z = coord.y;
 
           // 좌표 역변환 및 index(model_num) 계산
           const clickedcoord = convertToModelIndex(model_index, x, z); // model_index와 x, z를 넘김

@@ -196,21 +196,30 @@
           // marker와 label을 넣는 container
           const start = document.createElement("div");
           const startCoordin = JSON.parse(localStorage.getItem("start"));
+
+          console.log("마커 계산 전:", startCoordin.x, startCoordin.y);
+
+          // 마커 위치
+          const x = startCoordin.x - (100 * 19) / minimapRect.width;
+          const y = startCoordin.y - (100 * 42) / minimapRect.height;
+
+          console.log("마커 계산 후:", x, y);
+
           start.className = "minimap_start";
           start.style.position = "absolute";
-          start.style.top = startCoordin.y + "%";
-          start.style.left = startCoordin.x + "%";
+          start.style.top = y + "%";
+          start.style.left = x + "%";
           start.style.display = "flex";
           start.style.alignItems = "flex-start";
 
           // marker
           const startMarker = document.createElement("div");
           startMarker.innerHTML = `
-          <svg width="38" height="48" viewBox="0 0 23 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.4424 1.15625C17.0886 1.15635 21.666 5.73368 21.666 11.3799C21.666 14.1007 20.6117 17.0209 18.7705 20.1875C16.9354 23.3436 14.3687 26.6593 11.4453 30.168C8.54609 26.6575 5.97826 23.3407 4.13477 20.1836C2.285 17.0156 1.2188 14.0976 1.21875 11.3799C1.21875 5.73362 5.79612 1.15625 11.4424 1.15625Z" fill="white" stroke="#6BE3F0" stroke-width="2"/>
-<path d="M11.2175 16.0449L11.2175 10.8513L11.1367 10.8513L9.54903 11.9546L9.54903 10.7346L11.2219 9.57302L12.5719 9.57302L12.5719 16.0449L11.2175 16.0449Z" fill="#6BE3F0"/>
-</svg>
-`;
+                <svg width="38" height="48" viewBox="0 0 23 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.4424 1.15625C17.0886 1.15635 21.666 5.73368 21.666 11.3799C21.666 14.1007 20.6117 17.0209 18.7705 20.1875C16.9354 23.3436 14.3687 26.6593 11.4453 30.168C8.54609 26.6575 5.97826 23.3407 4.13477 20.1836C2.285 17.0156 1.2188 14.0976 1.21875 11.3799C1.21875 5.73362 5.79612 1.15625 11.4424 1.15625Z" fill="white" stroke="#6BE3F0" stroke-width="2"/>
+      <path d="M11.2175 16.0449L11.2175 10.8513L11.1367 10.8513L9.54903 11.9546L9.54903 10.7346L11.2219 9.57302L12.5719 9.57302L12.5719 16.0449L11.2175 16.0449Z" fill="#6BE3F0"/>
+      </svg>
+      `;
           startMarker.style.backgroundSize = "cover";
           startMarker.style.backgroundRepeat = "no-repeat";
           startMarker.style.backgroundPosition = "center";
@@ -259,6 +268,8 @@
       }
 
       const minimap = document.getElementById("minimap_map");
+      // 미니맵의 정보
+      const minimapRect = minimap.getBoundingClientRect();
       const background = document.getElementById("minimap_gaussian");
       const canvas = document.getElementById("colorCanvas");
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -280,9 +291,6 @@
 
       // 클릭한 부분
       minimap.addEventListener("click", (event) => {
-        // 미니맵의 정보
-        const minimapRect = minimap.getBoundingClientRect();
-
         // 이미지에서 marker 위치
         // 왼쪽 위를 원점
         const x =
@@ -291,22 +299,17 @@
           (100 * (event.clientY - minimapRect.top - 42)) / minimapRect.height;
 
         // 마커 좌표
+        console.log("마커 위치:", x, y);
         localStorage.setItem(
           destin === "0" ? "start" : "end",
           JSON.stringify({ x, y })
         );
+
         // 사람이 선택한 부분. %.
         selectedX =
           (100 * (event.clientX - minimapRect.left)) / minimapRect.width;
         selectedY =
           (100 * (event.clientY - minimapRect.top)) / minimapRect.height;
-
-        console.log("사람", selectedX, selectedY);
-        console.log(
-          "2d -> robot 좌표 테스트",
-          (selectedX * 3299) / 100 - 2750,
-          (-selectedY * 3133) / 100 + 2457
-        );
 
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
@@ -325,56 +328,96 @@
 
           // a, b는 클릭한 부분을 로봇 좌표로 변경한 것 (지도의 빨간 1px짜리가 원점)
           // 사용자는 왼쪽 위가 원점
-          robotX =
-            (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
-              (2750 * 100) / 3299) *
-              3299) /
-            100;
+          // robotX =
+          //   (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
+          //     (2750 * 100) / 3299) *
+          //     3299) /
+          //   100;
 
-          robotY =
-            (((2457 * 100) / 3133 -
-              (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
-              3133) /
-            100;
+          // robotY =
+          //   (((2457 * 100) / 3133 -
+          //     (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
+          //     3133) /
+          //   100;
 
           // console.log("x", x, "y", y);
 
           let model_index = -1; // 기본값 (해당 없음)
 
           // 인덱스 0
-          if (selectedX >= 82.5100 && selectedX <= 91.4553 && selectedY >= 77.0424 && selectedY <= 89.4141) {
+          if (
+            selectedX >= 82.51 &&
+            selectedX <= 91.4553 &&
+            selectedY >= 77.0424 &&
+            selectedY <= 89.4141
+          ) {
             model_index = 0;
 
             // 인덱스 1
-          } else if (selectedX >= 56.2083 && selectedX <= 81.5754 && selectedY >= 88.2894 && selectedY <= 91.6636) {
+          } else if (
+            selectedX >= 56.2083 &&
+            selectedX <= 81.5754 &&
+            selectedY >= 88.2894 &&
+            selectedY <= 91.6636
+          ) {
             model_index = 1;
 
             // 인덱스 2
-          } else if (selectedX >= 35.6475 && selectedX <= 55.8077 && selectedY >= 91.1012 && selectedY <= 93.7724) {
+          } else if (
+            selectedX >= 35.6475 &&
+            selectedX <= 55.8077 &&
+            selectedY >= 91.1012 &&
+            selectedY <= 93.7724
+          ) {
             model_index = 2;
 
             // 인덱스 3
-          } else if (selectedX >= 31.7 && selectedX <= 34.2 && selectedY >= 76.55 && selectedY <= 94.3) {
+          } else if (
+            selectedX >= 31.7 &&
+            selectedX <= 34.2 &&
+            selectedY >= 76.55 &&
+            selectedY <= 94.3
+          ) {
             model_index = 3;
 
             // 인덱스 4
-          } else if (selectedX >= 24.05 && selectedX <= 33.6 && selectedY >= 74.35 && selectedY <= 75.7) {
+          } else if (
+            selectedX >= 24.05 &&
+            selectedX <= 33.6 &&
+            selectedY >= 74.35 &&
+            selectedY <= 75.7
+          ) {
             model_index = 4;
 
             // 인덱스 5
-          } else if (selectedX >= 19.44 && selectedX <= 24.9 && selectedY >= 37.9 && selectedY <= 73) {
+          } else if (
+            selectedX >= 19.44 &&
+            selectedX <= 24.9 &&
+            selectedY >= 37.9 &&
+            selectedY <= 73
+          ) {
             model_index = 5;
 
             // 인덱스 6
-          } else if (selectedX >= 16.35   && selectedX <= 20.5604 && selectedY >= 13.5327 && selectedY <= 37.6 ) {
+          } else if (
+            selectedX >= 16.35 &&
+            selectedX <= 20.5604 &&
+            selectedY >= 13.5327 &&
+            selectedY <= 37.6
+          ) {
             model_index = 6;
-
           } else {
             setMarkerSelected(false);
           }
 
-
-          console.log("x", selectedX, "y", selectedY, "모델 인덱스 : ", model_index);
+          console.log(
+            "x",
+            selectedX,
+            "y",
+            selectedY,
+            "모델 인덱스 : ",
+            model_index
+          );
 
           // 마커와 라벨을 감싸는 컨테이너 생성
           markerContainer = document.createElement("div");
@@ -389,17 +432,17 @@
           marker.innerHTML =
             destin === "0"
               ? `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
-<ellipse cx="67" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
-<path d="M65.4652 69.9286V42.6818H65.325L56.7256 48.5237V42.2612L65.4418 36.2089H72.4521V69.9286H65.4652Z" fill="white"/>
-</svg>
-`
+      <path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
+      <ellipse cx="67" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
+      <path d="M65.4652 69.9286V42.6818H65.325L56.7256 48.5237V42.2612L65.4418 36.2089H72.4521V69.9286H65.4652Z" fill="white"/>
+      </svg>
+      `
               : `<svg width="38" height="48" viewBox="0 0 134 139" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
-<ellipse cx="67.0002" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
-<path d="M54.0853 69.9286V65.0915L66.0029 53.9451C67.4672 52.5897 68.5733 51.4603 69.3211 50.5567C70.0688 49.6532 70.5751 48.8431 70.84 48.1265C71.1204 47.4099 71.2606 46.6621 71.2606 45.8832V45.8364C71.2606 44.9173 71.0425 44.1072 70.6063 43.4062C70.1701 42.6896 69.5625 42.1288 68.7836 41.7237C68.0203 41.3187 67.1401 41.1162 66.1431 41.1162C64.9903 41.1162 63.9777 41.3498 63.1053 41.8172C62.2329 42.269 61.5474 42.8999 61.0489 43.71C60.5504 44.5045 60.2856 45.408 60.2544 46.4206L60.231 46.6309H53.6881V46.444C53.6881 44.3253 54.2255 42.4559 55.3004 40.8357C56.3753 39.2 57.8475 37.9226 59.7169 37.0034C61.6019 36.0843 63.7284 35.6247 66.0963 35.6247C68.4798 35.6247 70.5751 36.0454 72.3823 36.8866C74.1894 37.7123 75.5992 38.8651 76.6118 40.345C77.6244 41.825 78.1307 43.523 78.1307 45.4392V45.4859C78.1307 46.8413 77.8815 48.1031 77.383 49.2715C76.9 50.4243 76.0977 51.655 74.9761 52.9636C73.8544 54.2566 72.3199 55.7989 70.3726 57.5904L60.6049 66.4935L63.3156 61.7499V66.4935L60.6283 64.3203H78.5981V69.9286H54.0853Z" fill="white"/>
-</svg>
-`;
+      <path d="M112.464 49.7813C112.464 74.6317 90.9285 95.961 66.9999 119.643C41.9065 94.7769 21.5356 74.6317 21.5356 49.7813C21.5356 24.9309 41.8907 4.78571 66.9999 4.78571C92.1092 4.78571 112.464 24.9309 112.464 49.7813Z" fill="#6BE3F0"/>
+      <ellipse cx="67.0002" cy="132.804" rx="14.3571" ry="5.98214" fill="#B9B7B7"/>
+      <path d="M54.0853 69.9286V65.0915L66.0029 53.9451C67.4672 52.5897 68.5733 51.4603 69.3211 50.5567C70.0688 49.6532 70.5751 48.8431 70.84 48.1265C71.1204 47.4099 71.2606 46.6621 71.2606 45.8832V45.8364C71.2606 44.9173 71.0425 44.1072 70.6063 43.4062C70.1701 42.6896 69.5625 42.1288 68.7836 41.7237C68.0203 41.3187 67.1401 41.1162 66.1431 41.1162C64.9903 41.1162 63.9777 41.3498 63.1053 41.8172C62.2329 42.269 61.5474 42.8999 61.0489 43.71C60.5504 44.5045 60.2856 45.408 60.2544 46.4206L60.231 46.6309H53.6881V46.444C53.6881 44.3253 54.2255 42.4559 55.3004 40.8357C56.3753 39.2 57.8475 37.9226 59.7169 37.0034C61.6019 36.0843 63.7284 35.6247 66.0963 35.6247C68.4798 35.6247 70.5751 36.0454 72.3823 36.8866C74.1894 37.7123 75.5992 38.8651 76.6118 40.345C77.6244 41.825 78.1307 43.523 78.1307 45.4392V45.4859C78.1307 46.8413 77.8815 48.1031 77.383 49.2715C76.9 50.4243 76.0977 51.655 74.9761 52.9636C73.8544 54.2566 72.3199 55.7989 70.3726 57.5904L60.6049 66.4935L63.3156 61.7499V66.4935L60.6283 64.3203H78.5981V69.9286H54.0853Z" fill="white"/>
+      </svg>
+      `;
 
           marker.style.backgroundSize = "cover";
           marker.style.backgroundRepeat = "no-repeat";
@@ -513,10 +556,7 @@
             "selectedCoordinates",
             JSON.stringify(convertedCoordinates)
           );
-          localStorage.setItem(
-            "clickedCoords",
-           JSON.stringify([coordData])
-          );
+          localStorage.setItem("clickedCoords", JSON.stringify([coordData]));
           const url = `gaussian.html`;
           window.location.href = url;
         }
@@ -531,22 +571,34 @@
         let gaussianX;
         let gaussianZ;
 
+        console.log("2d : ", x, y);
+
         gaussianX = 0;
         gaussianZ = 0;
         // 인덱스 0
-        if (x >= 82.5100 && x <= 91.4553 && y >= 77.0424 && y <= 89.4141) {
+        if (x >= 82.51 && x <= 91.4553 && y >= 77.0424 && y <= 89.4141) {
           model_num = 0;
-          gaussianX = -40.145 * x + 3349.587
-          gaussianZ = 34.244 * y + -2652.041
+          gaussianX = -40.145 * x + 3349.587;
+          gaussianZ = 34.244 * y + -2652.041;
 
           // 인덱스 1
-        } else if (x >= 56.2083 && x <= 81.5754 && y >= 88.2894 && y <= 91.6636) {
+        } else if (
+          x >= 56.2083 &&
+          x <= 81.5754 &&
+          y >= 88.2894 &&
+          y <= 91.6636
+        ) {
           model_num = 1;
-          gaussianX = -41.775 * x + 3499.309
-          gaussianZ = 39.479 * y + -3107.619
+          gaussianX = -41.775 * x + 3499.309;
+          gaussianZ = 39.479 * y + -3107.619;
 
           // 인덱스 2
-        } else if (x >= 35.6475 && x <= 55.8077 && y >= 91.1012 && y <= 93.7724) {
+        } else if (
+          x >= 35.6475 &&
+          x <= 55.8077 &&
+          y >= 91.1012 &&
+          y <= 93.7724
+        ) {
           model_num = 2;
           gaussianX = -100.724 * x + 6450.991;
           gaussianZ = 30.022 * y + -2076.53;
@@ -566,20 +618,18 @@
           // 인덱스 5
         } else if (x >= 19.44 && x <= 24.9 && y >= 37.9 && y <= 73) {
           model_num = 5;
-          gaussianX = -33.608 * x + 3264.911
-          gaussianZ = 30.348 * y + -2674.893
+          gaussianX = -33.608 * x + 3264.911;
+          gaussianZ = 30.348 * y + -2674.893;
 
           // 인덱스 6
-        } else if (x >= 16.35   && x <= 20.5604 && y >= 13.5327 && y <= 37.6 ) {
+        } else if (x >= 16.35 && x <= 20.5604 && y >= 13.5327 && y <= 37.6) {
           model_num = 6;
-          gaussianX = -40.911 * x + 3434.542
-          gaussianZ = 37.845 * y + -2988.287    
+          gaussianX = -40.911 * x + 3434.542;
+          gaussianZ = 37.845 * y + -2988.287;
         }
-
+        console.log("계산 후 : ", gaussianX, gaussianZ);
         return { x: gaussianX, z: gaussianZ, model_num: model_num };
       }
-
-      
 
       window.openHome = openHome;
       window.goBack = goBack;
