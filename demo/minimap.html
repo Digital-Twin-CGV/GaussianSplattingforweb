@@ -74,10 +74,8 @@
         width: 100%;
         height: 56px;
         border-radius: 40px;
-
         padding: 10px 20px;
         margin-bottom: 30px;
-
         background-color: white;
         border: 1px solid rgba(63, 226, 244, 1);
         color: #222222;
@@ -115,7 +113,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-
         margin-top: 5px;
         margin-bottom: 30px;
       }
@@ -298,7 +295,6 @@
           destin === "0" ? "start" : "end",
           JSON.stringify({ x, y })
         );
-
         // 사람이 선택한 부분. %.
         selectedX =
           (100 * (event.clientX - minimapRect.left)) / minimapRect.width;
@@ -346,79 +342,39 @@
           let model_index = -1; // 기본값 (해당 없음)
 
           // 인덱스 0
-          if (
-            selectedX >= 82.51 &&
-            selectedX <= 91.4553 &&
-            selectedY >= 77.0424 &&
-            selectedY <= 89.4141
-          ) {
+          if (selectedX >= 82.5100 && selectedX <= 91.4553 && selectedY >= 77.0424 && selectedY <= 89.4141) {
             model_index = 0;
 
             // 인덱스 1
-          } else if (
-            selectedX >= 56.2083 &&
-            selectedX <= 81.5754 &&
-            selectedY >= 88.2894 &&
-            selectedY <= 91.6636
-          ) {
+          } else if (selectedX >= 56.2083 && selectedX <= 81.5754 && selectedY >= 88.2894 && selectedY <= 91.6636) {
             model_index = 1;
 
             // 인덱스 2
-          } else if (
-            selectedX >= 35.6475 &&
-            selectedX <= 55.8077 &&
-            selectedY >= 91.1012 &&
-            selectedY <= 93.7724
-          ) {
+          } else if (selectedX >= 35.6475 && selectedX <= 55.8077 && selectedY >= 91.1012 && selectedY <= 93.7724) {
             model_index = 2;
 
             // 인덱스 3
-          } else if (
-            selectedX >= 31.7 &&
-            selectedX <= 34.2 &&
-            selectedY >= 76.55 &&
-            selectedY <= 94.3
-          ) {
+          } else if (selectedX >= 31.7 && selectedX <= 34.2 && selectedY >= 76.55 && selectedY <= 94.3) {
             model_index = 3;
 
             // 인덱스 4
-          } else if (
-            selectedX >= 24.05 &&
-            selectedX <= 33.6 &&
-            selectedY >= 74.35 &&
-            selectedY <= 75.7
-          ) {
+          } else if (selectedX >= 24.05 && selectedX <= 33.6 && selectedY >= 74.35 && selectedY <= 75.7) {
             model_index = 4;
 
             // 인덱스 5
-          } else if (
-            selectedX >= 19.44 &&
-            selectedX <= 24.9 &&
-            selectedY >= 37.9 &&
-            selectedY <= 73
-          ) {
+          } else if (selectedX >= 19.44 && selectedX <= 24.9 && selectedY >= 37.9 && selectedY <= 73) {
             model_index = 5;
 
             // 인덱스 6
-          } else if (
-            selectedX >= 16.35 &&
-            selectedX <= 20.5604 &&
-            selectedY >= 13.5327 &&
-            selectedY <= 37.6
-          ) {
+          } else if (selectedX >= 16.35   && selectedX <= 20.5604 && selectedY >= 13.5327 && selectedY <= 37.6 ) {
             model_index = 6;
+
           } else {
             setMarkerSelected(false);
           }
 
-          console.log(
-            "x",
-            selectedX,
-            "y",
-            selectedY,
-            "모델 인덱스 : ",
-            model_index
-          );
+
+          console.log("x", selectedX, "y", selectedY, "모델 인덱스 : ", model_index);
 
           // 마커와 라벨을 감싸는 컨테이너 생성
           markerContainer = document.createElement("div");
@@ -545,17 +501,21 @@
             y: gaussianZ,
             model_num: model_num,
           };
+          const coordData = {
+            x: gaussianX,
+            y: gaussianZ,
+          };
 
           localStorage.setItem("destin", destin);
-          localStorage.setItem(
-            "clickedCoords",
-           JSON.stringify([coordData])
-          );
           localStorage.setItem("robot", robotId);
 
           localStorage.setItem(
             "selectedCoordinates",
             JSON.stringify(convertedCoordinates)
+          );
+          localStorage.setItem(
+            "clickedCoords",
+           JSON.stringify([coordData])
           );
           const url = `gaussian.html`;
           window.location.href = url;
@@ -574,29 +534,19 @@
         gaussianX = 0;
         gaussianZ = 0;
         // 인덱스 0
-        if (x >= 82.51 && x <= 91.4553 && y >= 77.0424 && y <= 89.4141) {
+        if (x >= 82.5100 && x <= 91.4553 && y >= 77.0424 && y <= 89.4141) {
           model_num = 0;
-          gaussianX = -40.145 * x + 3349.587;
-          gaussianZ = 34.244 * y + -2652.041;
+          gaussianX = -40.145 * x + 3349.587
+          gaussianZ = 34.244 * y + -2652.041
 
           // 인덱스 1
-        } else if (
-          x >= 56.2083 &&
-          x <= 81.5754 &&
-          y >= 88.2894 &&
-          y <= 91.6636
-        ) {
+        } else if (x >= 56.2083 && x <= 81.5754 && y >= 88.2894 && y <= 91.6636) {
           model_num = 1;
-          gaussianX = -41.775 * x + 3499.309;
-          gaussianZ = 39.479 * y + -3107.619;
+          gaussianX = -41.775 * x + 3499.309
+          gaussianZ = 39.479 * y + -3107.619
 
           // 인덱스 2
-        } else if (
-          x >= 35.6475 &&
-          x <= 55.8077 &&
-          y >= 91.1012 &&
-          y <= 93.7724
-        ) {
+        } else if (x >= 35.6475 && x <= 55.8077 && y >= 91.1012 && y <= 93.7724) {
           model_num = 2;
           gaussianX = -100.724 * x + 6450.991;
           gaussianZ = 30.022 * y + -2076.53;
@@ -616,18 +566,20 @@
           // 인덱스 5
         } else if (x >= 19.44 && x <= 24.9 && y >= 37.9 && y <= 73) {
           model_num = 5;
-          gaussianX = -33.608 * x + 3264.911;
-          gaussianZ = 30.348 * y + -2674.893;
+          gaussianX = -33.608 * x + 3264.911
+          gaussianZ = 30.348 * y + -2674.893
 
           // 인덱스 6
-        } else if (x >= 16.35 && x <= 20.5604 && y >= 13.5327 && y <= 37.6) {
+        } else if (x >= 16.35   && x <= 20.5604 && y >= 13.5327 && y <= 37.6 ) {
           model_num = 6;
-          gaussianX = -40.911 * x + 3434.542;
-          gaussianZ = 37.845 * y + -2988.287;
+          gaussianX = -40.911 * x + 3434.542
+          gaussianZ = 37.845 * y + -2988.287    
         }
 
         return { x: gaussianX, z: gaussianZ, model_num: model_num };
       }
+
+      
 
       window.openHome = openHome;
       window.goBack = goBack;
