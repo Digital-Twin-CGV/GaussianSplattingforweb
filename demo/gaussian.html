@@ -720,10 +720,10 @@
           // 가장 최근 클릭된 좌표 가져오기
           const coord = JSON.parse(stored)[0];
           const x = coord.x;
-          const z = coord.y;
+          const y = coord.y;
 
           // 좌표 역변환 및 index(model_num) 계산
-          const clickedcoord = convertToModelIndex(model_index, x, z); // model_index와 x, z를 넘김
+          const clickedcoord = convertToModelIndex(model_index, x, y); // model_index와 x, z를 넘김
           console.log("clickedcoord:", clickedcoord);
           // 출발지 선택 or 목적지 선택
           localStorage.setItem(
