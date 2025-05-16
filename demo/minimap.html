@@ -294,19 +294,6 @@
         const y =
           (100 * (event.clientY - minimapRect.top - 42)) / minimapRect.height;
 
-        // 마커 좌표
-        console.log("마커 위치:", x, y);
-        localStorage.setItem(
-          destin === "0" ? "start" : "end",
-          JSON.stringify({ x, y })
-        );
-
-        // 사람이 선택한 부분. %.
-        selectedX =
-          (100 * (event.clientX - minimapRect.left)) / minimapRect.width;
-        selectedY =
-          (100 * (event.clientY - minimapRect.top)) / minimapRect.height;
-
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
           (x * minimapRect.width) / 100 + 19,
@@ -318,25 +305,37 @@
         const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
         console.log(color);
         if (color === "rgb(208, 230, 246)") {
+          // 마커 좌표
+          console.log("마커 위치:", x, y);
+          localStorage.setItem(
+            destin === "0" ? "start" : "end",
+            JSON.stringify({ x, y })
+          );
+
+          // 사람이 선택한 부분. %.
+          selectedX =
+            (100 * (event.clientX - minimapRect.left)) / minimapRect.width;
+          selectedY =
+            (100 * (event.clientY - minimapRect.top)) / minimapRect.height;
           if (markerContainer && minimap.contains(markerContainer)) {
             minimap.removeChild(markerContainer);
           }
 
           // a, b는 클릭한 부분을 로봇 좌표로 변경한 것 (지도의 빨간 1px짜리가 원점)
           // 사용자는 왼쪽 위가 원점
-          // robotX =
-          //   (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
-          //     (2750 * 100) / 3299) *
-          //     3299) /
-          //   100;
+          robotX =
+            (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
+              (2750 * 100) / 3299) *
+              3299) /
+            100;
 
-          // robotY =
-          //   (((2457 * 100) / 3133 -
-          //     (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
-          //     3133) /
-          //   100;
+          robotY =
+            (((2457 * 100) / 3133 -
+              (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
+              3133) /
+            100;
 
-          // console.log("x", x, "y", y);
+          console.log("로봇 좌표 찐:", robotX, robotY);
 
           let model_index = -1; // 기본값 (해당 없음)
 

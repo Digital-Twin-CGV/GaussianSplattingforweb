@@ -692,11 +692,10 @@
           JSON.stringify({ x, y })
         );
 
-        console.log("3d->2d", x, y);
-
         // % 좌표에서 로봇 좌표로
         x = (x * 3299) / 100 - 2750;
         y = (-y * 3133) / 100 + 2457;
+        console.log("실험 로봇 좌표:", x, y);
 
         return { x, y };
       }
