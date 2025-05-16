@@ -169,6 +169,10 @@ function managerRobotMarker(robot, minimapRectClass, selected) {
 function marking(destin, start, end, className) {
   const startMarkerContainer = document.createElement("div");
   const endMarkerContainer = document.createElement("div");
+  // 미니맵 정보
+  const minimap = document.querySelector(className);
+  console.log(minimap);
+  const minimapRect = minimap.getBoundingClientRect();
 
   let markerLocation;
 
@@ -179,11 +183,14 @@ function marking(destin, start, end, className) {
 <path d="M12.2175 17.0466L12.2175 11.8529L12.1367 11.8529L10.549 12.9562L10.549 11.7363L12.2219 10.5747L13.5719 10.5747L13.5719 17.0466L12.2175 17.0466Z" fill="white"/>
 </svg>
 `;
+    // 마커 위치
+    const x = start.x - (100 * 12.5) / minimapRect.width;
+    const y = start.y - (100 * 34) / minimapRect.height;
 
     startMarkerContainer.style.position = "absolute";
     startMarkerContainer.className = "moving_start_marker";
-    startMarkerContainer.style.top = markerLocation.y + "%";
-    startMarkerContainer.style.left = markerLocation.x + "%";
+    startMarkerContainer.style.top = y + "%";
+    startMarkerContainer.style.left = x + "%";
     startMarkerContainer.style.display = "flex";
     startMarkerContainer.style.alignItems = "flex-start";
 
@@ -198,10 +205,14 @@ function marking(destin, start, end, className) {
 </svg>
 `;
 
+    // 마커 위치
+    const x = end.x - (100 * 12.5) / minimapRect.width;
+    const y = end.y - (100 * 34) / minimapRect.height;
+
     endMarkerContainer.style.position = "absolute";
     endMarkerContainer.className = "moving_start_marker";
-    endMarkerContainer.style.top = markerLocation.y + "%";
-    endMarkerContainer.style.left = markerLocation.x + "%";
+    endMarkerContainer.style.top = y + "%";
+    endMarkerContainer.style.left = x + "%";
     endMarkerContainer.style.display = "flex";
     endMarkerContainer.style.alignItems = "flex-start";
 
