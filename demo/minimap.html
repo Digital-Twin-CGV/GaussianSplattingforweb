@@ -197,13 +197,9 @@
           const start = document.createElement("div");
           const startCoordin = JSON.parse(localStorage.getItem("start"));
 
-          console.log("마커 계산 전:", startCoordin.x, startCoordin.y);
-
           // 마커 위치
           const x = startCoordin.x - (100 * 19) / minimapRect.width;
           const y = startCoordin.y - (100 * 42) / minimapRect.height;
-
-          console.log("마커 계산 후:", x, y);
 
           start.className = "minimap_start";
           start.style.position = "absolute";
