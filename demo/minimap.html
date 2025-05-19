@@ -145,7 +145,7 @@
         <img
           id="minimap_gaussian"
           alt="gaussian_img"
-          src="assets/images/Minimap2.png"
+          src="assets/images/Minimap.png"
         />
       </div>
     </div>
@@ -325,14 +325,14 @@
           // 사용자는 왼쪽 위가 원점
           robotX =
             (((100 * (event.clientX - minimapRect.left)) / minimapRect.width -
-              (2750 * 100) / 3299) *
-              3299) /
+              (3995 * 100) / 5063) *
+              5063) /
             100;
 
           robotY =
-            (((2457 * 100) / 3133 -
+            (((3905 * 100) / 4929 -
               (100 * (event.clientY - minimapRect.top)) / minimapRect.height) *
-              3133) /
+              4929) /
             100;
 
           console.log("로봇 좌표 찐:", robotX, robotY);

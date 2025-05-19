@@ -9,11 +9,11 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   container.className = "robot_marker_container";
   container.style.position = "absolute";
   container.style.left =
-    ((robot.position[0] + 2750) * 100) / 3299 -
+    ((robot.position[0] + 3995) * 100) / 5063 -
     (20 * 100) / minimapRect.width +
     "%";
   container.style.top =
-    ((-robot.position[1] + 2457) * 100) / 3133 -
+    ((-robot.position[1] + 3905) * 100) / 4929 -
     (52 * 100) / minimapRect.height +
     "%";
   container.style.display = "flex";
@@ -82,11 +82,11 @@ function managerRobotMarker(robot, minimapRectClass, selected) {
   container.className = "robot_marker_container";
   container.style.position = "absolute";
   container.style.left =
-    ((robot.position[0] + 2750) * 100) / 3299 -
+    ((robot.position[0] + 3995) * 100) / 5063 -
     (20 * 100) / minimapRect.width +
     "%";
   container.style.top =
-    ((-robot.position[1] + 2457) * 100) / 3133 -
+    ((-robot.position[1] + 3995) * 100) / 4929 -
     (48 * 100) / minimapRect.height +
     "%";
   container.style.display = "flex";
