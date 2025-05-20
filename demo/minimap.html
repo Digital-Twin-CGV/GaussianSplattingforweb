@@ -180,6 +180,7 @@
 
       const destin = localStorage.getItem("destin"); // 출발지인지 목적지인지. 0 : 출발지, 1 : 목적지
       const robotId = localStorage.getItem("robot"); // 로봇 번호
+      const minimap = document.getElementById("minimap_map"); // 미니맵 지정
 
       // 제목 설정
       const titleElement = document.getElementById("robot-info");
@@ -191,6 +192,7 @@
 
       // 출발지 마커
       if (destin == 1) {
+        const minimapRect = minimap.getBoundingClientRect();
         // 목적지를 찍는 페이지라면 ...
         document.addEventListener("DOMContentLoaded", () => {
           // marker와 label을 넣는 container
@@ -263,9 +265,7 @@
         isMarkerSelected = isSelected;
       }
 
-      const minimap = document.getElementById("minimap_map");
       // 미니맵의 정보
-      const minimapRect = minimap.getBoundingClientRect();
       const background = document.getElementById("minimap_gaussian");
       const canvas = document.getElementById("colorCanvas");
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -287,6 +287,7 @@
 
       // 클릭한 부분
       minimap.addEventListener("click", (event) => {
+        const minimapRect = minimap.getBoundingClientRect();
         // 이미지에서 marker 위치
         // 왼쪽 위를 원점
         const x =
@@ -294,10 +295,11 @@
         const y =
           (100 * (event.clientY - minimapRect.top - 42)) / minimapRect.height;
 
+        console.log(x, y);
         // 클릭한 위치의 색 가져오기
         const pixelData = ctx.getImageData(
-          (x * minimapRect.width) / 100 + 19,
-          (y * minimapRect.height) / 100 + 42,
+          Math.round((x * minimapRect.width) / 100 + 19),
+          Math.round((y * minimapRect.height) / 100 + 42),
           1,
           1
         ).data;
