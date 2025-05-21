@@ -185,6 +185,7 @@
         // DB에 정지 요청
         insertRequest(robotId, false);
         alert(`로봇 ${robotId}을 즉시 정지합니다.`);
+        window.location = 'index.html'; 
       } else {
         // 사용자가 취소를 눌렀을 때
         alert("정지 요청이 취소되었습니다.");
