@@ -30,6 +30,8 @@
         height: 42px;
 
         z-index: 2;
+
+        cursor: pointer;
       }
 
       .moving_testbtn {
@@ -213,6 +215,7 @@
         startBtn.style.color = "rgba(164, 164, 164, 1)";
         startBtn.innerHTML = "주행 시작";
         startBtn.disabled = true;
+        startBtn.style.cursor = "default";
       } else if (destin === 1) {
         titleElement.innerHTML = "로봇이 첫 번째 목적지에 도착했습니다.";
         destinBar1.style.borderBottom = "5px solid rgba(63, 226, 244, 1)";
@@ -225,6 +228,7 @@
         startBtn.style.color = "rgba(164, 164, 164, 1)";
         startBtn.innerHTML = "주행 완료";
         startBtn.disabled = true;
+        startBtn.style.cursor = "default";
       } else if (destin === 3) {
         titleElement.innerHTML = "로봇이 두 번째 목적지에 도착했습니다.";
         destinBar2.style.borderBottom = "5px solid rgba(63, 226, 244, 1)";
