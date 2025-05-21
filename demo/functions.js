@@ -38,7 +38,7 @@ function createRobotMarker(robot, minimapRectClass, selected) {
 `;
     container.style.zIndex = "1";
   } else {
-    if (robot.status == 3) {
+    if (robot.status == 0) {
       container.innerHTML = `
         <svg width="40" height="52" viewBox="0 0 60 90" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M60 32.5C60 47.9579 48.3685 62.4261 33.2985 83.3802C31.6838 85.6253 28.3253 85.6188 26.7174 83.3689C11.7466 62.4209 0 47.9551 0 32.5C0 15.9315 13.4315 2.5 30 2.5C46.5685 2.5 60 15.9315 60 32.5Z" fill="#303030"/>
@@ -111,7 +111,7 @@ function managerRobotMarker(robot, minimapRectClass, selected) {
 `;
     container.style.zIndex = "1";
   } else {
-    if (robot.status == 3) {
+    if (robot.status == 0) {
       container.innerHTML = `
         <svg width="40" height="52" viewBox="0 0 78 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_437_503)">
@@ -157,7 +157,6 @@ function managerRobotMarker(robot, minimapRectClass, selected) {
 </filter>
 </defs>
 </svg>
-
   `;
     }
   }

@@ -669,24 +669,23 @@
             break;
           case 3:
             x = (gaussianX - 2193.872) / -6.603;
-            y = (gaussianZ + 3302.323) / 40.880;
+            y = (gaussianZ + 3302.323) / 40.88;
             break;
           case 4:
             x = (gaussianX - 2815.961) / -38.889;
             y = (gaussianZ + 4698.785) / 59.324;
             break;
           case 5:
-            x = (gaussianX - 2765.991) / -31.650;
+            x = (gaussianX - 2765.991) / -31.65;
             y = (gaussianZ + 2492.444) / 28.599;
             break;
           case 6:
-            x = (gaussianX - 2906.340) / -43.049;
-            y = (gaussianZ + 2599.040) / 28.222;
+            x = (gaussianX - 2906.34) / -43.049;
+            y = (gaussianZ + 2599.04) / 28.222;
             break;
           default:
             return null;
         }
-
 
         localStorage.setItem(
           destin === "0" ? "start" : "end",
@@ -706,7 +705,7 @@
       // 만약 destin이 1이면 moving 페이지로 이동
       function openDemo() {
         // 만약 로봇이 사용중이라면
-        if (robotStatus === 1) {
+        if (robotStatus === 1 || robotStatus) {
           alert("이미 사용중인 로봇입니다. 로봇 선택 페이지로 이동합니다.");
           window.location.href = "selectrobot.html";
           return 0;
