@@ -434,7 +434,7 @@
           ".managerMap_modal_robot_status"
         );
         robotStatus.style.color = robotStatusColor(robot.status);
-        robotStatus.innerHTML = robot.status === 3 ? "사용 가능" : "사용중";
+        robotStatus.innerHTML = robot.status === 0 ? "사용 가능" : "사용중";
 
         // 로봇 로그
         const robotLog = document.querySelector(".managerMap_modal_log");
