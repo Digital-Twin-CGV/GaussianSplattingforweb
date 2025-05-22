@@ -14,7 +14,7 @@ function createRobotMarker(robot, minimapRectClass, selected) {
     "%";
   container.style.top =
     ((-robot.position[1] + 3905) * 100) / 4929 -
-    (52 * 100) / minimapRect.height +
+    (50 * 100) / minimapRect.height +
     "%";
   container.style.display = "flex";
   container.style.alignItems = "flex-start";
@@ -87,7 +87,7 @@ function managerRobotMarker(robot, minimapRectClass, selected) {
     "%";
   container.style.top =
     ((-robot.position[1] + 3995) * 100) / 4929 -
-    (48 * 100) / minimapRect.height +
+    (58 * 100) / minimapRect.height +
     "%";
   container.style.display = "flex";
   container.style.alignItems = "flex-start";
