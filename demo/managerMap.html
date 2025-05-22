@@ -151,6 +151,8 @@
 
       .managerMap_modal_log {
         flex: 10;
+        display: flex;
+        justify-content: space-between;
       }
 
       .managerMap_modal_stop {
@@ -272,7 +274,7 @@
             <div class="managerMap_modal_robot_status"></div>
           </div>
           <div class="managerMap_modal_log">
-            <div class="managerMap_modal_log_title">Logs</div>
+            <div class="managerMap_modal_log_title">Battery</div>
             <div class="managerMap_modal_logs"></div>
           </div>
           <div class="managerMap_modal_stop">
@@ -437,7 +439,8 @@
         robotStatus.innerHTML = robot.status === 0 ? "사용 가능" : "사용중";
 
         // 로봇 로그
-        const robotLog = document.querySelector(".managerMap_modal_log");
+        const robotLog = document.querySelector(".managerMap_modal_logs");
+        robotLog.innerHTML = `${robot.battery}%`;
 
         // 긴급정지 버튼
         const robotStopBtn = document.querySelector(".managerMap_modal_stop");
