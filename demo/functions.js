@@ -20,8 +20,11 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   container.style.alignItems = "flex-start";
 
   // SVG 로봇 마커 추가
-  if (selected == robot.id) {
-    container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+  if (robot.status == 0) {
+    // 사용 가능할 경우
+    if (selected == robot.id) {
+      // 선택된 경우
+      container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 106" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M60 48.5C60 63.9579 48.3685 78.4261 33.2985 99.3802C31.6838 101.625 28.3253 101.619 26.7174 99.3689C11.7466 78.4209 0 63.9551 0 48.5C0 31.9315 13.4315 18.5 30 18.5C46.5685 18.5 60 31.9315 60 48.5Z" fill="#303030"/>
 <circle cx="30" cy="48.5" r="26" fill="white"/>
 <rect x="11.9173" y="34.9173" width="36.1654" height="21.8598" rx="4.58644" fill="#98F5FF" stroke="#222222" stroke-width="1.83458"/>
@@ -36,9 +39,9 @@ function createRobotMarker(robot, minimapRectClass, selected) {
 <circle cx="30" cy="9" r="7" fill="#6BE3F0" stroke="#222222" stroke-width="4"/>
 </svg>
 `;
-    container.style.zIndex = "1";
-  } else {
-    if (robot.status == 0) {
+      container.style.zIndex = "1";
+    } else {
+      // 선택이 안된 경우
       container.innerHTML = `
         <svg width="40" height="52" viewBox="0 0 60 90" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M60 32.5C60 47.9579 48.3685 62.4261 33.2985 83.3802C31.6838 85.6253 28.3253 85.6188 26.7174 83.3689C11.7466 62.4209 0 47.9551 0 32.5C0 15.9315 13.4315 2.5 30 2.5C46.5685 2.5 60 15.9315 60 32.5Z" fill="#303030"/>
@@ -53,8 +56,9 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   <path d="M36.2065 25.751C36.7751 25.751 37.4683 26.3503 37.4683 27.4004C37.4682 28.4504 36.7751 29.0498 36.2065 29.0498C35.638 29.0496 34.9459 28.4503 34.9458 27.4004C34.9458 26.3505 35.638 25.7512 36.2065 25.751Z" fill="#222222" stroke="#222222" stroke-width="1.68147"/>
   </svg>
       `;
-    } else {
-      container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    }
+  } else {
+    container.innerHTML = `<svg width="40" height="52" viewBox="0 0 60 90" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M60 32.5C60 47.9579 48.3685 62.4261 33.2985 83.3802C31.6838 85.6253 28.3253 85.6188 26.7174 83.3689C11.7466 62.4209 0 47.9551 0 32.5C0 15.9315 13.4315 2.5 30 2.5C46.5685 2.5 60 15.9315 60 32.5Z" fill="#8E8E8E"/>
   <circle cx="30" cy="32.5" r="26" fill="white"/>
   <rect x="11.9173" y="18.9173" width="36.1654" height="21.8598" rx="4.58644" fill="#BDEEF3" stroke="#8E8E8E" stroke-width="1.83458"/>
@@ -64,7 +68,6 @@ function createRobotMarker(robot, minimapRectClass, selected) {
   <path d="M39.7178 39.8387C41.4818 39.8387 42.8925 41.2476 42.8926 42.9608C42.8926 44.6739 41.4819 46.0828 39.7178 46.0828C37.9539 46.0826 36.5439 44.6738 36.5439 42.9608C36.544 41.2478 37.9539 39.8389 39.7178 39.8387Z" fill="#8E8E8E" stroke="#8E8E8E" stroke-width="1.83439"/>
   </svg>
   `;
-    }
   }
 
   return container;
