@@ -13,11 +13,22 @@
         background-color: #f8f8f8;
       }
 
+      .managerMap_robot_info_container:hover {
+        background-color: #3fe2f4;
+        color: white;
+      }
+
       .back_button {
         width: 30px;
         height: 30px;
         border: 1px solid #3fe2f4;
         border-radius: 15px;
+
+        cursor: pointer;
+      }
+
+      .back_button:hover {
+        background-color: #3fe2f4;
       }
 
       .managerMap_container {
@@ -151,6 +162,11 @@
         border: 1px solid rgba(255, 16, 16, 1);
       }
 
+      .managerMap_modal_stop:hover {
+        background-color: rgba(255, 16, 16, 1);
+        color: white;
+      }
+
       .managerMap_modal_control {
         flex: 1;
         display: flex;
@@ -160,10 +176,17 @@
         border: 1px solid rgba(63, 226, 244, 1);
       }
 
+      .managerMap_modal_control:hover {
+        background-color: rgba(63, 226, 244, 1);
+        color: white;
+      }
+
       .managerMap_modal_stop,
       .managerMap_modal_control {
         margin: 10px 0;
         border-radius: 100px;
+
+        cursor: pointer;
       }
 
       /* 모바일 화면 크기 기준 */
@@ -303,6 +326,8 @@
         window.location = url;
       }
 
+      localStorage.setItem("manager", 1);
+
       // 데이터 불러오기
       robotData();
       requestData();
@@ -358,6 +383,12 @@
             .querySelector(".managerMap_map_container")
             .appendChild(marker_container);
 
+          marker_container.onclick = function () {
+            openModal(robot);
+          };
+
+          marker_container.style.cursor = "pointer";
+
           const robot_information = robotList(robot);
         });
       }
@@ -367,6 +398,7 @@
         const list = document.querySelector(".managerMap_robots");
         const robotInfoContainer = document.createElement("div");
         robotInfoContainer.className = "managerMap_robot_info_container";
+        robotInfoContainer.style.cursor = "pointer";
 
         robotInfoContainer.onclick = function () {
           openModal(robot);
@@ -402,7 +434,7 @@
           ".managerMap_modal_robot_status"
         );
         robotStatus.style.color = robotStatusColor(robot.status);
-        robotStatus.innerHTML = robot.status === 3 ? "사용가능" : "사용불가";
+        robotStatus.innerHTML = robot.status === 3 ? "사용 가능" : "사용중";
 
         // 로봇 로그
         const robotLog = document.querySelector(".managerMap_modal_log");
@@ -417,14 +449,14 @@
         const robotControlBtn = document.querySelector(
           ".managerMap_modal_control"
         );
-        robotStopBtn.onclick = function () {
+        robotControlBtn.onclick = function () {
           controlRobot(robot);
         };
       }
 
       // 로봇 상태 색상
       function robotStatusColor(status) {
-        if (status == 3) {
+        if (status == 0) {
           return "rgba(29, 210, 0, 1)";
         } else {
           return "rgba(255, 0, 0, 1)";
@@ -440,10 +472,16 @@
 
       // 로봇 제어 버튼
       function controlRobot(robot) {
-        if (robot.status === 3) {
+        if (robot.status === 0) {
           openPage("minimap", robot);
         } else {
-          alert("로봇이 이미 사용중입니다.");
+          const confirmControl = confirm(
+            "로봇이 사용중입니다. 그래도 하시겠습니까?"
+          );
+
+          if (confirmControl) {
+            openPage("minimap", robot);
+          }
         }
       }
 

@@ -121,6 +121,11 @@
         cursor: pointer;
       }
 
+      .selectrobot_modal_selectbtn:hover {
+        background-color: rgba(63, 226, 244, 1);
+        color: white;
+      }
+
       .selectrobot_modal_above {
         display: flex;
         align-items: center;
@@ -240,6 +245,7 @@
           .querySelector(".selectrobot_modal_selectbtn")
           .addEventListener("click", () => openDemo("minimap"));
       });
+      localStorage.setItem("manager", 0);
 
       // 로봇 데이터
       robotData();
