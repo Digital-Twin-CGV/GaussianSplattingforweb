@@ -328,6 +328,7 @@
       function openPage(page, robot) {
         let url;
         if (page == "minimap") {
+          url = "minimap.html";
           // 로봇 선택 페이지로 넘어갈 때
           localStorage.setItem("destin", 0);
           localStorage.setItem("robot", robot.id);
