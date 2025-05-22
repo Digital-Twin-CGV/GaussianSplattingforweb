@@ -300,9 +300,11 @@
         selectedRobot = robotName;
         selectedAvailable = available;
 
-        modal.style.display = "flex";
-        robotId.innerHTML = `${robotName}번 로봇`;
-        robotBattery.innerHTML = `${battery}%`;
+        if (available == 0) {
+          modal.style.display = "flex";
+          robotId.innerHTML = `${robotName}번 로봇`;
+          robotBattery.innerHTML = `${battery}%`;
+        }
 
         // 색상 변경한 것 적용
         robotData();
