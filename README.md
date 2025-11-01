@@ -10,7 +10,7 @@
 
 ---
 
-## 📌 Overview  
+## Overview 개요
 
 최근 자율주행 기술의 발전으로 실시간으로 원격으로 로봇을 관제할 수 있는 시스템의 수요가 증가하고 있다.   
 
@@ -20,7 +20,7 @@
 
 ---
 
-## 💡 Motivation  
+## Motivation 프로젝트 동기
 
 기존의 2D 로봇 관제 인터페이스는 공간 인식이 제한적이며,  
 로봇이 실제 공간에서 어디에 위치해있는지 직관적으로 파악하기 어렵다.  
@@ -30,7 +30,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 🎯 Objectives  
+## Objectives  목표
 
 - Gaussian Splatting을 활용해 실제 공간에 대응되는 3D 모델 생성  
 - 로봇의 위치 데이터를 실시간으로 반영하는 웹 기반 관제 UI 구현  
@@ -39,7 +39,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 🔑 Key Features  
+## Key Features  주요 기능
 
 - **3D 공간 시각화:** COLMAP으로 생성한 sparse point cloud를 Gaussian Splatting 모델로 변환  
 - **실시간 로봇 위치 갱신:** 로봇의 좌표 데이터를 수신하여 웹페이지에 실시간 반영  
@@ -48,7 +48,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 🧩 Tech Stack  
+## Tech Stack  기술 스택
 
 | Category | Technologies |
 |-----------|---------------|
@@ -60,34 +60,33 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 🛠 Implementation Details  
+## Implementation Details  세부 구현 설명
 
-- **COLMAP 자동화 파이프라인 구축**: 업로드된 이미지 세트를 기반으로 camera pose와 point cloud 생성  
-- **Gaussian 변환 스크립트 작성**: COLMAP 결과를 Gaussian Splatting 형식으로 자동 변환  
-- **WebSocket 기반 실시간 통신**: 로봇 좌표를 실시간 스트림으로 수신 및 브라우저 반영  
-- **Three.js 최적화**: Gaussian 모델의 해상도 및 렌더링 부하를 조절하기 위한 LOD(Level of Detail) 적용  
-- **UI 구조화**: 로봇 목록, 카메라 뷰, 실시간 상태창으로 구성된 React-like SPA 설계  
-
----
-
-## 🧱 System Architecture  
-
-<a href="https://www.inria.fr/"><img height="100" src="assets/logo_inria.png"> </a>
+- **학습 이미지 변환 스크립트 작성**: 가우시안 스플래팅 모델의 일관성을 위해 학습에 필요한 이미지 후처리 작업 자동화 스크립트 작성 
+- **데이터베이스 기반 실시간 통신**: 로봇 좌표를 실시간 스트림으로 수신 및 브라우저 반영  
+- **Three.js 최적화**: Gaussian 모델의 해상도 및 렌더링 부하를 조절하기 위한 분할 업로드  
+- **UI 구조화**: 로봇 목록, 3D Model 뷰, 실시간 상태창으로 구성된 UI 설계  
+- **미니맵과 3d model 좌표 매핑** : 2D 미니맵에서 클릭한 위치에 해당하는 3D 모델로 이동하는 좌표 매핑 계산식 제작
 
 ---
 
-## 🧩 Technical Challenges & Solutions  
+## System Architecture  시스템 구조 (파이프라인)
+
+<img height="100" src="https://github.com/Digital-Twin-CGV/GaussianSplattingforweb/blob/main/images/systemArchitecture.png">
+
+---
+
+## Technical Challenges & Solutions  기술적 문제와 해결방법
 
 | Challenge | Solution |
 |------------|-----------|
-| Gaussian Splatting 모델 좌표계와 로봇 좌표 불일치 | COLMAP camera pose 행렬을 변환하여 월드 좌표계 통합 |
-| Supersplat 모델의 렌더링 지연 | LOD(Level of Detail) 적용 및 프레임 버퍼 동적 업데이트 |
-| 실시간 데이터 동기화 지연 | WebSocket 기반 비동기 스트리밍 및 서버 캐싱 개선 |
-| Gaussian 모델 대용량 문제 | Gaussian 수집 시 threshold 기반 filtering 적용 |
+| Gaussian Splatting 모델 좌표계와 2D 로봇 미니맵 좌표 불일치 | 1차 방정식을 활용한 좌표 매핑 계산식 활용 |
+| Gaussian Splatting 모델의 렌더링 지연 | 분할 업로드 |
+| Gaussian Splatting 모델의 인터랙션 문제 | 건물의 바닥, 천장에 해당하는 부분을 메쉬로 만들어 해결 |
 
 ---
 
-## 🚀 Deployment & Demo  
+## Deployment & Demo  실행 및 데모 영상
 
 - **Live Demo:** https://gaussian-splattingforweb.vercel.app/  
 - **Demo Video:** [YouTube Link](https://youtu.be/G8lRnJHhhe4?si=AD9zh3tn8FmVEQwz)  
@@ -95,7 +94,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 🎓 What We Learned  
+## What We Learned  배운점
 
 - Gaussian Splatting의 구조와 WebGL 렌더링 최적화 방법 이해  
 - 3D Reconstruction과 Web Frontend 간의 데이터 파이프라인 설계 경험  
@@ -103,7 +102,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 📈 Future Work  
+## Future Work  추후 개선사항
 
 - 로봇 이동 예상 경로 표시  
 - 3D 모델의 퀄리티 향상
@@ -113,7 +112,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 
 ---
 
-## 👥 Team Roles  
+## Team Roles  팀역할
 
 | Name | Role | Responsibilities |
 |------|------|------------------|
