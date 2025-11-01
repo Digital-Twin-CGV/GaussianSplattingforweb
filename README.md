@@ -1,14 +1,16 @@
 
 # Garo: Web-based Robot Monitoring System using Gaussian Splatting 
 ## 가우시안 스플래팅을 활용한 웹 기반 로봇 관제 시스템 제작
+<br>
 
 **2025 Spring Capstone Design Project**  
-**2025 봄학기 캡스톤디자인 2** <br>
+2025 봄학기 캡스톤디자인 2 <br>
 **Advisor:** Prof. Hwang Sungsoo 황성수 교수님 <br>
 **Partner Company:** SensingPlus 센싱플러스 <br>
 **Team:** 심성환, 김유겸, 김예지, 김예빈 
 
 ---
+<br>
 
 ## Overview 개요
 
@@ -19,6 +21,7 @@
 본 프로젝트는 **Gaussian Splatting 기반의 3D 디지털 트윈 환경** 을 웹상에 구현하여 로봇의 위치, 경로, 상태 정보를 **실시간으로 시각화하고 제어할 수 있는 관제 시스템(Garo)** 을 설계하였다.
 
 ---
+<br>
 
 ## Motivation 프로젝트 동기
 
@@ -29,6 +32,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 이를 통해 **저비용·고현실감의 로봇 관제 시각화 플랫폼**을 구축하고자 했다.
 
 ---
+<br>
 
 ## Objectives  목표
 
@@ -38,6 +42,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 - Node.js + Supabase 기반 실시간 데이터 연동 및 동기화  
 
 ---
+<br>
 
 ## Key Features  주요 기능
 
@@ -47,6 +52,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 - **데이터베이스 동기화:** Supabase를 활용한 사용자-로봇 간 양방향 데이터 처리  
 
 ---
+<br>
 
 ## Tech Stack  기술 스택
 
@@ -59,6 +65,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 | Development | GitHub |
 
 ---
+<br>
 
 ## Implementation Details  세부 구현 설명
 
@@ -69,12 +76,15 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 - **미니맵과 3d model 좌표 매핑** : 2D 미니맵에서 클릭한 위치에 해당하는 3D 모델로 이동하는 좌표 매핑 계산식 제작
 
 ---
+<br>
+
 
 ## System Architecture  시스템 구조 (파이프라인)
 
-<img height="100" src="https://github.com/Digital-Twin-CGV/GaussianSplattingforweb/blob/main/images/systemArchitecture.png">
+<img height="250" src="https://github.com/Digital-Twin-CGV/GaussianSplattingforweb/blob/main/images/systemArchitecture.png">
 
 ---
+<br>
 
 ## Technical Challenges & Solutions  기술적 문제와 해결방법
 
@@ -85,6 +95,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 | Gaussian Splatting 모델의 인터랙션 문제 | 건물의 바닥, 천장에 해당하는 부분을 메쉬로 만들어 해결 |
 
 ---
+<br>
 
 ## Deployment & Demo  실행 및 데모 영상
 
@@ -93,6 +104,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 - **Repository:** [GitHub Repository](https://github.com/Digital-Twin-CGV/GaussianSplattingforweb#)
 
 ---
+<br>
 
 ## What We Learned  배운점
 
@@ -101,6 +113,7 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
 - 로봇 제어, 시각화, 데이터베이스 관리의 통합적 시스템 설계 역량 강화  
 
 ---
+<br>
 
 ## Future Work  추후 개선사항
 
@@ -111,14 +124,16 @@ Gaussian Splatting은 이미지로부터 고품질의 3D 장면을 빠르게 재
  
 
 ---
+<br>
 
 ## Team Roles  팀역할
 
-| Name | Role | Responsibilities |
-|------|------|------------------|
+| Member | Role | Responsibilities |
+|-----------|------|------------------|
 | **심성환** | Team Leader / Backend Developer | Node.js 서버 및 Supabase 데이터 구조 설계 |
 | **김유겸** | Backend Developer | 웹 사용자 인터랙션 구현, 2D 지도와 3D 모델간의 좌표 매핑 |
 | **김예지** | Frontend Developer | 웹페이지 UI 구현, Three.js 기반 상호작용 구현 |
 | **김예빈** | Integration Engineer | COLMAP 및 Gaussian Splatting 변환 작업, 2D 지도와 3D 모델간의 좌표 매핑 |
 
 ---
+<br>
